@@ -1,0 +1,5 @@
+#include <atomic>
+
+int main() {
+    
+}
