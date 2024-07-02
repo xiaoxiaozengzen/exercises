@@ -48,6 +48,11 @@ public:
     {
         this->age=a;
     }
+
+    int operator=(int a) {
+        this->age = a;
+        return a;
+    }
 };
 bool operator==(people& p1, people const & p2) {
     
@@ -77,4 +82,7 @@ int main()
     if(p11==p22) {
         std::cout << "the age is equal!" << std::endl;
     }
+
+    p11 = 30;
+    std::cout << "p11.age " << p11.age << std::endl;
 }
