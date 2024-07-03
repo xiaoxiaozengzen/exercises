@@ -8,3 +8,9 @@ target_link_libraries(atomic_example PUBLIC pthread)
 
 add_executable(memory_order memory_order.cpp)
 target_link_libraries(memory_order PUBLIC pthread)
+
+add_executable(thread_example thread_example.cpp)
+target_link_libraries(thread_example PUBLIC pthread)
+
+add_executable(pthread_example pthread_example.cpp)
+target_link_libraries(pthread_example PUBLIC pthread)
