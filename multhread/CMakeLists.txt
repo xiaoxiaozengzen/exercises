@@ -14,3 +14,6 @@ target_link_libraries(thread_example PUBLIC pthread)
 
 add_executable(pthread_example pthread_example.cpp)
 target_link_libraries(pthread_example PUBLIC pthread)
+
+add_executable(future future.cpp)
+target_link_libraries(future PUBLIC pthread)

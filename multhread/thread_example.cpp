@@ -156,8 +156,26 @@ void thread_pthread() {
     }
 }
 
+void thread_ref() {
+    int a = 10;
+    std::thread t(
+        [](int& a) {
+            a +=1;
+        },
+        std::ref(a)
+    );
+
+    if(t.joinable()) {
+        t.join();
+    }
+
+    std::cout << "thread_ref: " << a << std::endl;
+}
+
 int main() {
+    thread_ref();
     thread_base();
     this_thread_test();
     thread_pthread();
+
 }
