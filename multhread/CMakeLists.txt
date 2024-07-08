@@ -17,3 +17,9 @@ target_link_libraries(pthread_example PUBLIC pthread)
 
 add_executable(future future.cpp)
 target_link_libraries(future PUBLIC pthread)
+
+add_executable(mutex mutex.cpp)
+target_link_libraries(mutex PUBLIC pthread)
+
+add_executable(condition_varible condition_varible.cpp)
+target_link_libraries(condition_varible PUBLIC pthread)
