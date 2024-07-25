@@ -57,6 +57,16 @@ private:
     int m_d;
 };
 
+class Fa {
+public:
+    int a = 10;
+};
+
+class Su : public Fa {
+public:
+    int a = 12;
+};
+
 /**
     向上类型转换：派生类对象转换成基类对象，派生类指针转换成基类指针，派生类引用转换成基类引用
     向下类型转换：基类指针转换成派生类指针，基类引用转换成派生类引用.(注：基类对象一般不能直接转派生类对象，内存布局对不上)   向下类型转换不一定安全
@@ -100,6 +110,12 @@ void up_type_cast_ptr() {
     std::cout<<"pb="<<pb<<std::endl;
     std::cout<<"pc="<<pc<<std::endl;
     std::cout<<"pd="<<pd<<std::endl;
+
+    std::cout<<"-----------------------"<<std::endl;
+    Fa * fa = new Fa;
+    Su * su = new Su;
+    fa = su;
+    std::cout << "fa->a " << fa->a << std::endl;
 }
 
 class Base{
