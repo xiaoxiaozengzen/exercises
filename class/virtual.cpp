@@ -143,6 +143,23 @@ public:
     int c = 13;
 };
 
+class DerivedOther {
+public:
+    virtual int first() {
+        std::cout << "DerivedOther::first" << std::endl;
+    }
+};
+
+/**
+多重集成的情况下，包含两个虚函数表了
+ */
+class DerivedEnd : public Derived, public DerivedOther{
+public:
+    virtual int first() {
+        std::cout << "DerivedEnd::first" << std::endl;
+    }
+};
+
 /**
 多态的两个条件：1.虚函数重写 2.必须通过基类的指针或者引用调用虚函数。
  */
@@ -156,6 +173,12 @@ void duotai_example() {
     std::cout << "b->a: " << b->a << std::endl;
     std::cout << "b->b: " << b->b << std::endl;
     delete b;
+
+    std::cout << "sizeof(Base): " << sizeof(Base) 
+    << ", sizeof(Derived): " << sizeof(Derived)
+    << ", sizeof(DerivedOther): " << sizeof(DerivedOther)
+    << ", sizeof(DerivedEnd): " << sizeof(DerivedEnd)
+    << std::endl;
 }
 
 int main() {
