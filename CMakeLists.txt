@@ -6,6 +6,9 @@
 cmake_minimum_required(VERSION 3.14)
 project(EXERCISE)
 
+set(LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+
 ## 获取当前目录下文件夹
 macro(SUBDIRLIST result curdir)
     FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
