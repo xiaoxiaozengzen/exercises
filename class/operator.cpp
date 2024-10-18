@@ -11,6 +11,8 @@
 
 // 3.如果有一个操作数是类类型如string类的情形那么对于对称操作符比如等于操作符最好定义为全局名字空间成员。
 
+// 4.""_v形式的操作符重载，用于重载用户定义的字面量
+
 class person {
  private:
   int age;
@@ -54,6 +56,19 @@ bool operator==(people &p1, people const &p2) {
   }
 }
 
+/******************""_v形式重载************** */
+// 双引号之间加的内容是一些字面常量，比如"hello"，"world"等等，这些字面常量是由编译器来解释的，我们可以通过重载""_v来自定义这些字面量的含义。
+class Length {
+ public:
+  Length(int l) : length_(l) {}
+  int getLength() { return length_; }
+
+ private:
+  int length_;
+};
+
+Length operator""_m(unsigned long long l) { return Length(l); }
+
 int main() {
   person p1(10);
   person p2(10);
@@ -73,4 +88,7 @@ int main() {
 
   p11 = 30;
   std::cout << "p11.age " << p11.age << std::endl;
+
+  Length l = 10_m;
+  std::cout << "length: " << l.getLength() << std::endl;
 }
