@@ -69,6 +69,21 @@ class Length {
 
 Length operator""_m(unsigned long long l) { return Length(l); }
 
+/****************** ++操作符重载************** */
+class Counter {
+ public:
+  Counter() : count(0) {}
+  Counter(int c) : count(c) {}
+
+  // 前置++
+  void operator++() { ++count; }
+  // 后置++
+  void operator++(int) { count++; }
+
+ public:
+  int count;
+};
+
 int main() {
   person p1(10);
   person p2(10);
@@ -91,4 +106,10 @@ int main() {
 
   Length l = 10_m;
   std::cout << "length: " << l.getLength() << std::endl;
+
+  Counter coun;
+  coun++;
+  std::cout << "coun.count: " << coun.count << std::endl;
+  ++coun;
+  std::cout << "coun.count: " << coun.count << std::endl;
 }
