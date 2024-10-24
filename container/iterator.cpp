@@ -10,6 +10,9 @@
 //           class Reference = T&         // iterator::reference          > 
 // class iterator;
 
+// 注意：
+// 1.空迭代器不能被解引用，否则会报异常
+
 class MyIterator : public std::iterator<std::input_iterator_tag, int>
 {
   int* p;
@@ -136,9 +139,33 @@ void Traits() {
 }
 
 void Fun() {
-    
+    std::vector<int> v = {1, 2, 3, 4, 5};
+    int arr[]  = {1, 2, 3, 4, 5};
+    int (&arrd) [5] = arr;
+    std::vector<int>::iterator it = v.begin();
+
+    std::advance(it, 2);
+    std::cout << "it: " << *it << std::endl;
+
+    std::vector<int>::iterator::difference_type diff = std::distance(v.begin(), it);
+    std::cout << "diff: " << diff << std::endl;
+    diff = std::distance(it, v.begin());
+    std::cout << "diff: " << diff << std::endl;
+
+    std::cout << "begin: " << *(std::begin(v)) << std::endl;
+    std::cout << "begin: " << *std::begin<std::vector<int>>(v) << std::endl;
+    std::cout << "begin: " << *(std::begin<int>(arrd)) << std::endl;
+
+    std::cout << "previous: " << *std::prev(v.end()) << std::endl;
+    std::cout << "previous 2: " << *std::prev(v.end(), 2) << std::endl;
+
+    std::cout << "next: " << *std::next(v.begin()) << std::endl;
+    std::cout << "next 2: " << *std::next(v.begin(), 2) << std::endl;
 }
 
+void PreIterator() {
+    
+}
 
 int main() {
     std::cout << "--------------------------------BasicIter--------------------------------" << std::endl;
@@ -155,5 +182,7 @@ int main() {
     Random();
     std::cout << "--------------------------------Traits--------------------------------" << std::endl;
     Traits();
+    std::cout << "--------------------------------Fun--------------------------------" << std::endl;
+    Fun();
     return 0;
 }
