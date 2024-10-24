@@ -163,7 +163,30 @@ void Fun() {
     std::cout << "next 2: " << *std::next(v.begin(), 2) << std::endl;
 }
 
+
+template <class Container>
+class my_back_insert_iterator :
+    public std::iterator<std::output_iterator_tag,void,void,void,void>
+{
+protected:
+  Container* container;
+
+public:
+  typedef Container container_type;
+  explicit my_back_insert_iterator (Container& x) : container(&x) {}
+  my_back_insert_iterator<Container>& operator= (const typename Container::value_type& value)
+    { container->push_back(value); return *this; }
+  my_back_insert_iterator<Container>& operator= (typename Container::value_type&& value)
+    { container->push_back(std::move(value)); return *this; }
+  my_back_insert_iterator<Container>& operator* ()
+    { return *this; }
+  my_back_insert_iterator<Container>& operator++ ()
+    { return *this; }
+  my_back_insert_iterator<Container> operator++ (int)
+    { return *this; }
+};
 void PreIterator() {
+    std::vector<int> v = {1, 2, 3, 4, 5};
     
 }
 
