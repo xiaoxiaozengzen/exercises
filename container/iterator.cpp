@@ -187,7 +187,12 @@ public:
 };
 void PreIterator() {
     std::vector<int> v = {1, 2, 3, 4, 5};
-    
+    std::cout << "v.end() -1: " << *(v.end() - 1) << ",size: " << v.size() << std::endl;
+
+    my_back_insert_iterator<std::vector<int>> my_iterator(v);
+    my_iterator = 6;    
+    std::cout << "v.end() -1: " << *(v.end() - 1) << ",size: " << v.size() << std::endl;
+
 }
 
 int main() {
@@ -207,5 +212,7 @@ int main() {
     Traits();
     std::cout << "--------------------------------Fun--------------------------------" << std::endl;
     Fun();
+    std::cout << "--------------------------------PreIterator--------------------------------" << std::endl;
+    PreIterator();
     return 0;
 }
