@@ -84,6 +84,19 @@ class Counter {
   int count;
 };
 
+/****************** <<输出操作符重载 ************** */
+class OutExample {
+  public:
+    OutExample(int a) : a(a) {}
+    friend std::ostream &operator<<(std::ostream &output, const OutExample &oe) {
+      output << oe.a;
+      return output;
+    }
+  
+  private:
+    int a;
+};
+
 int main() {
   person p1(10);
   person p2(10);
@@ -112,4 +125,7 @@ int main() {
   std::cout << "coun.count: " << coun.count << std::endl;
   ++coun;
   std::cout << "coun.count: " << coun.count << std::endl;
+
+  OutExample oe(10);
+  std::cout << "OutExample: " << oe << std::endl;
 }

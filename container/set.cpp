@@ -12,7 +12,7 @@ public:
     A() {
         std::cout << "construct" << std::endl;
     }
-    A(int a):a(a) {
+    explicit A(int a):a(a) {
         std::cout << "another construct" << std::endl;
     }
     ~A() {
@@ -35,6 +35,15 @@ public:
     A& operator=(A&&) {
         std::cout << "move assign construct" << std::endl;
         return *this;
+    }
+
+    bool operator<(const A &a) const {
+        return this->a < a.a;
+    }
+
+    friend std::ostream &operator<<(std::ostream &output, const A &a) { 
+        output << a.a;
+        return output;            
     }
 
 public:
@@ -110,8 +119,20 @@ void BasicMember() {
   std::cout << "s.size: " << s.size() << std::endl;
   std::cout << "s.max_size: " << s.max_size() << std::endl;
   std::cout << "s.empty: " << s.empty() << std::endl;
+}
 
+void Insert() {
   //3.modifiers
+  A a(1);
+  A b(2);
+  A c(2);
+  std::set<A> s1;
+  std::pair<std::set<A>::iterator, bool> ret = s1.insert(a);
+  if(ret.second) {
+    std::cout << "insert a: " << ret.second << ", value: " << *(ret.first) << std::endl;
+  } else {
+    std::cout << "insert a failed" << std::endl;
+  }
 }
 
 int main() {
@@ -121,5 +142,7 @@ int main() {
   BasicMember();
   std::cout << "--------------------------------BasicConstructor--------------------------------" << std::endl;
   BasicConstructor();
+  std::cout << "--------------------------------Insert--------------------------------" << std::endl;
+  Insert();
   return 0;
 } 
