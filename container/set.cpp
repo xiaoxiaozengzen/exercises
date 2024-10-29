@@ -41,9 +41,13 @@ public:
         return this->a < a.a;
     }
 
-    friend std::ostream &operator<<(std::ostream &output, const A &a) { 
+    friend std::ostream& operator<<(std::ostream &output, const A &a) { 
         output << a.a;
         return output;            
+    }
+
+    bool operator==(const A &a) const {
+        return this->a != a.a;
     }
 
 public:
@@ -123,13 +127,20 @@ void BasicMember() {
 
 void Insert() {
   //3.modifiers
-  A a(1);
-  A b(2);
-  A c(2);
+  A a(11);
+  A b(12);
+  A c(13);
   std::set<A> s1;
   std::pair<std::set<A>::iterator, bool> ret = s1.insert(a);
   if(ret.second) {
     std::cout << "insert a: " << ret.second << ", value: " << *(ret.first) << std::endl;
+  } else {
+    std::cout << "insert a failed" << std::endl;
+  }
+
+  std::pair<std::set<A>::iterator, bool> ret2 = s1.insert(c);
+  if(ret2.second) {
+    std::cout << "insert a: " << ret2.second << ", value: " << *(ret2.first) << std::endl;
   } else {
     std::cout << "insert a failed" << std::endl;
   }
