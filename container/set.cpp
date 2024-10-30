@@ -38,6 +38,7 @@ public:
     }
 
     bool operator<(const A &a) const {
+      std::cout << "operator<, this " << this->a << ", other: " << a.a << std::endl;
         return this->a < a.a;
     }
 
@@ -46,13 +47,12 @@ public:
         return output;            
     }
 
-    bool operator==(const A &a) const {
-        return this->a != a.a;
-    }
+    // bool operator==(const A &a) const {
+    //     return this->a == a.a;
+    // }
 
 public:
     int a = 0;
-    double b = 0.0;
 };
 
 void BasicSetMemberTypes() {
@@ -129,21 +129,21 @@ void BasicMember() {
   if(ret.second) {
     std::cout << "insert 6: " << ret.second << ", value: " << *(ret.first) << std::endl;
   } else {
-    std::cout << "insert 6 failed" << std::endl;
+    std::cout << "insert 6 failed, old is: " << *(ret.first)  << std::endl;
   }
 
   std::pair<std::set<std::string>::iterator, bool> ret2 = s.insert("6");
   if(ret2.second) {
     std::cout << "insert 6: " << ret2.second << ", value: " << *(ret2.first) << std::endl;
   } else {
-    std::cout << "insert 6 failed" << std::endl;
+    std::cout << "insert 6 failed, old is: " << *(ret2.first)  << std::endl;
   }
 
 }
 
 void Insert() {
   //3.modifiers
-  A a(11);
+  A a(12);
   A b(12);
   A c(13);
   std::set<A> s1;
