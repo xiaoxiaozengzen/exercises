@@ -123,6 +123,22 @@ void BasicMember() {
   std::cout << "s.size: " << s.size() << std::endl;
   std::cout << "s.max_size: " << s.max_size() << std::endl;
   std::cout << "s.empty: " << s.empty() << std::endl;
+
+  //3.modifiers
+  std::pair<std::set<std::string>::iterator, bool> ret = s.insert("6");
+  if(ret.second) {
+    std::cout << "insert 6: " << ret.second << ", value: " << *(ret.first) << std::endl;
+  } else {
+    std::cout << "insert 6 failed" << std::endl;
+  }
+
+  std::pair<std::set<std::string>::iterator, bool> ret2 = s.insert("6");
+  if(ret2.second) {
+    std::cout << "insert 6: " << ret2.second << ", value: " << *(ret2.first) << std::endl;
+  } else {
+    std::cout << "insert 6 failed" << std::endl;
+  }
+
 }
 
 void Insert() {
