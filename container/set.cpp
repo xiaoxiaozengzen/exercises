@@ -19,27 +19,31 @@ public:
         std::cout << "deconstruct" << std::endl;
     }
 
-    A(const A &) {
+    A(const A& other) {
         std::cout << "copy construct" << std::endl;
+        this->a = other.a;
     }
 
-    A& operator=(const A &) {
+    A& operator=(const A& other) {
         std::cout << "copy assign construct" << std::endl;
+        this->a = other.a;
         return *this;
     }
 
-    A(A&&) {
+    A(A&& other) {
         std::cout << "move construct" << std::endl;
+        this->a = other.a;
     }
 
-    A& operator=(A&&) {
+    A& operator=(A&& other) {
         std::cout << "move assign construct" << std::endl;
+        this->a = other.a;
         return *this;
     }
 
     bool operator<(const A &a) const {
       std::cout << "operator<, this " << this->a << ", other: " << a.a << std::endl;
-        return this->a < a.a;
+      return this->a < a.a;
     }
 
     friend std::ostream& operator<<(std::ostream &output, const A &a) { 
@@ -47,9 +51,10 @@ public:
         return output;            
     }
 
-    // bool operator==(const A &a) const {
-    //     return this->a == a.a;
-    // }
+    bool operator==(const A &a) const {
+      std::cout << "operator==, this " << this->a << ", other: " << a.a << std::endl;
+      return this->a == a.a;
+    }
 
 public:
     int a = 0;
@@ -125,6 +130,7 @@ void BasicMember() {
   std::cout << "s.empty: " << s.empty() << std::endl;
 
   //3.modifiers
+  //3.1 insert
   std::pair<std::set<std::string>::iterator, bool> ret = s.insert("6");
   if(ret.second) {
     std::cout << "insert 6: " << ret.second << ", value: " << *(ret.first) << std::endl;
@@ -139,6 +145,106 @@ void BasicMember() {
     std::cout << "insert 6 failed, old is: " << *(ret2.first)  << std::endl;
   }
 
+  std::set<std::string>::iterator ret3 = s.insert(s.end(), "7");
+  std::cout << "insert 7: " << *ret3 << std::endl;
+
+  std::string v[3] = {"7", "8", "9"};
+  s.insert(v, v+3);
+  std::cout << "s.size: " << s.size() << std::endl;
+
+  s.insert({"10", "11", "12"});
+  std::cout << "s.size: " << s.size() << std::endl;
+
+  std::cout << "s: ";
+  for(auto it = s.begin(); it != s.end(); ++it) {
+    std::cout << *it << " ";
+  }
+  std::cout << std::endl;
+
+  // 3.2. erase
+  std::set<std::string>::iterator ret4 = s.erase(s.begin()); // 被擦除元素的紧邻元素
+  if(ret4 != s.end()) {
+    std::cout << "erase begin: " << *ret4 << std::endl;
+  } else {
+    std::cout << "erase begin failed" << std::endl;
+  }
+
+  int ret5 = s.erase("7");
+  std::cout << "erase 7: " << ret5 << std::endl;
+
+  std::set<std::string>::iterator ret6 = s.erase(s.begin(), ++s.begin());
+  if(ret6 != s.end()) {
+    std::cout << "erase begin begin+2: " << *ret6 << std::endl;
+  } else {
+    std::cout << "erase begin failed" << std::endl;
+  }
+
+  // 3.3. swap
+  std::set<std::string> s2 = {"13", "14", "15"};
+  s.swap(s2);
+
+  // 3.4. clear
+  // s.clear();
+
+  // 3.5. emplace
+  std::pair<std::set<std::string>::iterator, bool> ret7 = s.emplace("16");
+  if(ret7.second) {
+    std::cout << "emplace 16: " << ret7.second << ", value: " << *(ret7.first) << std::endl;
+  } else {
+    std::cout << "emplace 16 failed, old is: " << *(ret7.first)  << std::endl;
+  }
+  std::pair<std::set<std::string>::iterator, bool> ret8 = s.emplace("16");
+  if(ret8.second) {
+    std::cout << "emplace 16: " << ret8.second << ", value: " << *(ret8.first) << std::endl;
+  } else {
+    std::cout << "emplace 16 failed, old is: " << *(ret8.first)  << std::endl;
+  }
+
+  // 3.6. emplace_hint
+  std::set<std::string>::iterator ret9 = s.emplace_hint(s.end(), "17");
+  std::cout << "emplace_hint 17: " << *ret9 << std::endl;
+
+  // 4. observers
+  std::set<std::string>::key_compare com = s.key_comp();
+  std::cout << "key_comp: " << com("1", "2") << std::endl;
+
+  std::set<std::string>::value_compare com2 = s.value_comp();
+  std::cout << "value_comp: " << com2("1", "2") << std::endl;
+
+  std::cout << "s: ";
+  for(auto it = s.begin(); it != s.end(); ++it) {
+    std::cout << *it << " ";
+  }
+  std::cout << std::endl;
+
+  // 5. operations
+  std::set<std::string>::iterator ret10 = s.find("16");
+  if(ret10 != s.end()) {
+    std::cout << "find 16: " << *ret10 << std::endl;
+  } else {
+    std::cout << "find 16 failed" << std::endl;
+  }
+
+  std::cout << "count 16: " << s.count("16") << std::endl;
+
+  std::set<std::string>::iterator itlow,itup;
+  // lower_bound: The function uses its internal comparison object (key_comp) to determine this, returning an iterator to the first element for which key_comp(element,val) would return false.
+  // upper_bound: The function uses its internal comparison object (key_comp) to determine this, returning an iterator to the first element for which key_comp(val,element) would return true.
+  itlow=s.lower_bound ("12");
+  itup=s.upper_bound ("13");
+  std::cout << "lower_bound 12: " << *itlow << std::endl;
+  std::cout << "upper_bound 13: " << *itup << std::endl;
+
+  std::pair<std::set<std::string>::iterator,std::set<std::string>::iterator> ret11 = s.equal_range("14");
+  std::cout << "equal_range 14: " << *ret11.first << ", " << *ret11.second << std::endl;
+  
+  // 6. allocator
+  std::allocator<std::string> alloc = s.get_allocator();
+  std::string *p = alloc.allocate(5);
+  *p = "18";
+  std::cout << "alloc address: " << p << ", value: " << *p << std::endl;
+  alloc.deallocate(p, 5);
+
 }
 
 void Insert() {
@@ -146,6 +252,8 @@ void Insert() {
   A a(12);
   A b(12);
   A c(13);
+  A d(10);
+  A e(11);
   std::set<A> s1;
   std::pair<std::set<A>::iterator, bool> ret = s1.insert(a);
   if(ret.second) {
@@ -156,9 +264,58 @@ void Insert() {
 
   std::pair<std::set<A>::iterator, bool> ret2 = s1.insert(c);
   if(ret2.second) {
-    std::cout << "insert a: " << ret2.second << ", value: " << *(ret2.first) << std::endl;
+    std::cout << "insert c: " << ret2.second << ", value: " << *(ret2.first) << std::endl;
   } else {
-    std::cout << "insert a failed" << std::endl;
+    std::cout << "insert c failed" << std::endl;
+  }
+
+  std::pair<std::set<A>::iterator, bool> ret3 = s1.insert(b);
+  if(ret3.second) {
+    std::cout << "insert b: " << ret3.second << ", value: " << *(ret3.first) << std::endl;
+  } else {
+    std::cout << "insert b failed" << std::endl;
+  }
+
+  std::pair<std::set<A>::iterator, bool> ret4 = s1.insert(d);
+  if(ret4.second) {
+    std::cout << "insert d: " << ret4.second << ", value: " << *(ret4.first) << std::endl;
+  } else {
+    std::cout << "insert d failed" << std::endl;
+  }
+
+  std::pair<std::set<A>::iterator, bool> ret5 = s1.insert(e);
+  if(ret5.second) {
+    std::cout << "insert e: " << ret5.second << ", value: " << *(ret5.first) << std::endl;
+  } else {
+    std::cout << "insert e failed" << std::endl;
+  }
+
+  std::pair<std::set<A>::iterator, bool> ret6 = s1.emplace(14);
+  if(ret6.second) {
+    std::cout << "insert 14: " << ret6.second << ", value: " << *(ret6.first) << std::endl;
+  } else {
+    std::cout << "insert 14 failed" << std::endl;
+  }
+
+  std::pair<std::set<A>::iterator, bool> ret7 = s1.emplace(14);
+  if(ret7.second) {
+    std::cout << "insert 14: " << ret7.second << ", value: " << *(ret7.first) << std::endl;
+  } else {
+    std::cout << "insert 14 failed" << std::endl;
+  }
+
+  std::cout << "s1 size: " << s1.size() << std::endl;
+
+  if(a < b) {
+    std::cout << "a < b" << std::endl;
+  } else {
+    std::cout << "a !< b" << std::endl;
+  }
+
+  if(b < a) {
+    std::cout << "b < a" << std::endl;
+  } else {
+    std::cout << "b !< a" << std::endl;
   }
 }
 
