@@ -136,24 +136,136 @@ void MemberFun() {
   std::cout << "max_size: " << arr.max_size() << std::endl;
   std::cout << "capacity: " << arr.capacity() << std::endl;
   std::cout << "empty: " << arr.empty() << std::endl;
+  arr.reserve(10);
+  std::cout << "capacity: " << arr.capacity() << std::endl;
+  arr.shrink_to_fit();// This may cause a reallocation, but has no effect on the vector size and cannot alter its elements.
+  std::cout << "capacity: " << arr.capacity() << std::endl;
+
+  // 3. element access
+  std::cout << "arr[0]: " << arr[0] << std::endl;
+  std::cout << "arr.at(0): " << arr.at(0) << std::endl;
+  try {
+    std::cout << "arr.at(10): " << arr.at(10) << std::endl;
+  } catch(const std::out_of_range& e) {
+    std::cout << "out_of_range" << std::endl;
+  }
+  std::vector<int>::reference ref = arr.front();
+  ref = 10;
+  std::cout << "front: " << arr.front() << std::endl;
+  std::cout << "back: " << arr.back() << std::endl;
+
+  std::vector<int>::value_type* data = arr.data();
+  std::cout << "data: " << *data << std::endl;
+  std::cout << "data+1: " << *(data+1) << std::endl;
+
+  // 4. modifiers
+  int arr2[] = {6, 7, 8, 9, 10};
+  arr.assign(std::begin(arr2), std::end(arr2));
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+  arr.assign(10, 12);
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+  arr.assign({1, 2, 3, 4, 5});
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+
+  std::cout << "capacity: " << arr.capacity() << std::endl;
+  std::cout << "empty: " << arr.empty() << std::endl;
+
+  arr.push_back(6);
+  arr.pop_back();
+
+  std::vector<int>::iterator it9 = arr.insert(arr.begin(), 0);
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+  std::cout << "it9: " << *it9 << std::endl;
+  std::vector<int>::iterator it10 = arr.insert(arr.begin(), 2, 10);
+  std::cout << "it10: " << *it10 << std::endl;
+  std::cout << "distance: " << std::distance(arr.begin(), it10) << std::endl;
+  std::vector<int>::iterator it11 = arr.insert(arr.begin(), std::begin(arr2), std::end(arr2));
+  std::cout << "it11: " << *it11 << std::endl;
+  arr.insert(arr.begin(), {1, 2, 3, 4, 5});
+  arr.insert(arr.end(), 16);
+
+  // 引发：segmentation fault
+  // arr.insert(arr.end() + 1, 10);
+
+  // This is the container end if the operation erased the last element in the sequence.
+  std::vector<int>::iterator it12 = arr.erase(arr.end() - 1);
+  std::cout << "it12: " << *it12 << std::endl;
+  std::vector<int>::iterator it13 = arr.erase(arr.begin(), arr.begin() + 2);
+  std::cout << "it13: " << *it13 << std::endl;
+
+  std::vector<int> arr3 = {1, 2, 3, 4, 5};
+  arr.swap(arr3);
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+  std::cout << "capacity: " << arr.capacity() << std::endl;
+  std::cout << "empty: " << arr.empty() << std::endl;
+  arr.clear();
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+
+  std::vector<int>::iterator it14 =  arr.emplace(arr.begin(), 111);
+  arr.emplace_back(2);
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
 }
 
 void CapacityTest() {
-  std::vector<A> arr(5);
+  std::vector<A> arr(10);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
 
   // Requests that the vector capacity be at least enough to contain n elements.
   arr.reserve(3);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
 
-  arr.resize(3);
+  arr.resize(4);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
   for(const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
 
+  // 内部会调用拷贝
   arr.resize(5, 10);  
+  std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+
+  arr.push_back(6);
+  std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+
+  arr.assign(2, 10);
+  std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
+  for(const auto& val : arr) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+
+  // 比较奇怪
+  arr.insert(arr.begin() + 11, 20);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
   for(const auto& val : arr) {
     std::cout << val << " ";
