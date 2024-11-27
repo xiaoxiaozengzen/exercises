@@ -104,7 +104,7 @@ void Construct() {
     std::deque<int> mydeque6 = {1, 2, 3, 4, 5};
 }
 
-void Test() {
+void capacity_test() {
     std::deque<A> deq(2);
     std::cout << "size: " << deq.size() << std::endl;
     for(auto& a : deq) {
@@ -126,6 +126,7 @@ void Test() {
     }
     std::cout << std::endl;
 
+    std::cout << "shrink_to_fit" << std::endl;
     deq.shrink_to_fit();
 }
 
@@ -252,8 +253,8 @@ int main() {
     MemberType();
     std::cout << "------------ Construct ------------" << std::endl;
     Construct();
-    std::cout << "------------ Test ------------" << std::endl;
-    Test();
+    std::cout << "------------ capacity_test ------------" << std::endl;
+    capacity_test();
     std::cout << "------------ Member Function ------------" << std::endl;
     MemberFun();
 }
