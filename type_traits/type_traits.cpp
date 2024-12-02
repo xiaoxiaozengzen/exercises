@@ -7,12 +7,19 @@
 void HelperClass() {
     // template <class T, T v>
     // struct integral_constant {
-    // static constexpr T value = v;
-    // typedef T value_type;
-    // typedef integral_constant<T,v> type;
-    // constexpr operator T() const noexcept { return v; }
-    // constexpr T operator()() const noexcept { return v; }
+        // static constexpr T value = v;
+        // typedef T value_type;
+        // typedef integral_constant<T,v> type;
+        // constexpr operator T() const noexcept { return v; }
+        // constexpr T operator()() const noexcept { return v; }
     // };
+    std::integral_constant<int, 10> a;
+    std::cout << "a.value: " << a.value << std::endl;
+    if(std::is_same<int, decltype(a)::value_type>::value) {
+        std::cout << "a::value_type is the same type as int" << std::endl;
+    } else {
+        std::cout << "a::value_type is not the same type as int" << std::endl;
+    }
 
     // typedef integral_constant<bool,true> true_type;
 
