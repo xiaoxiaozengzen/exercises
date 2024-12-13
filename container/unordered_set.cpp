@@ -269,6 +269,9 @@ void Rehash() {
     std::cout << "set_a.size(): " << set_a.size() << ", set_a.bucket_count: " << set_a.bucket_count() << ", load_factor: " << set_a.load_factor() << std::endl;
     set_a.emplace("6");
     set_a.rehash(6);
+    set_a.emplace("7");
+    std::cout << "set_a.size(): " << set_a.size() << ", set_a.bucket_count: " << set_a.bucket_count() << ", load_factor: " << set_a.load_factor() << std::endl;
+    set_a.erase(A("7"));
     std::cout << "set_a.size(): " << set_a.size() << ", set_a.bucket_count: " << set_a.bucket_count() << ", load_factor: " << set_a.load_factor() << std::endl;
 
 }
