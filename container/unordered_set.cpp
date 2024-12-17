@@ -237,8 +237,12 @@ void MemFun() {
     set_int4.max_load_factor(0.5);
     max_load_factor = set_int4.max_load_factor();
     std::cout << "set_int4.max_load_factor(): " << max_load_factor << std::endl;
+    
+    // Sets the number of buckets in the container
     set_int4.rehash(10);
     std::cout << "set_int4.rehash(10): " << set_int4.bucket_count() << std::endl;
+    
+    // Sets the number of buckets in the container (bucket_count) to the most appropriate to contain at least n elements.
     set_int4.reserve(20);
     std::cout << "set_int4.reserve(20): " << set_int4.bucket_count() << std::endl;
 
@@ -273,6 +277,22 @@ void Rehash() {
     std::cout << "set_a.size(): " << set_a.size() << ", set_a.bucket_count: " << set_a.bucket_count() << ", load_factor: " << set_a.load_factor() << std::endl;
     set_a.erase(A("7"));
     std::cout << "set_a.size(): " << set_a.size() << ", set_a.bucket_count: " << set_a.bucket_count() << ", load_factor: " << set_a.load_factor() << std::endl;
+    set_a.emplace("17");
+    std::cout << "set_a.size(): " << set_a.size() << ", set_a.bucket_count: " << set_a.bucket_count() << ", load_factor: " << set_a.load_factor() << std::endl;
+    set_a.emplace("21");
+    std::cout << "set_a.size(): " << set_a.size() << ", set_a.bucket_count: " << set_a.bucket_count() << ", load_factor: " << set_a.load_factor() << std::endl;
+    set_a.emplace("31");
+    set_a.emplace("41");
+    set_a.emplace("14");
+    set_a.emplace("45");
+
+    for (unsigned i=0; i<set_a.bucket_count(); ++i) {
+        std::cout << "bucket #" << i << " contains:";
+        for (auto lit = set_a.begin(i); lit!=set_a.end(i); ++lit) {
+            std::cout << " " << *lit;
+        }            
+        std::cout << "\n";
+    }
 
 }
 
