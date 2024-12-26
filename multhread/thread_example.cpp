@@ -5,6 +5,7 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include <memory>
 
 void ThreadType() {
     std::thread::id id = std::this_thread::get_id();
@@ -150,6 +151,143 @@ void MemFun() {
     std::cout << "hardware_concurrency: " << std::thread::hardware_concurrency() << std::endl;
 }
 
+class A {
+public:
+    A() {
+        std::cout << "construct" << std::endl;
+    }
+
+    explicit A(std::string a):a(a) {
+        std::cout << "another construct" << std::endl;
+    }
+
+    ~A() {
+        std::cout << "deconstruct" << std::endl;
+    }
+
+    A(const A& other) {
+        std::cout << "copy construct" << std::endl;
+        this->a = other.a;
+    }
+
+    A& operator=(const A& other) {
+        std::cout << "copy assign construct" << std::endl;
+        this->a = other.a;
+        return *this;
+    }
+
+    A(A&& other) {
+        std::cout << "move construct" << std::endl;
+        this->a = other.a;
+    }
+
+    A& operator=(A&& other) {
+        std::cout << "move assign construct" << std::endl;
+        this->a = other.a;
+        return *this;
+    }
+
+public:
+    std::string a = "";
+};
+
+class Base {
+public:
+    Base() {
+        std::cout << "Base construct" << std::endl;
+    }
+
+    virtual ~Base() {
+        std::cout << "Base deconstruct" << std::endl;
+    }
+public:
+    virtual void Print(A& a) {
+        std::cout << "Base Print: " << a.a << std::endl;
+    }
+};
+
+class Derived : public Base {
+public:
+    Derived() {
+        std::cout << "Derived construct" << std::endl;
+    }
+
+    ~Derived() {
+        std::cout << "Derived deconstruct" << std::endl;
+    }
+
+    void Print(A& a) override {
+        std::cout << "Derived Print: " << a.a << std::endl;
+    }
+};
+
+void ThreadTest() {
+    A a("nihao");
+    std::thread t([](A& a) {
+        std::cout << "A a: " << a.a << std::endl;
+    }, std::ref(a));
+    if(t.joinable()) {
+        t.join();
+    }
+
+    // 编译报错：error: static assertion failed: std::thread arguments must be invocable after conversion to rvalues
+    // 错误是因为 std::thread 会将传入的参数转换为 rvalue，而 A 类中没有移动构造函数，所以编译报错
+    // std::thread t2([](A a) {
+    //     std::cout << "A a: " << a.a << std::endl;
+    // }, a);
+    // if(t2.joinable()) {
+    //     t2.join();
+    // }
+
+    std::shared_ptr<A> a_ptr = std::make_shared<A>("nihao");
+    std::thread t3([](std::shared_ptr<A>& a_ptr) {
+        std::cout << "A a: " << a_ptr->a << std::endl;
+    }, std::ref(a_ptr));
+    if(t3.joinable()) {
+        t3.join();
+    }
+
+    std::unique_ptr<A> a_unique_ptr = std::make_unique<A>("nihao");
+    std::thread t4([](std::unique_ptr<A>& a_unique_ptr) {
+        std::cout << "A a: " << a_unique_ptr->a << std::endl;
+    }, std::ref(a_unique_ptr));
+    if(t4.joinable()) {
+        t4.join();
+    }
+
+    std::shared_ptr<Base> base_ptr = std::make_shared<Derived>();
+    std::thread t5(&Base::Print, base_ptr, std::ref(a));
+    if(t5.joinable()) {
+        t5.join();
+    }
+
+    auto& aa = a;
+    std::thread t6([](A& a) {
+        std::cout << "A a: " << a.a << std::endl;
+    }, std::ref(aa));
+    if(t6.joinable()) {
+        t6.join();
+    }
+
+    // 报错：error: static assertion failed: std::thread arguments must be invocable after conversion to rvalues
+    // const auto& aaa = a;
+    // std::thread t7([](A& a) {
+    //     std::cout << "A a: " << a.a << std::endl;
+    // }, std::ref(aaa));
+    // if(t7.joinable()) {
+    //     t7.join();
+    // }
+
+    const auto& aaaa = a;
+    std::thread t8([](const A& a) {
+        std::cout << "A a: " << a.a << std::endl;
+    }, std::ref(aaaa));
+    if(t8.joinable()) {
+        t8.join();
+    }
+    
+}
+
 int main() {
     pid_t pid = getpid();
     std::cout << "pid: " << pid << std::endl;
@@ -167,4 +305,6 @@ int main() {
     ConFun();
     std::cout << "--------------------------MemFun----------------------------" << std::endl;
     MemFun();
+    std::cout << "--------------------------ThreadTest----------------------------" << std::endl;
+    ThreadTest();
 }
