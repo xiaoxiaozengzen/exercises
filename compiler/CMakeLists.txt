@@ -7,3 +7,8 @@ if(NO_OPTIMIZATION)
 endif()
 
 add_executable(RVO RVO.cpp)
+
+add_executable(question_1 question_1.cpp)
+target_link_libraries(question_1 PUBLIC pthread)
+
+add_executable(return return.cpp)
