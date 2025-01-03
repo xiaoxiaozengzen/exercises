@@ -1,6 +1,11 @@
 #include <stdio.h>
 
 #include <iostream>
+#include <memory>
+
+// 多态的两个条件：1.虚函数重写 2.必须通过基类的指针或者引用调用虚函数。
+// 对于成员变量，代码编译和执行时都看父类，以父类为依据（有无及值以父类为标准）；
+// 对于成员方法，编译时以父类为依据（父类无则编译报错），执行时以子类为依据（执行子类方法），但前提是子类必须对方法进行重载，在C++中父类函数还必须为虚函数。
 
 class A {
  public:
@@ -72,6 +77,7 @@ void virtual_tabel() {
   f1();
 }
 
+/*******************************************多态**********************************************/
 class Base {
  public:
   Base() { std::cout << "Base construct" << std::endl; }
@@ -143,6 +149,125 @@ void duotai_example() {
             << ", sizeof(DerivedEnd): " << sizeof(DerivedEnd) << std::endl;
 }
 
+/****************************shared ptr******************************/
+
+struct Value {
+  int a;
+  int b;
+
+  void Print() {
+    printf("Value::value_: %p\n", &a);
+  }
+};
+class BasePtr {
+ public:
+  BasePtr() { std::cout << "BasePtr construct" << std::endl; }
+
+  virtual ~BasePtr() { std::cout << "BasePtr deconstruct" << std::endl; }
+
+  virtual void Init() {
+    std::cout << "BasePtr::Init" << std::endl;
+  }
+
+  virtual void Print() {
+    std::cout << "BasePtr::Print" << std::endl;
+  }
+};
+
+class DerivedPtr : public BasePtr {
+ public:
+  DerivedPtr() { std::cout << "DerivedPtr construct" << std::endl; }
+
+  ~DerivedPtr() { std::cout << "DerivedPtr deconstruct" << std::endl; }
+
+  void Init() override {
+    std::cout << "DerivedPtr::Init" << std::endl;
+    value_ = std::make_shared<Value>();
+  }
+
+  void Print() override {
+    std::cout << "DerivedPtr::Print" << std::endl;
+    value_->Print();
+    printf("DerivedPtr::value_: %p\n", &(value_->a));
+  } 
+private:
+  std::shared_ptr<Value> value_ = nullptr;
+};
+
+class DerivedPtrOther : public BasePtr {
+ public:
+  DerivedPtrOther() {
+    std::cout << "DerivedPtrOther construct" << std::endl; 
+    Init();
+  }
+
+  ~DerivedPtrOther() { std::cout << "DerivedPtrOther deconstruct" << std::endl; }
+
+  void Init() override {
+    std::cout << "DerivedPtrOther::Init" << std::endl;
+    value_ = std::make_shared<Value>();
+  }
+
+  void Print() override {
+    std::cout << "DerivedPtrOther::Print" << std::endl;
+    value_->Print();
+    printf("DerivedPtrOther::value_: %p\n", &(value_->a));
+  }
+private:
+  std::shared_ptr<Value> value_ = nullptr;
+};
+
+class BaseFactory {
+public:
+  static std::shared_ptr<BasePtr> Create() {
+    return std::make_shared<DerivedPtr>();
+  }
+};
+
+class BaseFactoryOther {
+public:
+  static std::shared_ptr<BasePtr> Create(std::string name) {
+    std::shared_ptr<BasePtr> base_ptr = nullptr;
+    if(name == "DerivedPtr") {
+      base_ptr = std::make_shared<DerivedPtr>();
+    } else if(name == "DerivedPtrOther") {
+      base_ptr = std::make_shared<DerivedPtrOther>();
+    } else {
+      
+    }
+
+    return base_ptr;
+  }
+};
+
+void SharedPtrExample() {
+  std::shared_ptr<BasePtr> base_ptr = std::make_shared<DerivedPtr>();
+  base_ptr->Init();
+  base_ptr->Print();
+  std::cout << "-----------1----------" << std::endl;
+  std::shared_ptr<BasePtr> base_ptr_other = std::make_shared<DerivedPtrOther>();
+  base_ptr_other->Print();
+  std::cout << "-----------2-----------" << std::endl;
+
+  std::shared_ptr<BasePtr> base_ptr_factory = BaseFactory::Create();
+  base_ptr_factory->Init();
+  base_ptr_factory->Print();
+  std::cout << "-----------3-----------" << std::endl;
+  std::shared_ptr<BasePtr> base_ptr_factory_other = BaseFactory::Create();
+  base_ptr_factory_other->Init();
+  base_ptr_factory_other->Print();
+  std::cout << "-----------4-----------" << std::endl;
+
+  std::shared_ptr<BasePtr> base_ptr_factory1 = BaseFactoryOther::Create("DerivedPtr");
+  base_ptr_factory1->Init();
+  base_ptr_factory1->Print();
+  std::cout << "-----------5-----------" << std::endl;
+  std::shared_ptr<BasePtr> base_ptr_factory_other1 = BaseFactoryOther::Create("DerivedPtrOther");
+  base_ptr_factory_other1->Init();
+  base_ptr_factory_other1->Print();
+  std::cout << "-----------6-----------" << std::endl;
+}
+
 int main() {
   std::cout << "=================ptr_array===============" << std::endl;
   ptr_array();
@@ -150,4 +275,6 @@ int main() {
   virtual_tabel();
   std::cout << "=================duotai_example()===============" << std::endl;
   duotai_example();
+  std::cout << "=================SharedPtrExample()===============" << std::endl;
+  SharedPtrExample();
 }
