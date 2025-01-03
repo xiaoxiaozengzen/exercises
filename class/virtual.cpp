@@ -224,6 +224,9 @@ public:
   }
 };
 
+/**
+ * 工厂模式
+ */
 class BaseFactoryOther {
 public:
   static std::shared_ptr<BasePtr> Create(std::string name) {
@@ -258,17 +261,22 @@ void SharedPtrExample() {
   base_ptr_factory_other->Print();
   std::cout << "-----------4-----------" << std::endl;
 
+  // 返回的函数地址是不一样的
   std::shared_ptr<BasePtr> base_ptr_factory1 = BaseFactoryOther::Create("DerivedPtr");
   base_ptr_factory1->Init();
   base_ptr_factory1->Print();
   std::cout << "-----------5-----------" << std::endl;
+  std::shared_ptr<BasePtr> base_ptr_factory2 = BaseFactoryOther::Create("DerivedPtr");
+  base_ptr_factory2->Init();
+  base_ptr_factory2->Print();
+  std::cout << "-----------6-----------" << std::endl;
   std::shared_ptr<BasePtr> base_ptr_factory_other1 = BaseFactoryOther::Create("DerivedPtrOther");
   base_ptr_factory_other1->Init();
   base_ptr_factory_other1->Print();
-  std::cout << "-----------6-----------" << std::endl;
+  std::cout << "-----------7-----------" << std::endl;
   std::shared_ptr<BasePtr>& base_ptr_factory_other2 = base_ptr_factory1;
   base_ptr_factory_other2->Print();
-  std::cout << "-----------7-----------" << std::endl;
+  std::cout << "-----------8-----------" << std::endl;
 }
 
 /*******************************************pure virtual**********************************************/
