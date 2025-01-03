@@ -266,6 +266,41 @@ void SharedPtrExample() {
   base_ptr_factory_other1->Init();
   base_ptr_factory_other1->Print();
   std::cout << "-----------6-----------" << std::endl;
+  std::shared_ptr<BasePtr>& base_ptr_factory_other2 = base_ptr_factory1;
+  base_ptr_factory_other2->Print();
+  std::cout << "-----------7-----------" << std::endl;
+}
+
+/*******************************************pure virtual**********************************************/
+class PureVirtual {
+ public:
+  virtual void Init() = 0;
+  virtual void Print() = 0;
+};
+
+class DerivedPureVirtual : public PureVirtual {
+ public:
+  void Init() override {
+    std::cout << "DerivedPureVirtual::Init" << std::endl;
+  }
+
+  void Print() override {
+    std::cout << "DerivedPureVirtual::Print" << std::endl;
+  }
+};
+
+void PureVirtualExample() {
+  // 1. 纯虚函数的类不能实例化
+  // PureVirtual obj = PureVirtual();
+  // PureVirtual* obj = new PureVirtual();
+
+  PureVirtual* obj = new DerivedPureVirtual();
+  obj->Init();
+  obj->Print();
+
+  std::shared_ptr<PureVirtual> obj_ptr = std::make_shared<DerivedPureVirtual>();
+  obj_ptr->Init();
+  obj_ptr->Print();
 }
 
 int main() {
@@ -277,4 +312,6 @@ int main() {
   duotai_example();
   std::cout << "=================SharedPtrExample()===============" << std::endl;
   SharedPtrExample();
+  std::cout << "=================PureVirtualExample()===============" << std::endl;
+  PureVirtualExample();
 }
