@@ -293,6 +293,7 @@ void PureVirtualExample() {
   // 1. 纯虚函数的类不能实例化
   // PureVirtual obj = PureVirtual();
   // PureVirtual* obj = new PureVirtual();
+  // std::shared_ptr<PureVirtual> obj = std::make_shared<PureVirtual>();
 
   PureVirtual* obj = new DerivedPureVirtual();
   obj->Init();
