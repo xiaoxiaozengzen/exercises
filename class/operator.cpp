@@ -26,6 +26,11 @@ class person {
   operator int() { return this->age; }
 };
 
+// 编译报错：error: ‘void operator()()’ must be a nonstatic member function
+// void operator()() {
+//   std::cout << "callable object" << std::endl;
+// }
+
 // 因为operator ==是class
 // person的一个成员函数，所以对象p1,p2都可以调用该函数，上面的if语句中，相当
 // 于p1调用函数==，把p2作为该函数的一个参数传递给该函数，从而实现了两个对象的比较。
