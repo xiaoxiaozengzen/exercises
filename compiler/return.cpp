@@ -1,8 +1,6 @@
 #include <iostream>
 
-void fun1() {
-  std::cout << "fun1" << std::endl;
-}
+void fun1() { std::cout << "fun1" << std::endl; }
 
 // 未定义行为
 std::uint32_t fun2(std::uint32_t a) {

@@ -5,16 +5,16 @@
 //  （2）使类的const函数可以修改对象的mutable数据成员。
 
 int main() {
-    int a = 10;
+  int a = 10;
 
-    // 可以修改a的值
-    // lambda是闭包类，其operator()()函数默认是const的，如果要修改值，需要加上mutable关键字
-    auto lam1 = [a]() mutable{
-        std::cout << a << std::endl;
-        a++;
-    };
-    
-    lam1();
-    
+  // 可以修改a的值
+  // lambda是闭包类，其operator()()函数默认是const的，如果要修改值，需要加上mutable关键字
+  auto lam1 = [a]() mutable {
     std::cout << a << std::endl;
+    a++;
+  };
+
+  lam1();
+
+  std::cout << a << std::endl;
 }

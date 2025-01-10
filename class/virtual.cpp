@@ -155,9 +155,7 @@ struct Value {
   int a;
   int b;
 
-  void Print() {
-    printf("Value::value_: %p\n", &a);
-  }
+  void Print() { printf("Value::value_: %p\n", &a); }
 };
 class BasePtr {
  public:
@@ -165,13 +163,9 @@ class BasePtr {
 
   virtual ~BasePtr() { std::cout << "BasePtr deconstruct" << std::endl; }
 
-  virtual void Init() {
-    std::cout << "BasePtr::Init" << std::endl;
-  }
+  virtual void Init() { std::cout << "BasePtr::Init" << std::endl; }
 
-  virtual void Print() {
-    std::cout << "BasePtr::Print" << std::endl;
-  }
+  virtual void Print() { std::cout << "BasePtr::Print" << std::endl; }
 };
 
 class DerivedPtr : public BasePtr {
@@ -189,15 +183,16 @@ class DerivedPtr : public BasePtr {
     std::cout << "DerivedPtr::Print" << std::endl;
     value_->Print();
     printf("DerivedPtr::value_: %p\n", &(value_->a));
-  } 
-private:
+  }
+
+ private:
   std::shared_ptr<Value> value_ = nullptr;
 };
 
 class DerivedPtrOther : public BasePtr {
  public:
   DerivedPtrOther() {
-    std::cout << "DerivedPtrOther construct" << std::endl; 
+    std::cout << "DerivedPtrOther construct" << std::endl;
     Init();
   }
 
@@ -213,30 +208,28 @@ class DerivedPtrOther : public BasePtr {
     value_->Print();
     printf("DerivedPtrOther::value_: %p\n", &(value_->a));
   }
-private:
+
+ private:
   std::shared_ptr<Value> value_ = nullptr;
 };
 
 class BaseFactory {
-public:
-  static std::shared_ptr<BasePtr> Create() {
-    return std::make_shared<DerivedPtr>();
-  }
+ public:
+  static std::shared_ptr<BasePtr> Create() { return std::make_shared<DerivedPtr>(); }
 };
 
 /**
  * 工厂模式
  */
 class BaseFactoryOther {
-public:
+ public:
   static std::shared_ptr<BasePtr> Create(std::string name) {
     std::shared_ptr<BasePtr> base_ptr = nullptr;
-    if(name == "DerivedPtr") {
+    if (name == "DerivedPtr") {
       base_ptr = std::make_shared<DerivedPtr>();
-    } else if(name == "DerivedPtrOther") {
+    } else if (name == "DerivedPtrOther") {
       base_ptr = std::make_shared<DerivedPtrOther>();
     } else {
-      
     }
 
     return base_ptr;
@@ -279,7 +272,8 @@ void SharedPtrExample() {
   std::cout << "-----------8-----------" << std::endl;
 }
 
-/*******************************************pure virtual**********************************************/
+/*******************************************pure
+ * virtual**********************************************/
 class PureVirtual {
  public:
   virtual void Init() = 0;
@@ -288,13 +282,9 @@ class PureVirtual {
 
 class DerivedPureVirtual : public PureVirtual {
  public:
-  void Init() override {
-    std::cout << "DerivedPureVirtual::Init" << std::endl;
-  }
+  void Init() override { std::cout << "DerivedPureVirtual::Init" << std::endl; }
 
-  void Print() override {
-    std::cout << "DerivedPureVirtual::Print" << std::endl;
-  }
+  void Print() override { std::cout << "DerivedPureVirtual::Print" << std::endl; }
 };
 
 void PureVirtualExample() {

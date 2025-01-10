@@ -92,91 +92,85 @@ class Counter {
 
 /****************** <<输出操作符重载 ************** */
 class OutExample {
-  public:
-    OutExample(int a) : a(a) {}
-    friend std::ostream &operator<<(std::ostream &output, const OutExample &oe) {
-      output << oe.a;
-      return output;
-    }
-  
-  private:
-    int a;
+ public:
+  OutExample(int a) : a(a) {}
+  friend std::ostream &operator<<(std::ostream &output, const OutExample &oe) {
+    output << oe.a;
+    return output;
+  }
+
+ private:
+  int a;
 };
 
 /************************************operator new**************************************** */
-// throwing (1)	
+// throwing (1)
 // void* operator new (std::size_t size) throw (std::bad_alloc);
-// nothrow (2)	
+// nothrow (2)
 // void* operator new (std::size_t size, const std::nothrow_t& nothrow_value) throw();
-// placement (3)	
+// placement (3)
 // void* operator new (std::size_t size, void* ptr) throw();
 
-// ordinary (1)	
+// ordinary (1)
 // void operator delete (void* ptr) noexcept;
-// nothrow (2)	
+// nothrow (2)
 // void operator delete (void* ptr, const std::nothrow_t& nothrow_constant) noexcept;
-// placement (3)	
+// placement (3)
 // void operator delete (void* ptr, void* voidptr2) noexcept;
 
 class A {
-public:
-    A() {
-        std::cout << "construct" << std::endl;
-    }
-    explicit A(int a):a(a) {
-        std::cout << "another construct" << std::endl;
-    }
-    ~A() {
-        std::cout << "deconstruct" << std::endl;
-    }
+ public:
+  A() { std::cout << "construct" << std::endl; }
+  explicit A(int a) : a(a) { std::cout << "another construct" << std::endl; }
+  ~A() { std::cout << "deconstruct" << std::endl; }
 
-    A(const A& other) {
-        std::cout << "copy construct" << std::endl;
-        this->a = other.a;
-    }
+  A(const A &other) {
+    std::cout << "copy construct" << std::endl;
+    this->a = other.a;
+  }
 
-    A& operator=(const A& other) {
-        std::cout << "copy assign construct" << std::endl;
-        this->a = other.a;
-        return *this;
-    }
+  A &operator=(const A &other) {
+    std::cout << "copy assign construct" << std::endl;
+    this->a = other.a;
+    return *this;
+  }
 
-    A(A&& other) {
-        std::cout << "move construct" << std::endl;
-        this->a = other.a;
-    }
+  A(A &&other) {
+    std::cout << "move construct" << std::endl;
+    this->a = other.a;
+  }
 
-    A& operator=(A&& other) {
-        std::cout << "move assign construct" << std::endl;
-        this->a = other.a;
-        return *this;
-    }
+  A &operator=(A &&other) {
+    std::cout << "move assign construct" << std::endl;
+    this->a = other.a;
+    return *this;
+  }
 
-    bool operator<(const A &a) const {
-      std::cout << "operator<, this " << this->a << ", other: " << a.a << std::endl;
-      return this->a < a.a;
-    }
+  bool operator<(const A &a) const {
+    std::cout << "operator<, this " << this->a << ", other: " << a.a << std::endl;
+    return this->a < a.a;
+  }
 
-    friend std::ostream& operator<<(std::ostream &output, const A &a) { 
-        output << a.a;
-        return output;            
-    }
+  friend std::ostream &operator<<(std::ostream &output, const A &a) {
+    output << a.a;
+    return output;
+  }
 
-    bool operator==(const A &a) const {
-      std::cout << "operator==, this " << this->a << ", other: " << a.a << std::endl;
-      return this->a == a.a;
-    }
+  bool operator==(const A &a) const {
+    std::cout << "operator==, this " << this->a << ", other: " << a.a << std::endl;
+    return this->a == a.a;
+  }
 
-public:
-    int a = 0;
+ public:
+  int a = 0;
 };
 
-void* operator new(std::size_t size) {
+void *operator new(std::size_t size) {
   std::cout << "operator new" << std::endl;
   return malloc(size);
 }
 
-void* operator new(std::size_t size, const std::nothrow_t &nothrow_value) noexcept {
+void *operator new(std::size_t size, const std::nothrow_t &nothrow_value) noexcept {
   std::cout << "operator new nothrow" << std::endl;
   return malloc(size);
 }
@@ -192,7 +186,7 @@ void operator delete(void *ptr, const std::nothrow_t &nothrow_constant) noexcept
 }
 
 // new handler
-void no_memory () {
+void no_memory() {
   std::cout << "Failed to allocate memory!\n";
   // std::exit (1);
 }
@@ -209,24 +203,24 @@ void NewTest() {
 
   std::cout << "**********operator new nothrow**********" << std::endl;
   A *b = new (std::nothrow) A(20);
-  if(b == nullptr) {
+  if (b == nullptr) {
     std::cout << "new failed" << std::endl;
   } else {
     std::cout << "*b:" << *b << std::endl;
   }
-  
+
   std::cout << "**********operator replace new**********" << std::endl;
-  A *c = new (b) A(30); // c跟a地址一样
+  A *c = new (b) A(30);  // c跟a地址一样
   std::cout << "*b:" << *b << std::endl;
   std::cout << "*c:" << *c << std::endl;
 
   std::cout << "**********malloc**********" << std::endl;
-  A *d = (A*)malloc(sizeof(A));
+  A *d = (A *)malloc(sizeof(A));
   new (d) A(40);
   std::cout << "*d:" << *d << std::endl;
 
   std::cout << "**********operator new but no construct**********" << std::endl;
-  A *e = (A*) ::operator new(sizeof(A));
+  A *e = (A *)::operator new(sizeof(A));
   std::cout << "*e:" << *e << std::endl;
 
   std::cout << "**********operator delete**********" << std::endl;
@@ -273,6 +267,7 @@ int main() {
   OutExample oe(10);
   std::cout << "OutExample: " << oe << std::endl;
 
-  std::cout << "=================================operator new===================================" << std::endl;
+  std::cout << "=================================operator new==================================="
+            << std::endl;
   NewTest();
 }

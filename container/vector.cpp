@@ -7,18 +7,12 @@
 // > class vector; // generic template
 
 class A {
-public:
-  A() {
-    std::cout << "construct" << std::endl;
-  }
+ public:
+  A() { std::cout << "construct" << std::endl; }
 
-  A(int a):a(a) {
-    std::cout << "construct with a" << std::endl;
-  }
+  A(int a) : a(a) { std::cout << "construct with a" << std::endl; }
 
-  ~A() {
-    std::cout << "deconstruct" << std::endl;
-  }
+  ~A() { std::cout << "deconstruct" << std::endl; }
 
   A(const A& other) {
     this->a = other.a;
@@ -46,56 +40,64 @@ public:
     os << a.a;
     return os;
   }
-private:
+
+ private:
   int a = 0;
 };
 
 void MemberType() {
   std::vector<int> arr = {1, 2, 3, 4, 5};
 
-  if(std::is_same<std::vector<int>::value_type, int>::value) {
+  if (std::is_same<std::vector<int>::value_type, int>::value) {
     std::cout << "value_type is int" << std::endl;
   }
-  if(std::is_same<std::vector<int>::allocator_type, std::allocator<int>>::value) {
+  if (std::is_same<std::vector<int>::allocator_type, std::allocator<int>>::value) {
     std::cout << "allocator_type is std::allocator<int>" << std::endl;
   }
-  if(std::is_same<std::vector<int>::size_type, std::size_t>::value) {
+  if (std::is_same<std::vector<int>::size_type, std::size_t>::value) {
     std::cout << "size_type is std::size_t" << std::endl;
   }
-  if(std::is_same<std::vector<int>::difference_type, std::ptrdiff_t>::value) {
+  if (std::is_same<std::vector<int>::difference_type, std::ptrdiff_t>::value) {
     std::cout << "difference_type is std::ptrdiff_t" << std::endl;
   }
-  if(std::is_same<std::vector<int>::reference, int&>::value) {
+  if (std::is_same<std::vector<int>::reference, int&>::value) {
     std::cout << "reference is int&" << std::endl;
   }
-  if(std::is_same<std::vector<int>::const_reference, const int&>::value) {
+  if (std::is_same<std::vector<int>::const_reference, const int&>::value) {
     std::cout << "const_reference is const int&" << std::endl;
   }
-  if(std::is_same<std::vector<int>::pointer, int*>::value) {
+  if (std::is_same<std::vector<int>::pointer, int*>::value) {
     std::cout << "pointer is int*" << std::endl;
   }
-  if(std::is_same<std::vector<int>::const_pointer, const int*>::value) {
+  if (std::is_same<std::vector<int>::const_pointer, const int*>::value) {
     std::cout << "const_pointer is const int*" << std::endl;
   }
-  if(std::is_same<std::vector<int>::iterator, std::vector<int>::pointer>::value) {
+  if (std::is_same<std::vector<int>::iterator, std::vector<int>::pointer>::value) {
     std::cout << "iterator is std::vector<int>::pointer" << std::endl;
   } else {
     std::cout << "iterator is not std::vector<int>::pointer" << std::endl;
   }
-  if(std::is_same<std::vector<int>::const_iterator, std::vector<int>::const_pointer>::value) {
+  if (std::is_same<std::vector<int>::const_iterator, std::vector<int>::const_pointer>::value) {
     std::cout << "const_iterator is std::vector<int>::const_pointer" << std::endl;
   } else {
     std::cout << "const_iterator is not std::vector<int>::const_pointer" << std::endl;
   }
-  if(std::is_same<std::vector<int>::reverse_iterator, std::reverse_iterator<std::vector<int>::iterator>>::value) {
-    std::cout << "reverse_iterator is std::reverse_iterator<std::vector<int>::iterator>" << std::endl;
+  if (std::is_same<std::vector<int>::reverse_iterator,
+                   std::reverse_iterator<std::vector<int>::iterator>>::value) {
+    std::cout << "reverse_iterator is std::reverse_iterator<std::vector<int>::iterator>"
+              << std::endl;
   } else {
-    std::cout << "reverse_iterator is not std::reverse_iterator<std::vector<int>::iterator>" << std::endl;
+    std::cout << "reverse_iterator is not std::reverse_iterator<std::vector<int>::iterator>"
+              << std::endl;
   }
-  if(std::is_same<std::vector<int>::const_reverse_iterator, std::reverse_iterator<std::vector<int>::const_iterator>>::value) {
-    std::cout << "const_reverse_iterator is std::reverse_iterator<std::vector<int>::const_iterator>" << std::endl;
+  if (std::is_same<std::vector<int>::const_reverse_iterator,
+                   std::reverse_iterator<std::vector<int>::const_iterator>>::value) {
+    std::cout << "const_reverse_iterator is std::reverse_iterator<std::vector<int>::const_iterator>"
+              << std::endl;
   } else {
-    std::cout << "const_reverse_iterator is not std::reverse_iterator<std::vector<int>::const_iterator>" << std::endl;
+    std::cout
+        << "const_reverse_iterator is not std::reverse_iterator<std::vector<int>::const_iterator>"
+        << std::endl;
   }
 }
 
@@ -117,19 +119,19 @@ void MemberFun() {
   std::vector<int>::iterator it = arr.begin();
   std::cout << "begin: " << *it << std::endl;
   std::vector<int>::iterator it2 = arr.end();
-  std::cout << "end: " << *(it2-1) << std::endl;
+  std::cout << "end: " << *(it2 - 1) << std::endl;
   std::vector<int>::reverse_iterator it3 = arr.rbegin();
   std::cout << "rbegin: " << *it3 << std::endl;
   std::vector<int>::reverse_iterator it4 = arr.rend();
-  std::cout << "rend: " << *(it4-1) << std::endl;
+  std::cout << "rend: " << *(it4 - 1) << std::endl;
   std::vector<int>::const_iterator it5 = arr.cbegin();
   std::cout << "cbegin: " << *it5 << std::endl;
   std::vector<int>::const_iterator it6 = arr.cend();
-  std::cout << "cend: " << *(it6-1) << std::endl;
+  std::cout << "cend: " << *(it6 - 1) << std::endl;
   std::vector<int>::const_reverse_iterator it7 = arr.crbegin();
   std::cout << "crbegin: " << *it7 << std::endl;
   std::vector<int>::const_reverse_iterator it8 = arr.crend();
-  std::cout << "crend: " << *(it8-1) << std::endl;
+  std::cout << "crend: " << *(it8 - 1) << std::endl;
 
   // 2. capacity
   std::cout << "size: " << arr.size() << std::endl;
@@ -138,7 +140,8 @@ void MemberFun() {
   std::cout << "empty: " << arr.empty() << std::endl;
   arr.reserve(10);
   std::cout << "capacity: " << arr.capacity() << std::endl;
-  arr.shrink_to_fit();// This may cause a reallocation, but has no effect on the vector size and cannot alter its elements.
+  arr.shrink_to_fit();  // This may cause a reallocation, but has no effect on the vector size and
+                        // cannot alter its elements.
   std::cout << "capacity: " << arr.capacity() << std::endl;
 
   // 3. element access
@@ -146,7 +149,7 @@ void MemberFun() {
   std::cout << "arr.at(0): " << arr.at(0) << std::endl;
   try {
     std::cout << "arr.at(10): " << arr.at(10) << std::endl;
-  } catch(const std::out_of_range& e) {
+  } catch (const std::out_of_range& e) {
     std::cout << "out_of_range" << std::endl;
   }
   std::vector<int>::reference ref = arr.front();
@@ -156,22 +159,22 @@ void MemberFun() {
 
   std::vector<int>::value_type* data = arr.data();
   std::cout << "data: " << *data << std::endl;
-  std::cout << "data+1: " << *(data+1) << std::endl;
+  std::cout << "data+1: " << *(data + 1) << std::endl;
 
   // 4. modifiers
   int arr2[] = {6, 7, 8, 9, 10};
   arr.assign(std::begin(arr2), std::end(arr2));
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
   arr.assign(10, 12);
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
   arr.assign({1, 2, 3, 4, 5});
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
@@ -183,7 +186,7 @@ void MemberFun() {
   arr.pop_back();
 
   std::vector<int>::iterator it9 = arr.insert(arr.begin(), 0);
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
@@ -207,21 +210,21 @@ void MemberFun() {
 
   std::vector<int> arr3 = {1, 2, 3, 4, 5};
   arr.swap(arr3);
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
   std::cout << "capacity: " << arr.capacity() << std::endl;
   std::cout << "empty: " << arr.empty() << std::endl;
   arr.clear();
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
 
-  std::vector<int>::iterator it14 =  arr.emplace(arr.begin(), 111);
+  std::vector<int>::iterator it14 = arr.emplace(arr.begin(), 111);
   arr.emplace_back(2);
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
@@ -237,29 +240,29 @@ void CapacityTest() {
 
   arr.resize(4);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
 
   // 内部会调用拷贝
-  arr.resize(5, 10);  
+  arr.resize(5, 10);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
 
   arr.push_back(6);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
 
   arr.assign(2, 10);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
@@ -267,20 +270,25 @@ void CapacityTest() {
   // 比较奇怪
   arr.insert(arr.begin() + 11, 20);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
-  for(const auto& val : arr) {
+  for (const auto& val : arr) {
     std::cout << val << " ";
   }
   std::cout << std::endl;
 }
 
-
 int main() {
-  std::cout << "-------------------------------------MemberType-----------------------------------" << std::endl;
+  std::cout << "-------------------------------------MemberType-----------------------------------"
+            << std::endl;
   MemberType();
-  std::cout << "-------------------------------------ConstructFun-----------------------------------" << std::endl;
+  std::cout
+      << "-------------------------------------ConstructFun-----------------------------------"
+      << std::endl;
   ConstructFun();
-  std::cout << "-------------------------------------MemberFun-----------------------------------" << std::endl;
+  std::cout << "-------------------------------------MemberFun-----------------------------------"
+            << std::endl;
   MemberFun();
-  std::cout << "-------------------------------------CapacityTest-----------------------------------" << std::endl;
+  std::cout
+      << "-------------------------------------CapacityTest-----------------------------------"
+      << std::endl;
   CapacityTest();
 }

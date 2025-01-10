@@ -3,40 +3,24 @@
 template <typename T>
 class Base {
  public:
-  Base() {
-    std::cout << "Base" << std::endl;
-  }
-  virtual ~Base() {
-    std::cout << "~Base" << std::endl;
-  }
+  Base() { std::cout << "Base" << std::endl; }
+  virtual ~Base() { std::cout << "~Base" << std::endl; }
 
  public:
-  virtual void Print() {
-    std::cout << "Base::Print" << std::endl;
-  }
+  virtual void Print() { std::cout << "Base::Print" << std::endl; }
 
-  virtual void Print(T t) {
-    std::cout << "Base::Print : " << t << std::endl;
-  }
+  virtual void Print(T t) { std::cout << "Base::Print : " << t << std::endl; }
 };
 
 class Derived : public Base<int> {
  public:
-  Derived() {
-    std::cout << "Derived" << std::endl;
-  }
-  virtual ~Derived() {
-    std::cout << "~Derived" << std::endl;
-  }
+  Derived() { std::cout << "Derived" << std::endl; }
+  virtual ~Derived() { std::cout << "~Derived" << std::endl; }
 
  public:
-  void Print() override {
-    std::cout << "Derived::Print" << std::endl;
-  }
+  void Print() override { std::cout << "Derived::Print" << std::endl; }
 
-  void Print(int t) override {
-    std::cout << "Derived::Print : " << t << std::endl;
-  }
+  void Print(int t) override { std::cout << "Derived::Print : " << t << std::endl; }
 };
 
 int main() {
