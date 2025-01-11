@@ -23,3 +23,6 @@ target_link_libraries(mutex PUBLIC pthread)
 
 add_executable(condition_varible condition_varible.cpp)
 target_link_libraries(condition_varible PUBLIC pthread)
+
+add_executable(semaphore semaphore.cpp)
+target_link_libraries(semaphore PUBLIC pthread)
