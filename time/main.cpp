@@ -3,12 +3,22 @@
 #include <iostream>
 #include <ratio>
 
+/**
+ * template <intmax_t N, intmax_t D = 1> class ratio;
+ */
 void ratio_class() {
   typedef std::ratio<1, 3> one_third;
   typedef std::ratio<2, 4> two_fourths;
-
   std::cout << "one_third= " << one_third::num << "/" << one_third::den << std::endl;
   std::cout << "two_fourths= " << two_fourths::num << "/" << two_fourths::den << std::endl;
+
+  if(std::is_same<one_third::type, std::ratio<1, 3>>::value) {
+    std::cout << "one_third::type is std::ratio<1, 3>" << std::endl;
+  }
+
+  // 一些定义好的比率
+  std::cout << "std::milli : " << std::milli::num << "/" << std::milli::den << std::endl;
+  std::cout << "std::kilo : " << std::kilo::num << "/" << std::kilo::den << std::endl;
 
   typedef std::ratio_add<one_third, two_fourths> sum;
 
@@ -19,6 +29,9 @@ void ratio_class() {
   std::cout << std::endl;
 }
 
+/**
+ * template <class Rep, class Period = ratio<1> >class duration;
+ */
 void duration_class() {
   typedef std::chrono::duration<int> seconds_type;
   typedef std::chrono::duration<int, std::milli> milliseconds_type;
@@ -65,12 +78,16 @@ void duration_class() {
   std::cout << "bar: " << bar.count() << std::endl;
 }
 
+/**
+ * template <class Clock, class Duration = typename Clock::duration>  class time_point;
+ */
 void timepoint_class() {
   std::chrono::system_clock::time_point tp_epoch;  // epoch value
 
   std::chrono::time_point<std::chrono::system_clock, std::chrono::duration<int>> tp_seconds(
       std::chrono::duration<int>(1));
 
+  // copy or move
   std::chrono::system_clock::time_point tp(tp_seconds);
 
   std::cout << "1 second since system_clock epoch = ";
@@ -138,9 +155,14 @@ void time_function() {
 }
 
 int main() {
+  std::cout << "=======================ratio_class=======================" << std::endl;
   ratio_class();
+  std::cout << "=======================duration_class=======================" << std::endl;
   duration_class();
+  std::cout << "=======================timepoint_class=======================" << std::endl;
   timepoint_class();
+  std::cout << "=======================systemclock=======================" << std::endl;
   systemclock();
+  std::cout << "=======================time_function=======================" << std::endl;
   time_function();
 }
