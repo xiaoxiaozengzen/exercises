@@ -8,7 +8,7 @@ endif()
 
 add_executable(RVO RVO.cpp)
 
-add_executable(question_1 question_1.cpp)
-target_link_libraries(question_1 PUBLIC pthread)
+add_executable(const_auto const_auto_&.cpp)
+target_link_libraries(const_auto PUBLIC pthread)
 
-add_executable(return return.cpp)
+add_executable(no_return no_return.cpp)

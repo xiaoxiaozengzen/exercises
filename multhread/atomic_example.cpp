@@ -33,14 +33,21 @@ void show_atomic_base() {
   int before_ret = value.exchange(30);
   std::cout << "before_ret: " << before_ret << ", value: " << value << std::endl;
 
+  // compare_exchange_weak(expected, value)
+    // if true, it replaces the contained value with value
+    // if false, it replaces expected with the contained value .
   int expected_value = 30;
-  bool is_same = value.compare_exchange_weak(expected_value, 35);
-  std::cout << "is_same: " << is_same << ", value: " << value << std::endl;
+  int new_value = 35;
+  std::cout << "value: " << value << std::endl;
+  bool is_same = value.compare_exchange_weak(expected_value, new_value);
+  std::cout << "is_same: " << is_same << ", value: " << value
+            << ", expected value: " << expected_value << ", new_value: " << new_value << std::endl;
 
   expected_value = 40;
-  is_same = value.compare_exchange_strong(expected_value, 40);
+  new_value = 45;
+  is_same = value.compare_exchange_strong(expected_value, new_value);
   std::cout << "is_same: " << is_same << ", value: " << value
-            << ", expected value: " << expected_value << std::endl;
+            << ", expected value: " << expected_value << ", new_value: " << new_value << std::endl;
 }
 
 void show_atomic_spe() {
@@ -64,13 +71,16 @@ void show_atomic_spe() {
   std::cout << "value: " << value << std::endl;
 }
 
+/******************************CAS******************************* */
+// CPU提供的一种原子操作CAS（Compare and Swap）,即比较并交换，这是一个原子操作
+// 它包含三个操作数，内存值V、旧的预期值oldval、要修改的新值newval
+// 当且仅当内存值V等于旧的预期值oldval时，将内存值V修改为新值newval，否则什么都不做
+
 // Atomic flags are boolean atomic objects that support two operations:
 // test-and-set and clear.
 void show_atomic_flag() {
-  // The atomic_flag is in an unspecified state on construction (either set or
-  // clear) when no explicit enable This macro ATOMIC_FLAG_INIT is defined in
-  // such a way that it can be used to initialize an object of type atomic_flag
-  // to the clear state.
+  // The atomic_flag is in an unspecified state on construction (either set or clear) when no explicit enable 
+  // This macro ATOMIC_FLAG_INIT is defined in such a way that it can be used to initialize an object of type atomic_flag to the clear state.
   std::atomic_flag fl = ATOMIC_FLAG_INIT;
 
   auto append = [&](int id) {
@@ -179,8 +189,12 @@ void TestSpinLock() {
 }
 
 int main() {
+  std::cout << "==================show_atomic_base====================" << std::endl;
   show_atomic_base();
+  std::cout << "==================show_atomic_spe====================" << std::endl;
   show_atomic_spe();
+  std::cout << "==================show_atomic_flag====================" << std::endl;
   show_atomic_flag();
+  std::cout << "==================TestSpinLock====================" << std::endl;
   TestSpinLock();
 }
