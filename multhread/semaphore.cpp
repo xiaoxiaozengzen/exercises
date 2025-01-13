@@ -68,4 +68,6 @@ int main() {
             t.join();
         }
     }
+
+    sem_destroy(&sem);
 }
