@@ -93,6 +93,15 @@ void ConFun() {
   } else {
     std::cout << "a5 is not nullptr" << std::endl;
   }
+
+  std::cout << "before shuzu" << std::endl;
+
+  std::unique_ptr<A[]> b1;
+  std::unique_ptr<A[]> b2(nullptr);
+  std::unique_ptr<A[]> b3(new A[2]);
+  std::unique_ptr<A[]> b4(new A[2], std::default_delete<A[]>());
+
+  std::cout << "after shuzu" << std::endl;
 }
 
 void MemFun() {

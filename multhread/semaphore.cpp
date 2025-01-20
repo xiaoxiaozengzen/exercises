@@ -22,6 +22,7 @@
 // sem_wait 是一个阻塞的函数，测试所指定信号量的值，它的操作是原子的。
 //  - 若 sem value > 0，则该信号量值减去 1 并立即返回。
 //  - 若 sem value = 0，则阻塞直到 sem value > 0，此时立即减去 1，然后返回。
+// return: 若成功返回 0，失败返回 -1，并设置 errno 为 EINTR。
 
 /**************** sem_trywait *******************/
 // int sem_trywait(sem_t *sem);

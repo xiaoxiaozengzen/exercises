@@ -128,6 +128,31 @@ void remove_reference() {
   }
 }
 
+enum ENUM1 {a,b,c};
+enum class ENUM2 : unsigned char {x,y,z};
+
+void make_signed() {
+  // template <class T> struct make_signed;
+  if (std::is_same<std::make_signed<unsigned int>::type, int>::value) {
+    std::cout << "make_signed<unsigned int>::type is int" << std::endl;
+  } else {
+    std::cout << "make_signed<unsigned int>::type is not int" << std::endl;
+  }
+
+  typedef std::make_signed<int>::type A;                // int
+  typedef std::make_signed<unsigned>::type B;           // int
+  typedef std::make_signed<const unsigned>::type C;     // const int
+  typedef std::make_signed<ENUM1>::type D;              // int
+  typedef std::make_signed<ENUM2>::type E;              // signed char
+
+  std::cout << "typedefs of int:" << std::endl;
+  std::cout << "A: " << std::is_same<int,A>::value << std::endl;
+  std::cout << "B: " << std::is_same<int,B>::value << std::endl;
+  std::cout << "C: " << std::is_same<int,C>::value << std::endl;
+  std::cout << "D: " << std::is_same<int,D>::value << std::endl;
+  std::cout << "E: " << std::is_same<int,E>::value << std::endl;
+}
+
 int main() {
   std::cout << "--------------------------------integral_constant--------------------------------"
             << std::endl;
@@ -147,4 +172,7 @@ int main() {
   std::cout << "--------------------------------remove_reference--------------------------------"
             << std::endl;
   remove_reference();
+  std::cout << "--------------------------------make_signed--------------------------------"
+            << std::endl;
+  make_signed();
 }
