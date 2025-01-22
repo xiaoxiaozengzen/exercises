@@ -111,6 +111,10 @@ void MemFun() {
   bar = bar.set(1, 1);
   bar = bar.reset(1);
   std::cout << "test_1: " << bar.test(1) << std::endl;
+  bar = bar.flip(); // 翻转所有位
+  std::cout << "test_1: " << bar.test(1) << std::endl;
+  bar = bar.flip(1); // 翻转指定位
+  std::cout << "test_1: " << bar.test(1) << std::endl;
 
   // 3. bitset operation
   bar.set();

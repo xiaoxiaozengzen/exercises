@@ -75,6 +75,13 @@ struct DelFun {
   }
 };
 
+struct DelArrFun {
+  void operator()(A* p) {
+    std::cout << "deleter array called" << std::endl;
+    delete[] p;
+  }
+};
+
 void ConFun() {
   std::unique_ptr<A> a1;
   std::unique_ptr<A> a2(nullptr);
@@ -100,6 +107,8 @@ void ConFun() {
   std::unique_ptr<A[]> b2(nullptr);
   std::unique_ptr<A[]> b3(new A[2]);
   std::unique_ptr<A[]> b4(new A[2], std::default_delete<A[]>());
+  std::unique_ptr<A[], DelArrFun> b5(new A[2], DelArrFun());
+  std::unique_ptr<A[]> b6 = std::make_unique<A[]>(2);
 
   std::cout << "after shuzu" << std::endl;
 }

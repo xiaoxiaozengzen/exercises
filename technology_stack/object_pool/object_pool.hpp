@@ -5,8 +5,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
-
-#include "spin_lock.hpp"
+#include <mutex>
 
 namespace ObjectPool {
 
@@ -34,7 +33,7 @@ class ObjectPool {
   deleter_type deleter_;
   cleaner_type cleaner_{nullptr};
   std::bitset<FixedSize> bitmap_;
-  devastator::realtime::spinlock sp_;
+  std::mutex mtx_;
 
   size_t find_first() const noexcept {
     size_t index = 0;
@@ -47,7 +46,7 @@ class ObjectPool {
   }
 
   pointer allocate() noexcept {
-    devastator::realtime::spinlock::scoped_lock lock_guard(sp_);
+    std::unique_lock<std::mutex> lock(mtx_);
     if (bitmap_.count() == 0) {
       return nullptr;
     }
@@ -60,7 +59,7 @@ class ObjectPool {
   }
 
   void deallocate(pointer p) noexcept {
-    devastator::realtime::spinlock::scoped_lock lock_guard(sp_);
+    std::unique_lock<std::mutex> lock(mtx_);
     difference_type index = p - buffer_.get();
     if (index < 0 || index >= static_cast<difference_type>(capacity_)) {
       return;
@@ -113,19 +112,19 @@ class ObjectPool {
   /// @brief  get object pool available size
   /// @return  available size
   size_type size() noexcept {
-    devastator::realtime::spinlock::scoped_lock lock_guard(sp_);
+    std::unique_lock<std::mutex> lock(mtx_);
     return bitmap_.count();
   }
 
   size_type capacity() const noexcept { return capacity_; }
 
   bool empty() noexcept {
-    devastator::realtime::spinlock::scoped_lock lock_guard(sp_);
+    std::unique_lock<std::mutex> lock(mtx_);
     return bitmap_.none();
   }
 
   bool full() noexcept {
-    devastator::realtime::spinlock::scoped_lock lock_guard(sp_);
+    std::unique_lock<std::mutex> lock(mtx_);
     return bitmap_.count() == capacity_;
   }
 
