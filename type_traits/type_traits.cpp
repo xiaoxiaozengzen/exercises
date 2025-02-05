@@ -1,5 +1,6 @@
 #include <iostream>
 #include <type_traits>
+#include <functional>
 
 /**
     在编译期间就能知道值得常量
@@ -130,7 +131,6 @@ void remove_reference() {
 
 enum ENUM1 {a,b,c};
 enum class ENUM2 : unsigned char {x,y,z};
-
 void make_signed() {
   // template <class T> struct make_signed;
   if (std::is_same<std::make_signed<unsigned int>::type, int>::value) {
@@ -151,6 +151,43 @@ void make_signed() {
   std::cout << "C: " << std::is_same<int,C>::value << std::endl;
   std::cout << "D: " << std::is_same<int,D>::value << std::endl;
   std::cout << "E: " << std::is_same<int,E>::value << std::endl;
+}
+
+// template <class Fn, class... ArgTypes> struct result_of<Fn(ArgTypes...)>;
+int fn(int) {return int();}                            // function
+typedef int(&fn_ref)(int);                             // function reference
+typedef int(*fn_ptr)(int);                             // function pointer
+struct fn_class { int operator()(int i){return i;} };  // function-like class
+class fn_class2 {
+public:
+  int func(int i) {return i;}
+};
+class fn_class3 {
+public:
+  int func(int i) {return i;}
+  std::function<int(int)> f = [this](int i) {return i;};
+};
+void result_of() {
+  fn_class2 f2;
+  fn_class3 f3;
+
+  typedef std::result_of<decltype(fn)&(int)>::type A;  // int
+  typedef std::result_of<decltype(&fn)(int)>::type B;  // int
+  typedef std::result_of<fn_ref(int)>::type C;         // int
+  typedef std::result_of<fn_ptr(int)>::type D;         // int
+  typedef std::result_of<fn_class(int)>::type E;       // int
+  typedef std::result_of<decltype(&fn_class2::func)(fn_class2,int)>::type F; // int
+  // typedef std::result_of<decltype(&f3.f)(int(int))>::type F; // 编译报错，调用对象不能是成员变量？
+
+  std::cout << std::boolalpha;
+  std::cout << "typedefs of int:" << std::endl;
+
+  std::cout << "A: " << std::is_same<int,A>::value << std::endl;
+  std::cout << "B: " << std::is_same<int,B>::value << std::endl;
+  std::cout << "C: " << std::is_same<int,C>::value << std::endl;
+  std::cout << "D: " << std::is_same<int,D>::value << std::endl;
+  std::cout << "E: " << std::is_same<int,E>::value << std::endl;
+  std::cout << "F: " << std::is_same<int,F>::value << std::endl;
 }
 
 int main() {
@@ -175,4 +212,7 @@ int main() {
   std::cout << "--------------------------------make_signed--------------------------------"
             << std::endl;
   make_signed();
+  std::cout << "--------------------------------result_of--------------------------------"
+            << std::endl;
+  result_of();
 }

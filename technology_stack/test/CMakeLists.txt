@@ -9,3 +9,8 @@ object_pool_test.cpp
 target_link_libraries(object_pool_test PUBLIC
   pthread
 )
+
+add_executable(thread_pool_version_2 thread_pool_version_2.cpp)
+target_link_libraries(thread_pool_version_2 PUBLIC
+  pthread
+)

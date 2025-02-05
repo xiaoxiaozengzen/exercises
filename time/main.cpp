@@ -154,6 +154,26 @@ void time_function() {
   std::cout << today.time_since_epoch().count() << " days since epoch" << std::endl;
 }
 
+using namespace std::chrono_literals; // C++14 引入的一个命名空间，用于定义一些时间单位的字面量
+/**
+ * 主要增加了一些时间单位的字面量，如1h, 1min, 1s, 1ms, 1us, 1ns
+ */
+void chrono_literals() {
+  std::chrono::duration<int, std::ratio<3600>> hour = 10h;
+  std::chrono::duration<int, std::ratio<60>> min = 10min;
+  std::chrono::duration<int, std::ratio<1>> sec = 10s;
+  std::chrono::duration<int, std::milli> ms = 1000ms;
+  std::chrono::duration<int, std::micro> us = 1000us;
+  std::chrono::duration<int, std::nano> ns = 1000ns;
+
+  std::cout << "hour is " << hour.count() << std::endl;
+  std::cout << "min is " << min.count() << std::endl;
+  std::cout << "sec is " << sec.count() << std::endl;
+  std::cout << "ms is " << ms.count() << std::endl;
+  std::cout << "us is " << us.count() << std::endl;
+  std::cout << "ns is " << ns.count() << std::endl;
+}
+
 int main() {
   std::cout << "=======================ratio_class=======================" << std::endl;
   ratio_class();
@@ -165,4 +185,6 @@ int main() {
   systemclock();
   std::cout << "=======================time_function=======================" << std::endl;
   time_function();
+  std::cout << "=======================chrono_literals=======================" << std::endl;
+  chrono_literals();
 }
