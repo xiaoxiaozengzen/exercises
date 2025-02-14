@@ -5,3 +5,8 @@ add_executable(io_file_example file_example.cpp)
 target_link_libraries(io_file_example PUBLIC pthread)
 
 add_executable(io_buffer buffer.cpp)
+
+add_executable(filebuf filebuf.cpp)
+add_executable(ifstream ifstream.cpp)
+
+add_executable(locale locale.cpp)

@@ -9,9 +9,10 @@
   _IOLBF ：line buffered
   _IOFBF  ：fully buffered
 
-  全缓冲(_IOFBF)：只有缓冲区满或者调用flush时，才将缓冲区数据同步到磁盘。
-  行缓冲(_IOLBF)：缓冲区满或者调用flush时，或遇到\n换行符，才会写数据同步。
   无缓冲(_IONBF)：直接写入并同步。
+  行缓冲(_IOLBF)：缓冲区满或者调用flush时，或遇到\n换行符，才会写数据同步。
+  全缓冲(_IOFBF)：只有缓冲区满或者调用flush时，才将缓冲区数据同步到磁盘。
+  
  */
 
 /**
