@@ -46,16 +46,22 @@ class Example {
   Example():x_(0), y_(0) {
     std::cout << "Example()" << std::endl;
   }
+
+  /**
+   * constexpr还能修饰类的构造函数，即保证传递给该构造函数的所有参数都是constexpr，
+   * 那么产生的对象的所有成员都是constexpr。该对象是constexpr对象了，可用于只使用constexpr的场合。 
+   */
   constexpr Example(int x) : x_(x), y_(0) {
     std::cout << "Example(int x)" << std::endl;
   }
 
   void setX(int x) {
+    std::cout << "setX(int x)" << std::endl;
     x_ = x;
   }
 
   void getX(int x) const {
-    std::cout << "setX(int x) const" << std::endl;
+    std::cout << "getX(int x) const" << std::endl;
   }
 
   // 编译报错：error: static member function ‘static void Example::print()’ cannot have cv-qualifier
@@ -84,6 +90,26 @@ void example() {
   Example e1(10);
 
   e.setY(10);
+  e1.setX(20);
+}
+
+// 重载
+// 不注释函数的话，编译报错：error: call of overloaded ‘my_print(const int&)’ is ambiguous
+// void my_print(int a) {
+//   std::cout << "my_print(int a)" << std::endl;
+// }
+// void my_print(const int a) {
+//   std::cout << "my_print(const int a)" << std::endl;
+// }
+void my_print(const int& a) {
+  std::cout << "my_print(const int a)" << std::endl;
+}
+
+void PrintTest() {
+  int a = 10;
+  const int& b = a;
+  my_print(b);
+  // my_print(10);
 }
 
 int main() {
@@ -93,4 +119,6 @@ int main() {
   example();
   std::cout << "==================== ReadonlyTest ====================" << std::endl;
   ReadonlyTest();
+  std::cout << "==================== PrintTest ====================" << std::endl;
+  PrintTest();
 }

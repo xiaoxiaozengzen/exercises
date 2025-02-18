@@ -149,13 +149,13 @@ void PubMemFunInhertStreambuff() {
 
   // put
   std::filebuf fb2;
-  std::filebuf *ret2 = fb2.open("/mnt/workspace/cgz_workspace/Exercise/exercises/io/test.txt", std::ios::out | std::ios::app);
+  std::filebuf *ret2 = fb2.open("/mnt/workspace/cgz_workspace/Exercise/exercises/io/test.txt", std::ios::out | std::ios::in);
   if(ret2 == nullptr){
     std::cout << "open file2 failed" << std::endl;
   } else {
     std::cout << "open file2 success" << std::endl;
   }
-  fb2.pubseekoff(2, std::ios::beg, std::ios::out | std::ios::in);
+  fb2.pubseekoff(2, std::ios::beg, std::ios::out);
   int put = fb2.sputc('b');
   put = fb2.sputc('c');
   if(put == EOF){
@@ -163,7 +163,7 @@ void PubMemFunInhertStreambuff() {
   } else {
     std::cout << "sputc: " << put << std::endl;
   }
-  char array2[10] = "123456789";
+  char array2[10] = "112233445";
   std::streamsize putn = fb2.sputn(array2, 8);
   std::cout << "sputn: " << putn << std::endl;
 
