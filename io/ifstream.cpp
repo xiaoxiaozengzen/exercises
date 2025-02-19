@@ -102,6 +102,82 @@ void Inherit_istream() {
     ifs >> str;
     std::cout << "unget: " << str << std::endl;
 
+    std::streampos pos = ifs.tellg();
+    std::cout << "tellg: " << pos << std::endl;
+
+    ifs.seekg(0);
+    pos = ifs.tellg();
+    std::cout << "tellg: " << pos << std::endl;
+    ifs.seekg(10, std::ios::beg);
+    ret = ifs.get();
+    std::cout << "get: " << ret << std::endl;
+
+    ret = ifs.sync();
+    if(ret == 0) {
+        std::cout << "sync success" << std::endl;
+    } else {
+        std::cout << "sync failed" << std::endl;
+    }
+}
+
+void Inherit_ios() {
+  std::ifstream ifs("/mnt/workspace/cgz_workspace/Exercise/exercises/io/test2.txt", std::ios::in);
+
+  bool ret = ifs.good();
+  if(ret) {
+    std::cout << "good" << std::endl;
+  } else {
+    std::cout << "bad" << std::endl;
+  }
+  ret = ifs.eof();
+  if(ret) {
+    std::cout << "eof" << std::endl;
+  } else {
+    std::cout << "not eof" << std::endl;
+  }
+  ret = ifs.fail();
+  if(ret) {
+    std::cout << "fail" << std::endl;
+  } else {
+    std::cout << "not fail" << std::endl;
+  }
+  ret = ifs.bad();
+  if(ret) {
+    std::cout << "bad" << std::endl;
+  } else {
+    std::cout << "not bad" << std::endl;
+  }
+
+  std::ios::iostate state = ifs.rdstate();
+  ifs.setstate(std::ios::badbit);
+  ifs.clear();
+
+  char c = ifs.fill();
+  std::cout << "fill: " << int(c) << std::endl;
+  c = ifs.fill('1');
+  std::cout << "fill: " << int(c) << std::endl;
+}
+
+void Inherit_iosbase() {
+  std::ifstream ifs("/mnt/workspace/cgz_workspace/Exercise/exercises/io/test2.txt", std::ios::in);
+
+  std::ios_base::fmtflags flags = ifs.flags();
+  if(flags & std::ios_base::dec) {
+    std::cout << "dec" << std::endl;
+  }
+  if(flags & std::ios_base::oct) {
+    std::cout << "oct" << std::endl;
+  } else {
+    std::cout << "not oct" << std::endl;
+  }
+  std::ios_base::fmtflags before = ifs.setf(std::ios_base::oct);
+  ifs.unsetf(std::ios_base::oct);
+
+  std::streamsize precision = ifs.precision();
+  std::cout << "precision: " << precision << std::endl;
+
+  std::streamsize width = ifs.width();
+  std::cout << "width: " << width << std::endl;
 
 }
 
@@ -114,4 +190,8 @@ int main() {
     MemFun(); 
     std::cout << "==========================Inherit_istream==========================" << std::endl;
     Inherit_istream();
+    std::cout << "==========================Inherit_ios==========================" << std::endl;
+    Inherit_ios();
+    std::cout << "==========================Inherit_iosbase==========================" << std::endl;
+    Inherit_iosbase();
 }

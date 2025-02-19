@@ -8,5 +8,11 @@ add_executable(io_buffer buffer.cpp)
 
 add_executable(filebuf filebuf.cpp)
 add_executable(ifstream ifstream.cpp)
+add_executable(ofstream ofstream.cpp)
+
+add_executable(stringbuf stringbuf.cpp)
+add_executable(stringstream stringstream.cpp)
+
+add_executable(ios ios.cpp)
 
 add_executable(locale locale.cpp)
