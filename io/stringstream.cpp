@@ -43,6 +43,10 @@ void Inherti_istream() {
     std::cout << "ss5 >> num1 = " << num1 << std::endl;
     ss5 >> num2;
     std::cout << "ss5 >> num2 = " << num2 << std::endl;
+    std::stringstream ss7("Hello");
+    ss7 >> ss2.rdbuf();
+    ret = ss2.str();
+    std::cout << "ss7 >> ss2.rdbuf() = " << ret << std::endl;
 }
 
 void Inherit_ostream() {
@@ -66,6 +70,10 @@ void Inherit_ostream() {
     ss5 << 123 << " " << 456;
     ret = ss5.str();
     std::cout << "ss5 << 123 << \" \" << 456 = " << ret << std::endl;
+    std::stringstream ss6;
+    ss6 << ss1.rdbuf();
+    ret = ss6.str();
+    std::cout << "ss6 << ss1.rdbuf() = " << ret << std::endl;
 }
 
 void inherit_ios() {
