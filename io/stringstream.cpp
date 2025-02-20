@@ -17,6 +17,17 @@ void MemFun() {
     std::cout << "ss1.str() = " << ret << std::endl;
     std::stringstream ss2;
     ss2.swap(ss1);
+    std::cout << "ss1.str() = " << ss1.str() << std::endl;
+    std::cout << "ss2.str() = " << ss2.str() << std::endl;
+
+    std::stringstream ss3;
+    ss3 << ss2.rdbuf();
+    std::string ret1 = ss3.str();
+    std::cout << "ss3 << ss2.rdbuf() = " << ret1 << std::endl;
+    std::stringstream ss4("Hello");
+    ss4 >> ss3.rdbuf();
+    ret1 = ss3.str();
+    std::cout << "ss4 >> ss3.rdbuf() = " << ret1 << std::endl;
 }
 
 void Inherti_istream() {
