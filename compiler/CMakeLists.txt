@@ -12,3 +12,5 @@ add_executable(const_auto const_auto_&.cpp)
 target_link_libraries(const_auto PUBLIC pthread)
 
 add_executable(no_return no_return.cpp)
+
+add_executable(macro_redefined macro_redefined.cpp)
