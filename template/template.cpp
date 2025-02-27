@@ -30,15 +30,41 @@ class A {
 
   template <typename T>
   void print(T t) {
-    std::cout << t << std::endl;
+    std::cout << "A: " << t << std::endl;
+  }
+
+  template <typename T>
+  T get(T t) {
+    return t;
   }
 };
+
+class B : public A {
+  public:
+   B() {
+     std::cout << "B()" << std::endl;
+   }
+   ~B() {
+     std::cout << "~B()" << std::endl;
+   }
+
+   template <typename T>
+   static void print(T t) {
+     std::cout << "B: " << t << std::endl;
+   }
+ };
 
 void template_fun() {
   A a;
   a.print(1);
   // 显示指定模板参数
   a.template print<int>(2);
+  int ret = a.template get<int>(3);
+  std::cout << "ret: " << ret << std::endl;
+
+  B b;
+  b.A::template print<int>(4);
+  b.template print<int>(5);
 }
 
 int main() {
