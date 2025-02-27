@@ -16,12 +16,12 @@
 #define ADD(x, y) (x + y + y)
 #endif
 
-// 也可以直接error，编译的时候就会报错
-#ifdef ADD
-  # error Macro ADD has been defined
-#else
-  #define ADD(x, y) (x + y + y + y)
-#endif
+// // 也可以直接error，编译的时候就会报错
+// #ifdef ADD
+//   # error Macro ADD has been defined
+// #else
+//   #define ADD(x, y) (x + y + y + y)
+// #endif
 
 int main() {
   int a = ADD(1, 3);
