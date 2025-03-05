@@ -190,6 +190,20 @@ void result_of() {
   std::cout << "F: " << std::is_same<int,F>::value << std::endl;
 }
 
+void is_destructible() {
+  // template <class T> struct is_destructible;
+
+  struct A { };
+  struct B { ~B() = delete; };
+  struct C : B {};
+  std::cout << std::boolalpha;
+  std::cout << "is_destructible:" << std::endl;
+  std::cout << "int: " << std::is_destructible<int>::value << std::endl;
+  std::cout << "A: " << std::is_destructible<A>::value << std::endl;
+  std::cout << "B: " << std::is_destructible<B>::value << std::endl;
+  std::cout << "C: " << std::is_destructible<C>::value << std::endl;
+}
+
 int main() {
   std::cout << "--------------------------------integral_constant--------------------------------"
             << std::endl;
@@ -215,4 +229,6 @@ int main() {
   std::cout << "--------------------------------result_of--------------------------------"
             << std::endl;
   result_of();
+  std::cout << "--------------------------------is_destructible--------------------------------" << std::endl;
+  is_destructible();
 }

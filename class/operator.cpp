@@ -103,6 +103,17 @@ class OutExample {
   int a;
 };
 
+/****************** *输入操作符重载 ************** */
+
+class InExample {
+ public:
+  InExample(int a) : a(a) {}
+  int operator*() & { return a; } // & 用于限定当前函数只能用于左值对象
+
+ private:
+  int a;
+};
+
 /************************************operator new**************************************** */
 // throwing (1)
 // void* operator new (std::size_t size) throw (std::bad_alloc);
@@ -270,4 +281,10 @@ int main() {
   std::cout << "=================================operator new==================================="
             << std::endl;
   NewTest();
+
+  std::cout << "=================================operator new==================================="
+            << std::endl;
+  InExample ie(10);
+  std::cout << "InExample: " << *ie << std::endl;
+  return 0;
 }
