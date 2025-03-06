@@ -112,6 +112,19 @@ void PrintTest() {
   // my_print(10);
 }
 
+// c++17中，constexpr用于在编译期间计算表达式的值，而不是在运行时计算。constexpr函数是在编译期间执行的，而不是在运行时执行的。
+// std::is_same_v<T, U> 等价于std::is_same<T, U>::value
+void ConstexprTest() {
+  double a = 10;
+  if constexpr (std::is_same_v<int, decltype(a)>) {
+    std::cout << "a is int" << std::endl;
+  } else if constexpr (std::is_same_v<double, decltype(a)>) {
+    std::cout << "a is double" << std::endl;
+  } else {
+    std::cout << "a is other type" << std::endl;
+  }
+}
+
 int main() {
   std::cout << "==================== ArrayTest ====================" << std::endl;
   ArrayTest(10);
@@ -121,4 +134,7 @@ int main() {
   ReadonlyTest();
   std::cout << "==================== PrintTest ====================" << std::endl;
   PrintTest();
+  std::cout << "==================== ConstexprTest ====================" << std::endl;
+  ConstexprTest();
+  return 0;
 }
