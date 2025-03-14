@@ -55,10 +55,27 @@ void MemFun() {
   std::mbstate_t state = std::mbstate_t();
 }
 
+void chinese() {
+  std::string utf8_string = "你好";
+  std::u16string utf16_string = u"你好";
+  std::cout << "utf8_string size: " << utf8_string.size() << ", bytes: " << utf8_string.size() * sizeof(char) << std::endl;
+  std::cout << "utf16_string size: " << utf16_string.size() << ", bytes: " << utf16_string.size() * sizeof(char16_t) << std::endl;
+
+  std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t> convert;
+
+  std::u16string utf16_string2 = convert.from_bytes(utf8_string);
+  std::string utf8_string2 = convert.to_bytes(utf16_string);
+  std::cout << "utf8_string2: " << utf8_string2 << std::endl;
+  std::cout << "utf8_string2 size: " << utf8_string2.size() << std::endl;
+  std::cout << "utf16_string2 size: " << utf16_string2.size() << std::endl;
+}
+
 int main() {
   std::cout << "====================ConFun====================" << std::endl;
   ConFun();
   std::cout << "====================MemFun====================" << std::endl;
   MemFun();
+  std::cout << "====================chinese====================" << std::endl;
+  chinese();
   return 0;
 }
