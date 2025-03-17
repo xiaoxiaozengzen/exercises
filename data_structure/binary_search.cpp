@@ -122,6 +122,10 @@ void Interpolation() {
   double prev = data[left - 1];
   double next = data[left];
   double ratio = (match_timestamp - prev) / (next - prev);
+  if(ratio < 0 || ratio > 1) {
+    std::cout << "Ratio is invalid: " << ratio << std::endl;
+    return;
+  }
   double result = prev * (1 - ratio) + next * ratio;
   std::cout << "Result: " << result << std::endl;
 }
