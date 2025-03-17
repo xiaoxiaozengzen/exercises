@@ -16,19 +16,19 @@
  */
 void Normal() {
   std::deque<double> data = {
-    1741155871.098, 1741155871.198, 1741155871.298, 1741155871.398, 1741155871.498,
-    1741155871.598, 1741155871.698, 1741155871.798, 1741155871.898, 1741155871.998,
-    1741155872.098, 1741155872.198, 1741155872.298, 1741155872.398, 1741155872.498,
-    1741155872.598
+    1.098, 1.198, 1.298, 1.398, 1.498,
+    1.598, 1.698, 1.798, 1.898, 1.998,
+    2.098, 2.198, 2.298, 2.398, 2.498,
+    2.598
   };
 
-  double match_timestamp = 1741155871.998;
+  double match_timestamp = 1.000;
   int location = -1;
-  std::size_t left = 0;
-  std::size_t right = data.size() - 1;
+  int left = 0;
+  int right = data.size() - 1;
 
   while(left <= right) {
-    std::size_t mid = left + (right - left) / 2;
+    int mid = left + (right - left) / 2;
     if(data[mid] == match_timestamp) {
       location = mid;
       break;
@@ -39,7 +39,41 @@ void Normal() {
     }
   }
 
+  // 循环退出的时:
+  //  left值的含义是第一个大于match_timestamp的元素位置,或者数组的末尾(如果match_timestamp大于数组中的所有元素)
+  //  right值的含义是最后一个小于match_timestamp的元素位置,或者-1(如果match_timestamp小于数组中的所有元素)
+
+  // 1.match_timestamp=1.998,在数组中存在
+  // left: 8, right: 10
+  // data[8]: 1.898
+  // data[10]: 2.098
+  // Location: 9
+
+  // 2.match_timestamp=1.999,不在数组中,但是在数组最大最小值范围内,则mid理论值在[left, right]之间
+  // left: 10, right: 9
+  // data[10]: 2.098
+  // data[9]: 1.998
+  // Location: -1
+
+  // 3.match_timestamp=2.999,不在数组中，且大于数组最大值.则left此时为数组末尾,即data.size(),right此时为data.size() - 1
+  // left: 16, right: 15
+  // data[15]: 2.598
+  // Location: -1
+
+  // 4.match_timestamp=1.000,不在数组中，且小于最小值,则right此时为-1, left此时为0
+  // left: 0, right: -1
+  // data[0]: 1.098
+  // Location: -1
+
+
   std::cout << "left: " << left << ", right: " << right << std::endl;
+  if(left >=0 && left <= data.size() - 1) {
+    std::cout << "data[" << left << "]: " << data[left] << std::endl;
+  }
+  if(right >= 0 && right <= data.size() - 1) {
+    std::cout << "data[" << right << "]: " << data[right] << std::endl;
+  }
+   
   std::cout << "Location: " << location << std::endl;
 }
 
@@ -51,11 +85,11 @@ void Interpolation() {
   };
 
   double match_timestamp = 1.303;
-  std::size_t left = 0;
-  std::size_t right = data.size() - 1;
+  int left = 0;
+  int right = data.size() - 1;
 
   while(left <= right) {
-    std::size_t mid = left + (right - left) / 2;
+    int mid = left + (right - left) / 2;
     if(data[mid] == match_timestamp) {
       left = mid;
       break;
@@ -83,6 +117,8 @@ void Interpolation() {
     std::cout << "right :" << data[right] << ", right + 1: " << data[right + 1] << std::endl;
   }
 
+  // 假设没有找到对应数据，则mid值在[left-1, left]之间，因为循环的时候left = mid + 1
+  // 同理，mid值也在[right, right+1]之间，因为循环的时候right = mid - 1
   double prev = data[left - 1];
   double next = data[left];
   double ratio = (match_timestamp - prev) / (next - prev);
