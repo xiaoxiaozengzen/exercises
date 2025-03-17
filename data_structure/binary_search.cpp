@@ -9,14 +9,20 @@
 #include <algorithm>
 #include <cmath>
 
+/**
+ * @brief Normal binary search
+ * 
+ * @note 二分查找的循环条件使用left <= right，否则若是left < right，会漏掉元素刚好是left位置或者right位置的情况
+ */
 void Normal() {
   std::deque<double> data = {
     1741155871.098, 1741155871.198, 1741155871.298, 1741155871.398, 1741155871.498,
     1741155871.598, 1741155871.698, 1741155871.798, 1741155871.898, 1741155871.998,
-    1741155872.098, 1741155872.198, 1741155872.298, 1741155872.398, 1741155872.498
+    1741155872.098, 1741155872.198, 1741155872.298, 1741155872.398, 1741155872.498,
+    1741155872.598
   };
 
-  double match_timestamp = 1741155871.298;
+  double match_timestamp = 1741155871.998;
   int location = -1;
   std::size_t left = 0;
   std::size_t right = data.size() - 1;
@@ -33,6 +39,7 @@ void Normal() {
     }
   }
 
+  std::cout << "left: " << left << ", right: " << right << std::endl;
   std::cout << "Location: " << location << std::endl;
 }
 
