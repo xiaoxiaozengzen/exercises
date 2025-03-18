@@ -9,6 +9,51 @@
 #include <algorithm>
 #include <cmath>
 
+/****************************************************************/
+// 搜索范围的左右边界，即left = 0还是left = -1，right = nums.lengh-1 还是right = nums.lengh；
+// 搜索停止（循环结束）的条件，即while(left < right)与while(left <= right)的选择问题；
+// 搜索时中间值能否加入左/右边界，即right = mid 还是right = mid-1，left = mid还是left = mid+1；
+// mid怎么计算，即mid = left + (right - left) / 2还是mid = left + (right - left + 1) / 2；
+
+// 搜索边界问题：
+// 1.搜索大于target的第一个元素位置：
+//   当target比所有元素都大时，[0, nums.size()-1]找不到对应元素，有边界必须扩大，即right = nums.size()；
+//   而左边界不需要扩大，因为target比所有元素都小时，目标索引就是0
+//   则搜索区间改成[0, nums.size()]
+
+// 2.搜索小于target的最后一个元素位置：
+//   当target比所有元素都小时，[0, nums.size()-1]找不到对应元素，左边界必须扩大，即令left=-1；
+//   而右边界不需要扩大，因为target比所有元素都大时，目标索引就是nums.size()-1
+//   则搜索区间改成[-1, nums.size()-1]
+
+// 3.一般用于搜索区间是否含有target
+//   target可能在数组中，也可能不在数组中，所以搜索区间为[0, nums.size()-1]，不需要扩大边界
+//   target不在数组中时，循环结束，直接返回-1
+
+// 注意：如果我们应根据题目要求选择是否扩充边界，如果扩充了，那么循环截止条件一定是while(left < right)
+// 循环结束条件问题：
+// 1.搜索区间[left, right]中一定存在target索引值时，循环结束条件为left < right。
+//    因为当left == right时，目标索引就是left或者right，适用于上述的第1和第2种情况
+//    甚至当情况三的搜索区间扩充为[-1, nums.size()]时，也适用
+
+// 2.搜索区间[left, right]中可能存在target索引值时，循环结束条件为left <= right。
+
+// 中间值归属问题：
+// 1.对应边界问题1，当搜索的是大于6的最小值索引，如果num[mid] <= 6,则mid一定不是目标索引，此时left = mid + 1
+//   如果num[mid] > 6,则mid可能是目标索引，此时right = mid
+
+// 2.对应边界问题2，当搜索的是小于6的最大值索引，如果num[mid] >= 6,则mid一定不是目标索引，此时right = mid - 1
+//   如果num[mid] < 6,则mid可能是目标索引，此时left = mid
+
+// 3.对应边界问题3，当搜索的是是否存在6，如果num[mid] < 6,则mid一定不是目标索引，此时left = mid + 1
+//   如果num[mid] > 6,则mid一定不是目标索引，此时right = mid - 1
+
+// mid的计算方式问题：
+// mid = left + (right - left) / 2，这种方式取靠左边的中位数
+// mid = left + (right - left + 1) / 2，这种方式取靠右边的中位数
+
+/****************************************************************/
+
 /**
  * @brief Normal binary search
  * 
@@ -28,6 +73,7 @@ void Normal() {
   int right = data.size() - 1;
 
   while(left <= right) {
+    //这个mid的位置是偏左的，当数组长度为奇数时候，mid为正中间，当数组长度为偶数时候，mid是靠近左边 
     int mid = left + (right - left) / 2;
     if(data[mid] == match_timestamp) {
       location = mid;
