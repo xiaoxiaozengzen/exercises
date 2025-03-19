@@ -21,6 +21,9 @@ target_include_directories(lwrb PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../ring_buffe
 target_compile_definitions(lwrb PUBLIC
   -DLWRB_DISABLE_ATOMIC
 )
+target_compile_definitions(lwrb PRIVATE
+  -DLWRB_DEV
+)
 
 add_executable(lwrb_test lwrb_test.cpp)
 target_link_libraries(lwrb_test PUBLIC
