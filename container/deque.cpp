@@ -243,6 +243,32 @@ void MemberFun() {
   std::cout << std::endl;
 }
 
+void MemoryTest() {
+  std::deque<int> arr = {1, 2, 3, 4, 5};
+
+  // 队首元素地址：0x55d13e3f6bd0
+  int& ref_1 = arr[0];
+  std::cout << "ref_1 address: " << &ref_1 << std::endl;
+
+  // 插入元素后，队首元素地址变了，且跟[1]地址不连续，[0]地址：0x55d13e3f702c
+  arr.push_front(0);
+  int& ref_2 = arr[0];
+  std::cout << "ref_2 address: " << &ref_2 << std::endl;
+
+  // 原来的元素，[1], [2], [3], [4], [5]地址不变，且从内存看是连续的
+  int& ref_3 = arr[1];
+  std::cout << "ref_3 address: " << &ref_3 << std::endl;
+  int& ref_4 = arr[2];
+  std::cout << "ref_4 address: " << &ref_4 << std::endl;
+  int& ref_5 = arr[3];
+  std::cout << "ref_5 address: " << &ref_5 << std::endl;
+
+  // 继续插入元素，队首元素地址变了，[0]地址：0x55d13e3f7028
+  arr.push_front(-1);
+  int& ref_6 = arr[0];
+  std::cout << "ref_6 address: " << &ref_6 << std::endl;
+}
+
 int main() {
   std::cout << "------------ Member Type ------------" << std::endl;
   MemberType();
@@ -252,4 +278,7 @@ int main() {
   capacity_test();
   std::cout << "------------ Member Function ------------" << std::endl;
   MemberFun();
+  std::cout << "------------ Memory Test ------------" << std::endl;
+  MemoryTest();
+  return 0;
 }
