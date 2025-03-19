@@ -2,6 +2,7 @@
 #include <future>
 #include <iostream>
 #include <memory>
+#include <thread>
 
 void promise_base() {
   std::promise<int> p1;
