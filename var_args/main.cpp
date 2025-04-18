@@ -2,29 +2,45 @@
 https://gcc.gnu.org/onlinedocs/gcc/Variadic-Macros.html
 */
 
-#include <stdarg.h>  //该头文件中包含后面va_list.va_start等函数
+#include <stdarg.h>  //该头文件中包含后面va_lis,va_start等函数
 #include <stdio.h>
 
 #include <iostream>
 
-//  ISO C standard of 1999
+/***************************宏定义***************************** */
+
+// __VA_ARGS__ 不能是空的，##__VA_ARGS__ 可以是空的
+// __VA_ARGS__ 只能在宏定义中使用，不能在函数中使用
 #define debug1(format, ...) fprintf(stderr, format, __VA_ARGS__)
-#define debug4(...) printf(__VA_ARGS__)
 
 #define debug2(format, args...) fprintf(stderr, format, args)
 
 #define debug3(format, ...) fprintf(stderr, format, ##__VA_ARGS__)
 
-/**
-    va_list
-*/
+#define debug4(...) printf(__VA_ARGS__)
+
+/***************************va_list***************************** */
 void MyPrintf(const char* format, ...) {
   int count = 4;
   int first;
 
   va_list ap;
+
+  /**
+   * @brief 该函数的作用是将可变参数列表初始化为一个指向参数列表的指针
+   * @param ap 指向参数列表的指针
+   * @param parmN 第一个参数
+   */
   va_start(ap, format);
   while (count > 0) {
+    /**
+     * @brief 该函数的作用是将参数列表中的下一个参数取出，并将其存储在指定的变量中
+     * 
+     * @param ap 指向参数列表的指针
+     * @param T 参数类型
+     * 
+     * @return T 返回参数值
+     */
     first = va_arg(ap, int);
     count--;
 
@@ -33,13 +49,10 @@ void MyPrintf(const char* format, ...) {
   va_end(ap);
 }
 
-/**
-    function
-*/
+/***************************template***************************** */
 template <typename First, typename... Rest>
 void my_print(const First& first, const Rest&... rest) {
-  std::cout << first << ", ";
-  printf(rest...);  // recursive call using pack expansion syntax
+  printf(first, rest...);  // recursive call using pack expansion syntax
 }
 
 /**************** 递归展开参数，从而进行使用 ******************* */
@@ -74,17 +87,39 @@ class tuple<Head, Tail...> : private tuple<Tail...> {
   Head m_head;
 };
 
-int main() {
-  debug1("hello %s\n", "world");
-  debug2("hello %s\n", "world");
-  debug3("hello %s\n", "world");
-  debug4("hello %s\n", "world");
+void define_test() {
+  debug1("hello1 %s\n", "world");
+  debug2("hello2 %s\n", "world");
+  debug3("hello3 %s\n", "world");
+  debug4("hello4 %s\n", "world");
+}
 
-  MyPrintf("nihoa ", 1, 2, 3, 4);
+void va_list_test() {
+  MyPrintf("hello %s %d %f %c\n", "world", 1, 2.3, 'a');
+}
 
-  my_print("nihoa", "hello %s\n", "hahah");
-  print("nihoa", "hello %s", "hahah");
+void template_test() {
+  my_print("hello\n");
+  my_print("hello %s\n", "nihao");
+  my_print("hello %s %d %f %d\n", "world", 1, 2.3, 'a');
+  
+  // 递归展开参数
+  print("hello", "world", 1, 2.3, 'a');
+}
 
+void tuple_test() {
   tuple<int, float, std::string> t(1, 2.3, "hello");
   std::cout << t.head() << " " << t.tail().head() << " " << t.tail().tail().head() << std::endl;
+}
+
+int main() {
+  std::cout << "====================== define_test ======================" << std::endl;
+  define_test();
+  std::cout << "====================== va_list_test ======================" << std::endl;
+  va_list_test();
+  std::cout << "====================== template_test ======================" << std::endl;
+  template_test();
+  std::cout << "====================== tuple_test ======================" << std::endl;
+  tuple_test();
+  return 0;
 }
