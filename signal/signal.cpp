@@ -61,15 +61,18 @@ void signal_example() {
 // struct sigaction {
 //     void (*sa_handler)(int);           // 信号处理函数指针，一般用来处理非实时信号(当然也可以处理实时信号)
 //     void (*sa_sigaction)(int, siginfo_t *, void *); // 拓展信号处理函数指针，传递信号值以及其他信息，一般用来处理实时信号
+//                                                     // sa_sigaction和sa_handler互斥，不能同时使用
+//                                                     // 且只有sa_flags设置了SA_SIGINFO时，sa_sigaction才会被使能
 //     sigset_t sa_mask;                  // 在处理该信号时要阻塞的信号集
 //     int sa_flags;                      // 修改信号行为的选项
 //     void (*sa_restorer)(void);         // 恢复函数，已废弃
 // };
 // sa_mask字段说明了一个信号集，指定在信号处理程序执行过程中，哪些信号应当被阻塞。缺省情况下当前信号本身被阻塞，防止信号的嵌套发送，
 // sa_flags字段说明了信号处理的行为，列举了一些值，这些值可以通过or进行使用：
+//      0 信号处理行为是默认的，当前信号处理函数执行期间会被阻塞，防止嵌套递送
 //      #define	SA_NOCLDSTOP  1		 /* Don't send SIGCHLD when children stop.  */
 //      #define SA_NOCLDWAIT  2		 /* Don't create zombie on child death.  */
-//      #define SA_SIGINFO    4		 /* Invoke signal-catching function with
+//      #define SA_SIGINFO    4		 /* Invoke signal-catching function with three arguments instead of one.  */
 
 // 不同平台siginfo_t结构体定义不同
 // siginfo_t {
@@ -271,7 +274,7 @@ void SigInfoTest() {
   sigemptyset(&set);
   struct sigaction act;
   act.sa_sigaction = signal_habdler_info;
-  act.sa_flags = 0;
+  act.sa_flags = SA_SIGINFO; // 需要设置SA_SIGINFO才能使用sa_sigaction
   sigaction(SIGABRT, &act, NULL);
 
   sigqueue(getpid(), SIGABRT, {10});
