@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <thread>
+#include <iostream>
 
 /**
   对于应用程序自行处理的信号来说，信号的生命周期要经过信号的安装登记、信号集操作、信号的发送和信号的处理四个阶段。
@@ -47,44 +48,48 @@ void sigaction_example() {
   act.sa_flags = 0;
   sigaction(SIGABRT, &act, NULL);
   sigaction(SIGALRM, &act, NULL);
+  sigaction(SIGINT, &act, NULL);
 }
 
 /************************************2.信号集操作*************************************************/
 /**
-    (1) int sigemptyset(sigset_t *set);         将某个信号集清 0         成功:0;失败:-1
-    (2) int sigfillset(sigset_t *set);                 将某个信号集置 1         成功:0;失败:-1
-    (3) int sigaddset(sigset_t *set, int signum);         将某个信号加入信号集 ，将对应编号置1
-   成功:0;失败:-1 (4) int sigdelset(sigset_t *set, int signum);         将某个信号清出信号集
-   ，将对应编号置0       成功:0;失败:-1 (5) int sigismember(const sigset_t *set, int
-   signum);判断某个信号是否在信号集中出错:-1   返回值:在集合:1;不在:0; (6) int sigprocmask(int how,
-   const sigset_t *set, sigset_t *oldset);
-   用来屏蔽信号、解除屏蔽也使用该函数。其本质,读取或修改进程的信号屏蔽字(PCB 中) 成功:0;失败:-1 (7)
-   int sigpending(sigset_t *set);         获取未决信号集 成功:0;失败:-1 (8) int sigsuspend(const
-   sigset_t *mask);         临时解除对信号的屏蔽，然后进入休眠状态，直到捕捉到一个信号
-   成功:-1;失败:不返回 (9) int sigaction(int signum, const struct sigaction *act, struct sigaction
-   *oldact);    信号处理函数的设置和获取 成功:0;失败:-1 (10) int sigwait(const sigset_t *set, int
-   *signo);         用于等待一个信号的产生 成功:0;失败:-1 (11) int sigwaitinfo(const sigset_t *set,
-   siginfo_t *info);    用于等待一个信号的产生 成功:0;失败:-1 (12) int sigtimedwait(const sigset_t
-   *set, siginfo_t *info, const struct timespec *timeout);    用于等待一个信号的产生 成功:0;失败:-1
-    (13) int sigqueue(pid_t pid, int sig, const union sigval value);    向指定进程发送一个信号
-   成功:0;失败:-1 (14) int sigsuspend(const sigset_t *mask);
-   临时解除对信号的屏蔽，然后进入休眠状态，直到捕捉到一个信号 成功:-1;失败:不返回 (15) int
-   sigwait(const sigset_t *set, int *signo);         用于等待一个信号的产生 成功:0;失败:-1 (16) int
-   sigwaitinfo(const sigset_t *set, siginfo_t *info);    用于等待一个信号的产生 成功:0;失败:-1 (17)
-   int sigtimedwait(const sigset_t *set, siginfo_t *info, const struct timespec *timeout
+ * int sigemptyset(sigset_t *set); // 将某个信号集清 0: 成功:0;失败:-1
+ * int sigfillset(sigset_t *set); // 将某个信号集置 1： 成功:0;失败:-1
+ * int sigaddset(sigset_t *set, int signum); // 将某个信号加入信号集，将对应编号置1; 成功:0;失败:-1
+ * int sigdelset(sigset_t *set, int signum); // 将某个信号清出信号集，将对应编号置0
+ * int sigismember(const sigset_t *set, intsignum); // 判断某个信号是否在信号集中: 失败:-1，返回值:在集合:1;不在:0;
+ * int sigprocmask(int how, const sigset_t *set, sigset_t *oldset); // 用来屏蔽信号、解除屏蔽也使用该函数。其本质,读取或修改进程的信号屏蔽字
+ * int sigpending(sigset_t *set); // 获取未决信号集
+ * int sigsuspend(const sigset_t *mask); // 临时解除对信号的屏蔽，然后进入休眠状态，直到捕捉到一个信号
+ * int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact); // 信号处理函数的设置和获取
+ * int sigwait(const sigset_t *set, int *signo); // 用于等待一个信号的产生
+ * int sigwaitinfo(const sigset_t *set, siginfo_t *info); // 用于等待一个信号的产生
+ * int sigtimedwait(const sigset_t, *set, siginfo_t *info, const struct timespec *timeout); // 用于等待一个信号的产生
+ * int sigqueue(pid_t pid, int sig, const union sigval value); // 向指定进程发送一个信号
  */
 void sigset_example() {
   sigset_t set;
-  sigemptyset(&set);                   // 初始化信号集为空
-  sigaddset(&set, SIGABRT);            // 将SIGABRT信号添加到信号集中
-  sigaddset(&set, SIGALRM);            // 将SIGALRM信号添加到信号集中
+
+  // 初始化信号集为空
+  sigemptyset(&set);
+
+  // 将SIGABRT信号添加到信号集中
+  sigaddset(&set, SIGABRT);
+  // 将SIGALRM信号添加到信号集中
+  sigaddset(&set, SIGALRM);
+
+  // SIG_BLOCK: 将set中的信号添加到进程的信号屏蔽字中
+  // SIG_UNBLOCK: 将set中的信号从进程的信号屏蔽字中删除，解除阻塞
+  // SIG_SETMASK: 将进程的信号屏蔽字设置为set
   sigprocmask(SIG_BLOCK, &set, NULL);  // 阻塞信号集中的信号
 
-  raise(SIGABRT);  // 发送SIGABRT信号
+  // 发送SIGABRT信号
+  raise(SIGABRT);  
 
   sigset_t ret_set;
   sigemptyset(&ret_set);
-  sigpending(&ret_set);  // 获取未决信号集
+  // 获取未决信号集
+  sigpending(&ret_set);
   if (sigismember(&ret_set, SIGABRT)) {
     printf("SIGABRT is pending\n");
   }
@@ -92,7 +97,12 @@ void sigset_example() {
     printf("SIGALRM is pending\n");
   }
 
-  sigprocmask(SIG_UNBLOCK, &set, NULL);  // 解除信号集中的信号
+  // 发送SIGINT信号
+  raise(SIGINT);
+  std::this_thread::sleep_for(std::chrono::seconds(1)); 
+
+  // 解除对信号集中的信号阻塞，当前进程可以接收到之前pending的信号
+  sigprocmask(SIG_UNBLOCK, &set, NULL);
 }
 
 /************************************3.信号生成*************************************************/
@@ -158,8 +168,11 @@ int main(int argc, char *argv[]) {
 
   int option = atoi(argv[1]);
 
+  std::cerr << "====================== sigaction_example ======================" << std::endl;
   sigaction_example();
+  std::cerr << "====================== signal_example ======================" << std::endl;
   sigset_example();
+  std::cerr << "====================== system_call ======================" << std::endl;
   system_call(option);
   std::this_thread::sleep_for(std::chrono::seconds(10));
 }
