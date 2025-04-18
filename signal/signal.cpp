@@ -18,6 +18,17 @@
  */
 
 /************************************1.1.信号安装*************************************************/
+/**
+ * void (*signal(int sig, void (*func)(int)))(int);
+ * sig: 信号编号
+ * func: 信号处理函数指针
+ * 返回值: 旧的信号处理函数指针
+ * 
+ * func默认有三种处理方式：
+ * 1. SIG_DFL: 默认处理方式
+ * 2. SIG_IGN: 忽略该信号
+ * 3. 使用func函数处理该信号
+ */
 void signal_handler(int signo) { printf("signal_handler: %d\n", signo); }
 void signal_example() {
   signal(SIGABRT, signal_handler);
@@ -158,6 +169,43 @@ void system_call(int option) {
   } else {
     return;
   }
+}
+
+/**
+ * 多线程中信号处理是未定义行为，在多线程的场景下，信号处理可能在任何一个线程中运行，甚至是主线程
+ */
+void multi_thread() {
+
+  sigset_t set;
+  sigemptyset(&set);
+  struct sigaction act;
+  act.sa_handler = signal_handler;
+  act.sa_flags = 0;
+
+  std::thread t1([&]() {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    printf("thread 1\n");
+
+    sigaddset(&set, SIGABRT);
+    sigaction(SIGABRT, &act, NULL);
+
+    while(true) {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+  });
+
+  std::thread t2([&]() {
+    printf("thread 2\n");
+
+    while(true) {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }    
+  });
+
+  raise(SIGABRT);
+
+  t1.join();
+  t2.join();
 }
 
 int main(int argc, char *argv[]) {
