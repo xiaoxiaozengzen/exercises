@@ -172,6 +172,9 @@ void system_clock_class() {
   std::cout << "current time: " << ctime(&tt);  // 转换为字符串格式输出
   time_t tt2 = time(nullptr);  // 获取当前时间点
   std::chrono::system_clock::time_point tp2 = std::chrono::system_clock::from_time_t(tt2);  // 转换为time_point类型
+
+  // construct functions
+  std::chrono::system_clock clock;  // default constructor
 }
 
 /**
