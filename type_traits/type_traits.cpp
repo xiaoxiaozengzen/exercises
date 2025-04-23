@@ -1,19 +1,66 @@
 #include <iostream>
+#include <typeinfo>
+#include <typeindex>
+
+// <type_traits>定义了很多类，这些类包含了类型信息，并且编译器在编译期间就能知道这些信息
 #include <type_traits>
 #include <functional>
 
 /**
-    在编译期间就能知道值得常量
+ * <typeinfo>头文件中定义了操作符typeid和dynamic_cast相关的
+ * 
+ * typeid返回一个type_info对象，包含了类型的信息
+ */
+void typeinfo_example() {
+  int a = 10;
+  double b = 20.0;
+  std::cout << "typeid(a) == typeid(int): " << (typeid(a) == typeid(int)) << std::endl;
+  std::cout << "typeid(a) != typeid(double): " << (typeid(a) != typeid(double)) << std::endl;
+  const char *type_name = typeid(a).name();
+  std::cout << "typeid(a).name(): " << type_name << std::endl;
+  bool ret = typeid(int).before(typeid(char));
+  std::cout << "typeid(int).before(typeid(char)): " << ret << std::endl;
+  std::size_t hash_code = typeid(int).hash_code();
+  std::cout << "typeid(int).hash_code(): " << hash_code << std::endl;
+
+}
+
+/**
+ * <typeindex>头文件中定义了std::type_index类
+ * 
+ * std::type_index是一个封装了type_info的类，提供了hash_code()和operator<()等操作
+ */
+void typeindex_example() {
+  std::type_index ti1(typeid(int));
+  std::type_index ti2(ti1);
+  std::type_index ti3(std::move(ti1));
+
+  std::size_t hash_code1 = ti2.hash_code();
+  std::cout << "ti2.hash_code(): " << hash_code1 << std::endl;
+  const char *type_name = ti2.name();
+  std::cout << "ti2.name(): " << type_name << std::endl;
+  std::cout << "ti2 == ti3: " << (ti2 == ti3) << std::endl;
+
+  /**
+   * template <class T> struct hash; hash有个模板特化typeindex
+   */
+  std::size_t hash_code2 = std::hash<std::type_index>()(ti2);
+  std::cout << "std::hash<std::type_index>()(ti2): " << hash_code2 << std::endl;
+}
+
+/**
+ * @brief 用于提供编译时常量
+ * 
+ * template <class T, T v>
+ * struct integral_constant {
+ *   static const T value = v;
+ *   typedef T value_type;
+ *   typedef integral_constant<T, v> type;
+ *   constexpr operator T() const noexcept { return v; }
+ *   constexpr T operator()() const noexcept { return v; }
+ * };
  */
 void integral_constant() {
-  // template <class T, T v>
-  // struct integral_constant {
-  // static constexpr T value = v;
-  // typedef T value_type;
-  // typedef integral_constant<T,v> type;
-  // constexpr operator T() const noexcept { return v; }
-  // constexpr T operator()() const noexcept { return v; }
-  // };
   std::integral_constant<int, 10> a;
   std::cout << "a.value: " << a.value << std::endl;
   if (std::is_same<int, decltype(a)::value_type>::value) {
@@ -22,8 +69,9 @@ void integral_constant() {
     std::cout << "a::value_type is not the same type as int" << std::endl;
   }
 
-  // typedef integral_constant<bool,true> true_type;
-
+  /**
+   * typedef integral_constant<bool,true> true_type;
+   */
   std::true_type t;
   std::cout << "t.value: " << t.value << std::endl;
   std::cout << "t(): " << t() << std::endl;
@@ -205,29 +253,25 @@ void is_destructible() {
 }
 
 int main() {
-  std::cout << "--------------------------------integral_constant--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------typeinfo_example--------------------------------" << std::endl;
+  typeinfo_example();
+  std::cout << "--------------------------------typeindex_example--------------------------------" << std::endl;
+  typeindex_example();
+  std::cout << "--------------------------------integral_constant--------------------------------" << std::endl;
   integral_constant();
-  std::cout << "--------------------------------is_same--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------is_same--------------------------------" << std::endl;
   is_same();
-  std::cout << "--------------------------------enable_if--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------enable_if--------------------------------" << std::endl;
   enable_if();
-  std::cout << "--------------------------------conditional--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------conditional--------------------------------" << std::endl;
   conditional();
-  std::cout << "--------------------------------is_reference--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------is_reference--------------------------------" << std::endl;
   is_reference();
-  std::cout << "--------------------------------remove_reference--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------remove_reference--------------------------------" << std::endl;
   remove_reference();
-  std::cout << "--------------------------------make_signed--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------make_signed--------------------------------" << std::endl;
   make_signed();
-  std::cout << "--------------------------------result_of--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------result_of--------------------------------" << std::endl;
   result_of();
   std::cout << "--------------------------------is_destructible--------------------------------" << std::endl;
   is_destructible();
