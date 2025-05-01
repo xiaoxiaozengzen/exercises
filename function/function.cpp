@@ -50,7 +50,7 @@ void function_test() {
 
 }
 
-void reference_test() {
+void reference_wrapper_test() {
   if(std::is_same<std::reference_wrapper<int>::type, int>::value) {
     std::cout << "std::reference_wrapper<int>::type is int" << std::endl;
   } else {
@@ -124,8 +124,8 @@ void cerf_test() {
 int main() {
   std::cout << "=================function_test=================" << std::endl;
   function_test();
-  std::cout << "=================reference_test=================" << std::endl;
-  reference_test();
+  std::cout << "=================reference_wrapper_test=================" << std::endl;
+  reference_wrapper_test();
   std::cout << "=================bind_test=================" << std::endl;
   bind_test();
   std::cout << "=================cerf_test=================" << std::endl;
