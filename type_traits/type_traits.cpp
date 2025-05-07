@@ -107,6 +107,9 @@ bool is_even(T i) {
   return !bool(i % 2);
 }
 
+// 3. std::enable_if_t: c++14引入
+// using enable_if_t = typename std::enable_if<Cond, T>::type;
+
 void enable_if() {
   // 1.template <bool Cond, class T = void> struct enable_if;
   // The type T is enabled as member type enable_if::type if Cond is true.Otherwise, enable_if::type
@@ -117,6 +120,12 @@ void enable_if() {
   std::cout << std::boolalpha;
   std::cout << "i is odd: " << is_odd(i) << std::endl;
   std::cout << "i is even: " << is_even(i) << std::endl;
+  std::enable_if_t<std::is_integral<short int>::value, short int> a = 10;
+  std::cout << "a: " << a << std::endl;
+#if 0
+  std::enable_if_t<std::is_integral<double>::value, int> b = 20;
+  std::cout << "b: " << b << std::endl;
+#endif
 }
 
 void conditional() {
