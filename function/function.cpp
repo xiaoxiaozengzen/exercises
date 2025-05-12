@@ -68,6 +68,8 @@ void function_test() {
   f2(3, 4); // fun_test: 1, 3, 4
   f3(3, 4); // fun_test: 2, 1, 2
   f4(3, 4); // fun_test: 3, 3, 2
+  std::function<void(int, int)> f5 = f2;
+  f5(5, 6); // fun_test: 4, 5, 6
 }
 
 /**
