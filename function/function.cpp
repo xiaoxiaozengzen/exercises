@@ -4,6 +4,19 @@
 #include <functional>
 
 /**
+ * std::function是一个可调用对象的封装，可以**存储**任何可调用对象，包括函数指针、lambda表达式、bind表达式等
+ */
+
+/**
+ * @brief 函数含有静态变量
+ */
+void fun_test(int a, int b) {
+  static int i = 0;
+  i++;
+  std::cout << "fun_test: " << i << ", " << a << ", " << b << std::endl;
+}
+
+/**
  * template <class Ret, class... Args> 
  * class function<Ret(Args...)>;
  */
@@ -48,8 +61,19 @@ void function_test() {
     std::cout << "f1 target_type is not int(int, int)" << std::endl;
   }
 
+  // 绑定含有静态变量的函数
+  std::function<void(int, int)> f2 = std::bind(fun_test, std::placeholders::_1, std::placeholders::_2);
+  std::function<void(int, int)> f3 = std::bind(fun_test, 1, 2);
+  std::function<void(int, int)> f4 = std::bind(fun_test, std::placeholders::_1, 2);
+  f2(3, 4); // fun_test: 1, 3, 4
+  f3(3, 4); // fun_test: 2, 1, 2
+  f4(3, 4); // fun_test: 3, 3, 2
 }
 
+/**
+ * template <class T> 
+ * class reference_wrapper;
+ */
 void reference_wrapper_test() {
   if(std::is_same<std::reference_wrapper<int>::type, int>::value) {
     std::cout << "std::reference_wrapper<int>::type is int" << std::endl;
@@ -67,10 +91,6 @@ void reference_wrapper_test() {
   std::cout << "r1: " << r1.get() << ", r2: " << r2.get() << ", r3: " << r3 << std::endl; // r1: 2, r2: 2, r3: 2
 }
 
-/**
- * template <class T> 
- * class reference_wrapper;
- */
 void fun1(int a, int b) {
     std::cout << "fun1: " << a << ", " << b << std::endl;
 }
