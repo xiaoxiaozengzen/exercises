@@ -16,6 +16,9 @@ void fun_test(int a, int b) {
   std::cout << "fun_test: " << i << ", " << a << ", " << b << std::endl;
 }
 
+int my_plus (int a, int b) {return a+b;}
+int my_minus (int a, int b) {return a-b;}
+
 /**
  * template <class Ret, class... Args> 
  * class function<Ret(Args...)>;
@@ -59,6 +62,30 @@ void function_test() {
     std::cout << "f1 target_type is int(int, int)" << std::endl;
   } else {
     std::cout << "f1 target_type is not int(int, int)" << std::endl;
+  }
+  std::cout << "f1 target_type: " << f1.target_type().name() << std::endl;
+  std::function<int(int, int)> fun2 = my_plus;
+  /**
+   * target_type.name == PFiiiE
+   * c++filt -t PFiiiE == int (*)(int, int)
+   */
+  std::cout << "fun2 target_type: " << fun2.target_type().name() << std::endl;
+  std::cout << (*fun2.target<int(*)(int,int)>())(100, 20) << std::endl; // 120
+#if 0
+  // 会报错，因为当前target的实际参数是std::_Bind<int(int, int)>
+  std::function<int(int, int)> fun3 = std::bind(my_plus, std::placeholders::_1, std::placeholders::_2);
+  std::cout << (*fun3.target<int(*)(int,int)>())(100, 20) << std::endl; // 120
+#endif
+  *fun2.target<int(*)(int,int)>() = my_minus;
+  int ret = fun2(100, 20);
+  std::cout << "ret: " << ret << std::endl; // fun2: 80
+  typedef int(*fun_ptr)(int, int);
+  fun_ptr* fun4_ptr = fun2.target<fun_ptr>();
+  if(fun4_ptr) {
+    std::cout << "fun4_ptr is valid" << std::endl;
+    std::cout << "fun4_ptr: " << (*fun4_ptr)(100, 20) << std::endl; // fun4_ptr: 80
+  } else {
+    std::cout << "fun4_ptr is not valid" << std::endl;
   }
 
   // 绑定含有静态变量的函数
