@@ -25,23 +25,46 @@
   int setvbuf(FILE *stream, char *buf, int mode, size_t size)
 
  */
+
+/**
+ * 注意，在linux下：
+ * 1.stdin:
+ *   如果输入来自终端，则是行缓冲的。
+ *   如果输入来自文件或者管道，则是全缓冲的。
+ * 2.stdout：
+ *  如果输出到终端，则是行缓冲的。
+ *  如果输出到文件或者管道，则是全缓冲的。
+ * 3.stderr：
+ * 	无论输出到哪里，都是无缓冲的。
+ */
  
 int main(int argc, char **args){
+	if(argc != 2){
+		std::cout << "Usage: " << args[0] << " <option>" << std::endl;
+		return 1;
+	}
+
+	std::string option = args[1];
+
 	printf("xxx-----01");
 	sleep(1);
  
 	printf(" xxx-----02\n");
     //fflush(NULL);
 	sleep(2);
- 
-	//1.No buffer
-	setvbuf(stdout, NULL, _IONBF, 0);
- 
-	//2.line buffer
-	// setvbuf(stdout, NULL, _IOLBF, 0);
- 
-	//3.full buffer
-	// setvbuf(stdout, NULL, _IOFBF, 0); 
+
+if(option == "1"){
+		// No buffer
+		setvbuf(stdout, NULL, _IONBF, 0);
+	} else if(option == "2"){
+		// Line buffer
+		setvbuf(stdout, NULL, _IOLBF, 0);
+	} else if(option == "3"){
+		// Full buffer
+		setvbuf(stdout, NULL, _IOFBF, 0);
+	} else {
+		setvbuf(stdout, NULL, _IONBF, 0);
+	}
 	
 	printf("xxx-----03 ");
 	sleep(2);
