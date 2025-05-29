@@ -12,5 +12,6 @@ add_executable(stringstream stringstream.cpp)
 
 add_executable(ios ios.cpp)
 target_link_libraries(ios pthread)
+target_compile_options(ios PRIVATE -O0)
 
 add_executable(locale locale.cpp)

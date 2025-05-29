@@ -29,6 +29,7 @@ void tie_test() {
         std::cout << "os != &std::cout" << std::endl;
     }
 
+    // 输入输出的buffer不是同一个
     std::streambuf* cout_rdbuf = std::cout.rdbuf();
     std::streambuf* cin_rdbuf = std::cin.rdbuf();
     if(cout_rdbuf == nullptr) {
@@ -43,6 +44,19 @@ void tie_test() {
     }
     printf("std::cout.rdbuf() = %p\n", cout_rdbuf);  // 0x7f1e420d8ea0
     printf("std::cin.rdbuf() = %p\n", cin_rdbuf);  // 0x7f1e420d8e40
+
+    printf("before tie null");
+
+    // 清除std::cin的tie()，由于std::cout.flush不会再被std::cin任何IO操作自动调用，则printf("789")不会被打印，因为printf跟std::cout公用一个缓冲区
+    std::cin.tie(0);
+
+    // ?这句话还是能打印出来，很诧异
+    printf("after tie null");
+
+    std::string str;
+    std::cin >> str;
+    std::cout << get_current_time() << "str = " << str << std::endl;
+    std::cin.tie(&std::cout);  // 重新绑定std::cin和std::cout
 }
 
 /**
@@ -70,6 +84,7 @@ void sync_test() {
     // 关闭同步后，C++的标准输入输出流将不再自动刷新C的标准输入输出流。
     // 这意味着在使用C++的标准输入输出流时，C的标准输入输出流可能不会立即刷新。
     // 这可以提高性能，特别是在需要频繁进行输入输出操作的情况下。
+    // 但是需要注意，这可能会导致C++和C的输入输出流之间的数据不一致。
     std::ios_base::sync_with_stdio(false);
 
     sync = std::ios_base::sync_with_stdio();
@@ -82,12 +97,11 @@ void sync_test() {
     std::cout << get_current_time() << "after: sync 4 " << std::endl;
     printf("%safter: sync 5", get_current_time().c_str());
 
-    // 清除std::cin的tie()，由于std::cout.flush不会再被std::cin任何IO操作自动调用，则printf("789")不会被打印，因为printf跟std::cout公用一个缓冲区
-    std::cin.tie(nullptr);
-    std::string str;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    printf("%safter: sync 6\n", get_current_time().c_str());
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    std::cin >> str;
-    std::cout << get_current_time() << "str = " << str << std::endl;
+    std::ios_base::sync_with_stdio(true);  // 恢复同步
 }
 
 int main() {
@@ -95,6 +109,7 @@ int main() {
     tie_test();
     std::cout << "======================sync_test=========================" << std::endl;
     sync_test();
+    std::cout << "======================end=========================" << std::endl;
 
     return 0;
 }
