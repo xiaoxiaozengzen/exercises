@@ -11,5 +11,6 @@ add_executable(stringbuf stringbuf.cpp)
 add_executable(stringstream stringstream.cpp)
 
 add_executable(ios ios.cpp)
+target_link_libraries(ios pthread)
 
 add_executable(locale locale.cpp)
