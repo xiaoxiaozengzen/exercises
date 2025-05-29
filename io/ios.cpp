@@ -45,17 +45,23 @@ void tie_test() {
     printf("std::cout.rdbuf() = %p\n", cout_rdbuf);  // 0x7f1e420d8ea0
     printf("std::cin.rdbuf() = %p\n", cin_rdbuf);  // 0x7f1e420d8e40
 
-    printf("before tie null");
+    printf("%sbefore tie null\n", get_current_time().c_str());
 
-    // 清除std::cin的tie()，由于std::cout.flush不会再被std::cin任何IO操作自动调用，则printf("789")不会被打印，因为printf跟std::cout公用一个缓冲区
+    // 清除std::cin的tie()，由于std::cout.flush不会再被std::cin任何IO操作自动调用，则输出不会被打印
     std::cin.tie(0);
+    os = std::cin.tie();
+    if(os == nullptr) {
+        std::cout << "os == nullptr" << std::endl;
+    } else {
+        std::cout << "os != nullptr" << std::endl;
+    }
 
     // ?这句话还是能打印出来，很诧异
-    printf("after tie null");
+    std::cout << get_current_time() << "after tie null";
 
     std::string str;
     std::cin >> str;
-    std::cout << get_current_time() << "str = " << str << std::endl;
+    std::cout << get_current_time() << "std::cin = " << str << std::endl;
     std::cin.tie(&std::cout);  // 重新绑定std::cin和std::cout
 }
 
