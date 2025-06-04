@@ -183,5 +183,46 @@ int main(int argc, char** argv) {
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
   std::cout << "CLOCK_THREAD_CPUTIME_ID: " << ts.tv_sec << "s " << ts.tv_nsec << "ns" << std::endl;
 
+  /**
+   * struct tm {
+   *  int tm_sec;   // 秒，范围为0-60
+   *  int tm_min;   // 分，范围为0-59
+   *  int tm_hour;  // 小时，范围为0-23
+   *  int tm_mday;  // 一月中的第几天，范围为1-31
+   *  int tm_mon;   // 月份，范围为0-11（0表示1月，11表示12月）
+   *  int tm_year;  // 年份，从1900年开始计算
+   *  int tm_wday;  // 一周中的第几天，范围为0-6（0表示星期日，6表示星期六）
+   *  int tm_yday;  // 一年中的第几天，范围为0-365（0表示1月1日，365表示12月31日）
+   *  int tm_isdst; // 夏令时标志，正值表示夏令时，0表示非夏令时，负值表示未知
+   * };
+   */
+  time_t now = time(NULL);
+  struct tm* local_time = localtime(&now);
+  std::cout << "local time: "
+            << local_time->tm_year + 1900 << "-"
+            << local_time->tm_mon + 1 << "-"
+            << local_time->tm_mday << " "
+            << local_time->tm_hour << ":"
+            << local_time->tm_min << ":"
+            << local_time->tm_sec << std::endl; 
+  struct tm* gmt_time = gmtime(&now);
+  std::cout << "gmt time: "
+            << gmt_time->tm_year + 1900 << "-"
+            << gmt_time->tm_mon + 1 << "-"
+            << gmt_time->tm_mday << " "
+            << gmt_time->tm_hour << ":"
+            << gmt_time->tm_min << ":"
+            << gmt_time->tm_sec << std::endl;
+  char* time_str = asctime(local_time);
+  std::cout << "asctime(local_time): " << time_str << std::endl;
+  char time_str_buf[100];
+  std::size_t size = strftime(time_str_buf, sizeof(time_str_buf), "%Y-%m-%d %H:%M:%S", local_time);
+  if (size > 0) {
+    std::cout << "size = " << size << std::endl;
+    std::cout << "strftime(local_time): " << time_str_buf << std::endl;
+  } else {
+    std::cerr << "strftime failed" << std::endl;
+  }
+
   return 0;
 }
