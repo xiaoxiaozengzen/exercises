@@ -1,53 +1,42 @@
 #include <iostream>
 
 /******************************1. 模板类的成员函数明确指出******************************************** */
-class A {
- public:
-  A() {
-    std::cout << "A()" << std::endl;
-  }
-  ~A() {
-    std::cout << "~A()" << std::endl;
-  }
+template<typename T>
+struct S{
+    template<typename U>
+    void foo() {
+        std::cout << "S::foo<U>() called with U = " << typeid(U).name() << std::endl;
+    }
 
-  template <typename T>
-  void print(T t) {
-    std::cout << "A: " << t << std::endl;
-  }
-
-  template <typename T>
-  T get(T t) {
-    return t;
-  }
+    static void static_foo() {
+        std::cout << "S::static_foo() called" << std::endl;
+    }
 };
+ 
+template<typename T>
+void bar(){
+    S<T> s;
 
-class B : public A {
-  public:
-   B() {
-     std::cout << "B()" << std::endl;
-   }
-   ~B() {
-     std::cout << "~B()" << std::endl;
-   }
+#if 0
+    /**
+     * @brief 错误：< 被解析为小于运算符
+     * 
+     * @note 这里的 < 被解析为小于运算符，而不是模板参数列表的开始。
+     * @note 因此编译器会报错：error: expected primary-expression before '<' token
+     */
+    s.foo<T>();
+#endif
+    s.template foo<T>();
+}
 
-   template <typename T>
-   static void print(T t) {
-     std::cout << "B: " << t << std::endl;
-   }
- };
-
+/**
+ * @brief 可有使用template关键字来明确指出模板，消除歧义
+ * 
+ * @note 模板定义中不是当前实例化的成员的待决名同样不被认为是模板名，除非使用消歧义关键词 template，或它已被设立为模板名
+ */
 void class_template_fun() {
-  A a;
-  a.print(1);
-  // 显示指定模板参数
-  a.template print<int>(2);
-  int ret = a.template get<int>(3);
-  std::cout << "ret: " << ret << std::endl;
-
-  B b;
-  // 调用B的静态模板函数
-  b.B::template print<int>(4);
-  b.template print<int>(5);
+  bar<int>();
+  S<double>::static_foo();
 }
 
 /******************************2. 模板类的虚函数******************************************** */

@@ -85,6 +85,39 @@ void default_test() {
   my_print_default_value<int, 20>(10);  // 调用默认值
 }
 
+/*****************************4. SFINAE ****************************************** */
+/**
+ * @brief SFINAE（Substitution Failure Is Not An Error）:代换失败不是错误
+ * 
+ * @note SFINAE是C++模板编程中的一个重要概念，在函数模板的重载决议中使用该规则：
+ * 当模板形参在替换成显式指定的类型或推导出的类型失败时，从重载集中丢弃这个特化，而非导致编译失败
+ * 注意：此特性被用于模板元编程中
+ * 
+ * @note 对模板的形参进行两次替换：
+ * 1.第一次，在模板类型推导前，对显示指定的模板实参进行代换
+ * 2.第二次，在模板类型推导后，对推导出的实参数和默认实参进行代换
+ */
+
+template<typename A>
+struct B { using type = typename A::type; }; // 待决名，C++20 之前必须使用 typename 消除歧义
+
+template<
+    class T,
+    class U = typename T::type,              // 如果 T 没有成员 type 那么就是 SFINAE 失败（代换失败）
+    class V = typename B<T>::type>           // 如果 T 没有成员 type 那么就是硬错误 不过标准保证这里不会发生硬错误，因为到 U 的默认模板实参中的代换会首先失败
+void foo(int) { std::puts("SFINAE T::type B<T>::type"); }
+
+template<typename T>
+void foo(double) { std::puts("SFINAE T"); }
+
+
+void template_sfinane_test() {
+    struct C { using type = int; };
+
+    foo<B<C>>(1);       // void foo(int)    输出: SFINAE T::type B<T>::type
+    foo<void>(1);       // void foo(double) 输出: SFINAE T
+}
+
 int main() {
   std::cout << "===================== array_test=====================" << std::endl;
   array_test();
@@ -92,5 +125,7 @@ int main() {
   spcecialization_test();
   std::cout << "===================== default_test=====================" << std::endl;
   default_test();
+  std::cout << "===================== template_sfinane_test=====================" << std::endl;
+  template_sfinane_test();
   return 0;
 }
