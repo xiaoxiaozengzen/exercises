@@ -128,26 +128,20 @@ void SpecializationClass<T, U>::print() {
 }
 
 /**
- * @note 模板类的成员函数不能偏特化，参考函数模板
- * @note 特化的成员函数必须类外实现 
- * 
- */
-
-/**
  * @brief 模板类的全特化
  */
 template <>
 class SpecializationClass<int, int> {
  public:
   SpecializationClass() {
-    std::cout << "SpecializationClass<int>()" << std::endl;
+    std::cout << "SpecializationClass<int, int>()" << std::endl;
   }
   ~SpecializationClass() {
-    std::cout << "~SpecializationClass<int>()" << std::endl;
+    std::cout << "~SpecializationClass<int, int>()" << std::endl;
   }
 
   void print(int t) {
-    std::cout << "SpecializationClass<int>::print : " << t << std::endl;
+    std::cout << "SpecializationClass<int, int>::print : " << t << std::endl;
   }
 };
 
@@ -169,12 +163,17 @@ class SpecializationClass<double, U> {
   void print() {
     std::cout << "SpecializationClass<double, U>::print" << std::endl;
   }
-  void my_print();
 };
 
-template <typename U>
-void SpecializationClass<double, U>::my_print() {
-  std::cout << "SpecializationClass<double, U>::my_print" << std::endl;
+
+/**
+ * @note 模板类的成员函数不能偏特化，参考函数模板
+ * @note 特化的成员函数必须类外实现 
+ * 
+ */
+template <>
+void SpecializationClass<double, int>::print() {
+  std::cout << "SpecializationClass<double, int>::print" << std::endl;
 }
 
 
@@ -183,12 +182,12 @@ void class_template_specialization() {
   std::cout << "SpecializationClass<char, double>::value: " << SpecializationClass<char, double>::value << std::endl;
   sc1.print();
 
+
   SpecializationClass<int, int> sc2;
   sc2.print(2);
 
   SpecializationClass<double, int> sc3;
   sc3.print();
-  sc3.my_print();
 }
 
 /****************************************4. 成员函数模板*********************************************** */
