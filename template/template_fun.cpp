@@ -116,6 +116,13 @@ void template_sfinane_test() {
 
     foo<B<C>>(1);       // void foo(int)    输出: SFINAE T::type B<T>::type
     foo<void>(1);       // void foo(double) 输出: SFINAE T
+#if 0
+    /**
+     * @note 编译报错：
+     * error: no matching function for call to ‘foo<void, int>(int)’
+     */
+    foo<void, int>(1);
+#endif
 }
 
 int main() {
