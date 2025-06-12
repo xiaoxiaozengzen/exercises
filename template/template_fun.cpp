@@ -125,6 +125,39 @@ void template_sfinane_test() {
 #endif
 }
 
+/*****************************5. 模板元编程 ****************************************** */
+/**
+ * @brief 模板元编程（Template Metaprogramming）是C++中一种使用模板进行编程的技术，可以在编译时进行计算和类型推导。
+ * 
+ * @note 把模板元编程当成一种新的编程语言，其基本的编程要包含：
+ * 1. 需要有基本的数据类型，例如：数字、布尔值等
+ * 2. 需要有某种方法，将基础类型组合成更复杂的类型，例如：struct、class等
+ * 3. 需要有某种方法，进行条件判断和循环，例如：if、for等
+ * 4. 需要输入和输出
+ */
+
+template <char... Chars>
+struct String {
+    static constexpr char value[] = {Chars..., '\0'}; // 字符串结尾需要一个空字符
+    void print() const {
+        std::cout << "size Chars: " << sizeof...(Chars) << std::endl;
+    }
+};
+
+template <typename First, typename... Rest>
+void my_print(const First& first, const Rest&... rest) {
+  std::cout << "size Rest: " << sizeof...(Rest) << std::endl;
+  printf(first, rest...);  // recursive call using pack expansion syntax
+}
+
+void template_metaprogramming_test() {
+    String<'H', 'e', 'l', 'l', 'o'> str;
+    std::cout << "String value: " << str.value << std::endl;
+    str.print();
+
+    my_print("Hello, %s! Number: %d \n", str.value, 42);  // 使用模板函数打印字符串和数字
+}
+
 int main() {
   std::cout << "===================== array_test=====================" << std::endl;
   array_test();
@@ -134,5 +167,7 @@ int main() {
   default_test();
   std::cout << "===================== template_sfinane_test=====================" << std::endl;
   template_sfinane_test();
+  std::cout << "===================== template_metaprogramming_test=====================" << std::endl;
+  template_metaprogramming_test();
   return 0;
 }
