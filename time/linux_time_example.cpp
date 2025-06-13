@@ -63,6 +63,7 @@ void tm_example() {
    * };
    */
   time_t now = time(NULL);
+  printf("time_t now: %ld s\n", now);
   struct tm* local_time = localtime(&now);
   std::cout << "local time: "
             << local_time->tm_year + 1900 << "-"
@@ -89,6 +90,31 @@ void tm_example() {
   } else {
     std::cerr << "strftime failed" << std::endl;
   }
+
+  /**
+   * struct tm* localtime_r(time_t* timer, struct tm* result);
+   */
+  time_t sec_count = 1749822480; // 2025-06-13 09:48:00 PM CST
+  struct tm param;
+  struct tm* result = localtime_r(&sec_count, &param);
+  if (result != NULL) {
+    std::cout << "localtime_r: "
+              << result->tm_year + 1900 << "-"
+              << result->tm_mon + 1 << "-"
+              << result->tm_mday << " "
+              << result->tm_hour << ":"
+              << result->tm_min << ":"
+              << result->tm_sec << std::endl;
+  } else {
+    std::cerr << "localtime_r failed" << std::endl;
+  }
+  std::cout << "localtime_r param: "
+            << param.tm_year + 1900 << "-"
+            << param.tm_mon + 1 << "-"
+            << param.tm_mday << " "
+            << param.tm_hour << ":"
+            << param.tm_min << ":"
+            << param.tm_sec << std::endl;
 }
 
 void time_example() {
