@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
 
   /**
    * clock_t clock(void);
-   * @brief 获取当前进程的processor time=CPU时间
+   * @brief 获取当前进程的CPU时间
    * @return 返回自程序开始执行到当前位置为止, 处理器走过的时钟打点数
    * 
    * CLOCKS_PER_SEC 是一个常量，一般为1000000，用于将clock()函数的返回值转换成秒数
