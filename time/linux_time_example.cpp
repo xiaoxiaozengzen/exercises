@@ -2,6 +2,12 @@
 #include <sys/times.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/syscall.h>
+#include <stdexcept>
+#include <signal.h>
+#include <cerrno>
+#include <string.h>
 
 #include <chrono>
 #include <iostream>
@@ -42,21 +48,50 @@
  * 进程运行时间=用户cpu时间+系统cpu时间
  */
 
-int main(int argc, char** argv) {
-  if (argc != 2) {
-    throw std::runtime_error("using like: ./bin <arg>");
-  }
-
-  std::string arg = argv[1];
-
-  if (arg == "1") {
-    for (int i = 0; i < 10000000; i++) {
-      getppid();
-    }
+void tm_example() {
+  /**
+   * struct tm {
+   *  int tm_sec;   // 秒，范围为0-60
+   *  int tm_min;   // 分，范围为0-59
+   *  int tm_hour;  // 小时，范围为0-23
+   *  int tm_mday;  // 一月中的第几天，范围为1-31
+   *  int tm_mon;   // 月份，范围为0-11（0表示1月，11表示12月）
+   *  int tm_year;  // 年份，从1900年开始计算
+   *  int tm_wday;  // 一周中的第几天，范围为0-6（0表示星期日，6表示星期六）
+   *  int tm_yday;  // 一年中的第几天，范围为0-365（0表示1月1日，365表示12月31日）
+   *  int tm_isdst; // 夏令时标志，正值表示夏令时，0表示非夏令时，负值表示未知
+   * };
+   */
+  time_t now = time(NULL);
+  struct tm* local_time = localtime(&now);
+  std::cout << "local time: "
+            << local_time->tm_year + 1900 << "-"
+            << local_time->tm_mon + 1 << "-"
+            << local_time->tm_mday << " "
+            << local_time->tm_hour << ":"
+            << local_time->tm_min << ":"
+            << local_time->tm_sec << std::endl; 
+  struct tm* gmt_time = gmtime(&now);
+  std::cout << "gmt time: "
+            << gmt_time->tm_year + 1900 << "-"
+            << gmt_time->tm_mon + 1 << "-"
+            << gmt_time->tm_mday << " "
+            << gmt_time->tm_hour << ":"
+            << gmt_time->tm_min << ":"
+            << gmt_time->tm_sec << std::endl;
+  char* time_str = asctime(local_time);
+  std::cout << "asctime(local_time): " << time_str << std::endl;
+  char time_str_buf[100];
+  std::size_t size = strftime(time_str_buf, sizeof(time_str_buf), "%Y-%m-%d %H:%M:%S", local_time);
+  if (size > 0) {
+    std::cout << "size = " << size << std::endl;
+    std::cout << "strftime(local_time): " << time_str_buf << std::endl;
   } else {
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cerr << "strftime failed" << std::endl;
   }
+}
 
+void time_example() {
   /**
    * time_t time (time_t* timer);
    * @brief 获取当前时间到1970年1月1日00:00:00的秒数
@@ -66,7 +101,9 @@ int main(int argc, char** argv) {
   time_t t;
   t = time(NULL);
   std::cout << "time(NULL): " << t << " s" << std::endl;
+}
 
+void gettimeoftoday_example() {
   /**
    * int gettimeofday( struct timeval *tv, struct timezone *tz );
    * @brief 获取对应时区的当前时间，从1970年1月1日00:00:00到现在的秒数和微秒数
@@ -90,7 +127,9 @@ int main(int argc, char** argv) {
     std::cout << "gettimeofday failed" << std::endl;
   }
   std::cout << "gettimeofday: " << tv.tv_sec << "s " << tv.tv_usec << "us" << std::endl;
+}
 
+void times_example() {
   /**
    * @brief 获取系统的 时钟滴答的频率
    */
@@ -129,7 +168,9 @@ int main(int argc, char** argv) {
   std::cout << "tms_cstime: " << tms_value.tms_cstime << " ticks"
             << ", s: " << double(tms_value.tms_cstime) / ticks << std::endl;
 
+}
 
+void colck_gettime_example() {
   /**
    * clock_t clock(void);
    * @brief 获取当前进程的CPU时间
@@ -183,46 +224,114 @@ int main(int argc, char** argv) {
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts);
   std::cout << "CLOCK_THREAD_CPUTIME_ID: " << ts.tv_sec << "s " << ts.tv_nsec << "ns" << std::endl;
 
+}
+
+/**
+ * @brief POSIX提供了一套定时器API，通过产生一个sigevent事件，来通知进程事件产生。
+
+ */
+void timer_gettime_example() {
   /**
-   * struct tm {
-   *  int tm_sec;   // 秒，范围为0-60
-   *  int tm_min;   // 分，范围为0-59
-   *  int tm_hour;  // 小时，范围为0-23
-   *  int tm_mday;  // 一月中的第几天，范围为1-31
-   *  int tm_mon;   // 月份，范围为0-11（0表示1月，11表示12月）
-   *  int tm_year;  // 年份，从1900年开始计算
-   *  int tm_wday;  // 一周中的第几天，范围为0-6（0表示星期日，6表示星期六）
-   *  int tm_yday;  // 一年中的第几天，范围为0-365（0表示1月1日，365表示12月31日）
-   *  int tm_isdst; // 夏令时标志，正值表示夏令时，0表示非夏令时，负值表示未知
+   * int timer_create(clockid_t clockid, struct sigevent *evp, timer_t *timerid);
+   * @brief 创建一个定时器
+   * @param clockid 时钟ID，指定要使用的时钟类型
+   * @param evp 指向sigevent结构体的指针，用于指定定时器到期时的事件处理方式
+   * @param timerid 指向timer_t类型的指针，用于存储创建的定时器ID
+   * @return 成功返回0，失败返回-1
+   */
+
+   /**
+    * union sigval {
+    *  int sival_int;        // 整数值
+    *  void *sival_ptr;       // 指针值
+    * };
+    * 
+    * struct sigevent {
+    *   int sigev_notify;        // 通知方式
+    *   int sigev_signo;        // 信号编号
+    *   union sigval sigev_value; // 信号值
+    *   void (*sigev_notify_function)(union sigval); // 通知函数
+    *   pthread_attr_t *sigev_notify_attributes; // 线程属性
+    * };
+    * 
+    * sigev_notify的值可以是以下之一:
+    *  1. SIGEV_NONE: 事件发生后，不发送信号
+    *  2. SIGEV_SIGNAL: 事件发生后，为进程产生sigev_signo中指定的信号。如果接受进程使用sigaction()函数注册了信号处理函数，则会将sigev_value传递给该函数。
+    *  3. SIGEV_THREAD: 事件发生后，创建一个新线程来执行sigev_notify_function函数，并将sigev_value作为参数传递给该函数。
+    * 
+    */
+  struct sigevent sev;
+  sev.sigev_notify = SIGEV_SIGNAL; // 使用信号通知
+  sev.sigev_signo = SIGUSR1; // 使用SIGUSR1信号通知
+  sev.sigev_value.sival_int = 0; // 信号值为0
+  sev.sigev_notify_function = nullptr; // 不使用通知函数
+  sev.sigev_notify_attributes = nullptr; // 不使用线程属性
+  timer_t timerid;
+  int ret = timer_create(CLOCK_REALTIME, &sev, &timerid);
+  if(ret != 0) {
+    std::cerr << "timer_create failed: " << strerror(errno) << std::endl;
+    return;
+  }
+
+  /**
+   * int timer_settime(timer_t timerid, int flags, const struct itimerspec *new_value, struct itimerspec *old_value);
+   * @brief 设置定时器的启动时间并启动定时器
+   * @param timerid 定时器ID
+   * @param flags 标志位，通常为0
+   * @param new_value 指向itimerspec结构体的指针，指定定时器的启动时间和间隔时间
+   * @param old_value 如果不为NULL，则存储定时器之前的设置
+   * @return 成功返回0，失败返回-1
+   * 
+   * struct itimerspec {
+   *   struct timespec it_interval; // 定时器的间隔时间
+   *   struct timespec it_value;    // 定时器的启动时间
    * };
    */
-  time_t now = time(NULL);
-  struct tm* local_time = localtime(&now);
-  std::cout << "local time: "
-            << local_time->tm_year + 1900 << "-"
-            << local_time->tm_mon + 1 << "-"
-            << local_time->tm_mday << " "
-            << local_time->tm_hour << ":"
-            << local_time->tm_min << ":"
-            << local_time->tm_sec << std::endl; 
-  struct tm* gmt_time = gmtime(&now);
-  std::cout << "gmt time: "
-            << gmt_time->tm_year + 1900 << "-"
-            << gmt_time->tm_mon + 1 << "-"
-            << gmt_time->tm_mday << " "
-            << gmt_time->tm_hour << ":"
-            << gmt_time->tm_min << ":"
-            << gmt_time->tm_sec << std::endl;
-  char* time_str = asctime(local_time);
-  std::cout << "asctime(local_time): " << time_str << std::endl;
-  char time_str_buf[100];
-  std::size_t size = strftime(time_str_buf, sizeof(time_str_buf), "%Y-%m-%d %H:%M:%S", local_time);
-  if (size > 0) {
-    std::cout << "size = " << size << std::endl;
-    std::cout << "strftime(local_time): " << time_str_buf << std::endl;
-  } else {
-    std::cerr << "strftime failed" << std::endl;
+  struct itimerspec its;
+  its.it_value.tv_sec = 5; // 定时器启动时间为5秒
+  its.it_value.tv_nsec = 0; // 定时器启动时间的纳秒部分为0
+  its.it_interval.tv_sec = 2; // 定时器间隔时间为2秒
+  its.it_interval.tv_nsec = 0; // 定时器间隔时间的纳秒部分为0
+  ret = timer_settime(timerid, 0, &its, NULL);
+  if(ret != 0) {
+    std::cerr << "timer_settime failed: " << strerror(errno) << std::endl;
+    return;
   }
+
+  while(true) {
+    // 等待定时器到期
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "Waiting for timer to expire..." << std::endl;
+  }
+}
+
+int main(int argc, char** argv) {
+  if (argc != 2) {
+    throw std::runtime_error("using like: ./bin <arg>");
+  }
+
+  std::string arg = argv[1];
+
+  if (arg == "1") {
+    for (int i = 0; i < 10000000; i++) {
+      getppid();
+    }
+  } else {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+
+  std::cout << "=============== tm_example ===============" << std::endl;
+  tm_example();
+  std::cout << "=============== time_example ===============" << std::endl;
+  time_example();
+  std::cout << "=============== gettimeofday_example ===============" << std::endl;
+  gettimeoftoday_example();
+  std::cout << "=============== times_example ===============" << std::endl;
+  times_example();
+  std::cout << "=============== clock_gettime_example ===============" << std::endl;
+  colck_gettime_example();
+  std::cout << "=============== timer_gettime_example ===============" << std::endl;
+  timer_gettime_example();
 
   return 0;
 }
