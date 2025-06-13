@@ -50,6 +50,33 @@ void function_test() {
     std::cout << "std::function<int(int, int)>::second_argument_type is int" << std::endl;
   }
 
+  // constructor
+  std::function<int(int, int)> f0; // 默认构造函数
+  std::function<int(int, int)> f0_1 = nullptr; // nullptr构造函数
+  if(f0_1) {
+    std::cout << "f0_1 is valid" << std::endl;
+  } else {
+    std::cout << "f0_1 is not valid" << std::endl;
+  }
+  std::function<int(int, int)> f0_2 = [](int, int) { return 0; }; // lambda表达式构造函数
+  if(f0_2) {
+    std::cout << "f0_2 is valid" << std::endl;
+  } else {
+    std::cout << "f0_2 is not valid" << std::endl;
+  }
+  std::function<int(int, int)> f0_3 = f0_2; // 拷贝构造函数
+  std::function<int(int, int)> f0_4 = std::move(f0_2); // 移动构造函数
+  if(f0_4) {
+    std::cout << "f0_4 is valid" << std::endl;
+  } else {
+    std::cout << "f0_4 is not valid" << std::endl;
+  }
+  if(f0_2) {
+    std::cout << "f0_2 is valid" << std::endl;
+  } else {
+    std::cout << "f0_2 is not valid" << std::endl;
+  }
+
   // member function
   std::function<int(int, int)> f1 = [](int a, int b) { return a + b; };
   std::cout << "f1: " << f1(1, 2) << std::endl; // f1: 3
@@ -88,7 +115,11 @@ void function_test() {
     std::cout << "fun4_ptr is not valid" << std::endl;
   }
 
-  // 绑定含有静态变量的函数
+  /**
+   * @brief 绑定带有静态变量的函数
+   * 
+   * @note std::function本质上是存储对应可调用对象地址，因此以下调用会导致静态变量i被多次调用
+   */
   std::function<void(int, int)> f2 = std::bind(fun_test, std::placeholders::_1, std::placeholders::_2);
   std::function<void(int, int)> f3 = std::bind(fun_test, 1, 2);
   std::function<void(int, int)> f4 = std::bind(fun_test, std::placeholders::_1, 2);
