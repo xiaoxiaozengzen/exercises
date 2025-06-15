@@ -10,8 +10,11 @@
 //           class Reference = T&         // iterator::reference          >
 // class iterator;
 
-// 注意：
-// 1.空迭代器不能被解引用，否则会报异常
+/**
+ * 注意：
+ * 1.空迭代器不能被解引用，否则会报异常
+ * 2.迭代器不一定支持所有的指针操作，需要根据迭代器的类型来判断。
+ */
 
 class MyIterator : public std::iterator<std::input_iterator_tag, int> {
   int* p;
@@ -48,6 +51,11 @@ void BasicIter() {
   std::cout << std::endl;
 }
 
+/**
+ * @brief: Input Iterators
+ * 
+ * @note 可以被解引用为右值
+ */
 void Input() {
   std::vector<int> nu;
   std::vector<int>::iterator it_nu = nu.begin();
@@ -58,6 +66,13 @@ void Input() {
   std::cout << "begin: " << *it << std::endl;
 }
 
+/**
+ * @brief: Output Iterators
+ * 
+ * @note 可以被解引用为左值
+ * 
+ * @note 迭代器的解引用操作符返回一个左值引用，因此可以修改容器中的元素。
+ */
 void Output() {
   std::vector<int> v = {1, 2, 3, 4, 5};
   std::vector<int>::iterator it = v.begin();
@@ -74,9 +89,10 @@ void Output() {
   std::cout << std::endl;
   std::cout << "it: " << *it << std::endl;
 
-  /** seg fault */
-  // std::vector<int>::iterator it2;
-  // std::cout << "it2: " << *it2 << std::endl;
+#if 0
+  std::vector<int>::iterator it2;
+  std::cout << "it2: " << *it2 << std::endl;
+#endif
 }
 
 void Forward() {
@@ -150,7 +166,7 @@ void Traits() {
   }
 }
 
-void Fun() {
+void iterator_operations() {
   std::vector<int> v = {1, 2, 3, 4, 5};
   int arr[] = {1, 2, 3, 4, 5};
   int(&arrd)[5] = arr;
@@ -174,7 +190,11 @@ void Fun() {
   std::cout << "next: " << *std::next(v.begin()) << std::endl;
   std::cout << "next 2: " << *std::next(v.begin(), 2) << std::endl;
 }
-
+/**
+ * @brief: Pre-Iterator
+ * 
+ * @note 自定义实现一个后插迭代器，类似于std::back_insert_iterator。
+ */
 template <class Container>
 class my_back_insert_iterator
     : public std::iterator<std::output_iterator_tag, void, void, void, void> {
@@ -196,40 +216,48 @@ class my_back_insert_iterator
   my_back_insert_iterator<Container>& operator++() { return *this; }
   my_back_insert_iterator<Container> operator++(int) { return *this; }
 };
+
 void PreIterator() {
   std::vector<int> v = {1, 2, 3, 4, 5};
-  std::cout << "v.end() -1: " << *(v.end() - 1) << ",size: " << v.size() << std::endl;
 
-  my_back_insert_iterator<std::vector<int>> my_iterator(v);
-  my_iterator = 6;
-  std::cout << "v.end() -1: " << *(v.end() - 1) << ",size: " << v.size() << std::endl;
+  /**
+   * template <class Container>
+   * class back_insert_iterator;
+   * 
+   * @note 一种特殊的output迭代器，它将元素插入到容器的末尾。container必须支持push_back()方法。
+   */
+  std::back_insert_iterator<std::vector<int>> back_it(v);
+  back_it = 6;  // 将6插入到v的末尾
+  back_it = 7;  // 将7插入到v的末尾
+
+  std::back_insert_iterator<std::vector<int>> my_back_it = std::back_inserter(v);
+  my_back_it = 8;  // 将8插入到v的末尾
+  my_back_it = 9;  // 将9插入到v的末尾
+
+  for(const auto& i : v) {
+    std::cout << i << " ";
+  }
+  std::cout << std::endl;
 }
 
 int main() {
-  std::cout << "--------------------------------BasicIter--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------BasicIter--------------------------------" << std::endl;
   BasicIter();
   std::cout << "--------------------------------Input--------------------------------" << std::endl;
   Input();
-  std::cout << "--------------------------------Output--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------Output--------------------------------" << std::endl;
   Output();
-  std::cout << "--------------------------------Forward--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------Forward--------------------------------" << std::endl;
   Forward();
-  std::cout << "--------------------------------Bidirectional--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------Bidirectional--------------------------------" << std::endl;
   Bidirectional();
-  std::cout << "--------------------------------Random--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------Random--------------------------------" << std::endl;
   Random();
-  std::cout << "--------------------------------Traits--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------Traits--------------------------------" << std::endl;
   Traits();
-  std::cout << "--------------------------------Fun--------------------------------" << std::endl;
-  Fun();
-  std::cout << "--------------------------------PreIterator--------------------------------"
-            << std::endl;
+  std::cout << "--------------------------------iterator_operations--------------------------------" << std::endl;
+  iterator_operations();
+  std::cout << "--------------------------------PreIterator--------------------------------" << std::endl;
   PreIterator();
   return 0;
 }
