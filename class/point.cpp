@@ -41,7 +41,21 @@ void second_point() {
   // address: 0x7fffffffdbf8
   std::string **poiterVar2 = &poiterVar1;
 
-  std::cout << "*poiterVar1: " << *poiterVar1 << std::endl;
+  std::cout << "str: " << str
+            << ", &str: " << &str
+            << std::endl;
+  std::cout << "str1: " << str1
+            << ", &str1: " << &str1
+            << std::endl;
+  std::cout << "poiterVar1: " << poiterVar1
+            << ", &poiterVar1: " << &poiterVar1
+            << ", *poiterVar1: " << *poiterVar1
+            << std::endl;
+  std::cout << "poiterVar2: " << poiterVar2
+            << ", &poiterVar2: " << &poiterVar2
+            << ", *poiterVar2: " << *poiterVar2
+            << ", **poiterVar2: " << **poiterVar2
+            << std::endl;
   *poiterVar2 = &str1;
   std::cout << "*poiterVar1: " << *poiterVar1 << std::endl;
   std::cout << "**poiterVar2: " << **poiterVar2 << std::endl;
@@ -86,14 +100,52 @@ void const_point() {
 void arr_point() {
   char *arr[4] = {"hello", "world", "shannxi", "xian"};
   std::cout << "sizeof(arr): " << sizeof(arr) << std::endl;
+  std::cout << "arr: " << arr << std::endl;
+  std::cout << "&arr: " << &arr << std::endl;
+  std::cout << "*arr: " << *arr << std::endl;
+  char* first = nullptr;
+  first = arr[0];
+  std::cout << "first: " << first << std::endl;
+  std::cout << "arr[0]: " << arr[0] << std::endl;
 
-  int arr1[4] = {1, 2, 3, 4};
-  int(*p)[4] = &arr1;
+  std::cout << "-------------------------" << std::endl;
+
+  int arr1[4] = {10, 11, 12, 13};
+  std::cout << "sizeof(arr1): " << sizeof(arr1) << std::endl;
   std::cout << "arr1: " << arr1 << std::endl;
-  std::cout << "arr1[0]: " << *arr1 << std::endl;
-  std::cout << "arr1[1]: " << *(arr1 + 1) << std::endl;
+  std::cout << "&arr1: " << &arr1 << std::endl;
+  std::cout << "&arr1[0]: " << &arr1[0] << std::endl;
+  std::cout << "arr1[0]: " << arr1[0] << std::endl;
+  std::cout << "*arr1: " << *arr1 << std::endl;
+  std::cout << "*(arr1 + 1): " << *(arr1 + 1) << std::endl;
+
+  std::cout << "-------------------------" << std::endl;
+  
+  /**
+   * @brief 一个数组指针
+   */
+  int(*p)[4] = &arr1;
+  std::cout << "sizeof(p): " << sizeof(p) << std::endl;
+  std::cout << "p: " << p << std::endl;
+  std::cout << "&p: " << &p << std::endl;
+  std::cout << "*p: " << *p << std::endl;
   std::cout << "*(*p): " << *(*p) << std::endl;
   std::cout << "*((*p)+1): " << *((*p) + 1) << std::endl;
+
+  std::cout << "-------------------------" << std::endl;
+
+  /**
+   * @brief 双指针
+   */
+  char** pp = arr;
+  std::cout << "sizeof(pp): " << sizeof(pp) << std::endl;
+  std::cout << "pp: " << pp << std::endl;
+  std::cout << "&pp: " << &pp << std::endl;
+  std::cout << "*pp: " << *pp << std::endl;
+  std::cout << "*(pp + 1): " << *(pp + 1) << std::endl;
+  std::cout << "*pp + 1: " << *pp + 1 << std::endl;
+  std::cout << "*(*pp): " << *(*pp) << std::endl;
+  std::cout << "*((*pp)+1): " << *((*pp) + 1) << std::endl;
 }
 
 int main() {
