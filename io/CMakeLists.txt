@@ -15,3 +15,5 @@ target_link_libraries(ios pthread)
 target_compile_options(ios PRIVATE -O0)
 
 add_executable(locale locale.cpp)
+
+add_executable(iomanip iomanip.cpp)
