@@ -15,6 +15,9 @@ typedef struct {
 } Point2;
 
 void Init() {
+  // 0.不赋值，成员的值未定义
+  Point p0;
+
   // 1.定义时赋值
   Point p1 = {"p1", 1, 2, 3};
 
@@ -42,9 +45,6 @@ void Init() {
 
   // 6.这是c风格的初始化，他会将第一个元素初始化，其他元素隐式初始化为0
   Point p6 = {"p6"};
-
-  // 0.不赋值
-  Point p0;
 
   std::cout << "p0: " << p0.name << ", " << p0.x << ", " << p0.y << ", " << p0.z << std::endl;
   std::cout << "p1: " << p1.name << ", " << p1.x << ", " << p1.y << ", " << p1.z << std::endl;
