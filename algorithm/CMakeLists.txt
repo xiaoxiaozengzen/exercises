@@ -8,3 +8,4 @@ add_executable(algorithm_upper_bound upper_bound.cpp)
 add_executable(algorithm_sort sort.cpp)
 
 add_executable(non_modifying_operation non_modifying_operation.cpp)
+add_executable(modifying_operation modifying_operation.cpp)
