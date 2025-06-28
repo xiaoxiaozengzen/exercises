@@ -288,6 +288,7 @@ void PureVirtualExample() {
 /*************************virtual never in construct********************************* */
 /**
  * 永远不要在构造函数中调用虚函数，因为在构造函数执行时，派生类的部分还没有被构造完成。
+ * 永远不要在析构函数中调用虚函数，因为在析构函数执行时，派生类的部分已经被析构了。
  * 
  * 派生类与基类的构造函数初始化时，虚函数表是不一样的，意味着构造函数中调用虚函数是当前类的虚函数，无法多态调用。
  * 即使允许多态调用，如果在基类中调用派生类的虚函数，由于派生类还未开始初始化，如果访问了还未初始化的数据，那就有很大的问题了。
@@ -296,14 +297,13 @@ class BaseClass {
 public:
     BaseClass():data_(std::make_shared<int>(42)) {
         std::cout << "BaseClass constructed" << std::endl;
-        Init(); // 调用Init函数
-        this->Init(); // 调用Init函数
-        th_ = std::thread([this](){
-            while(true) {
-                std::this_thread::sleep_for(std::chrono::seconds(1));
-                this->doSomething();
-                Init(); // 调用Init函数
-            }
+        Init();
+        thread_ = std::thread([&](){
+          while(count_ < 5) {
+            count_++;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            doSomething();
+          }
         });
     }
 
@@ -313,44 +313,70 @@ public:
 
     virtual ~BaseClass() { 
         std::cout << "BaseClass destructed" << std::endl;
-        th_.join(); // 等待线程结束
+        doSomethingElse();
+        thread_.join();  // 确保线程结束
     }
 
     virtual void doSomething() {
-        std::cout << "Doing something with ptr: " << *data_ << std::endl;
+        std::cout << "BaseClass Doing something with ptr: " << *data_ << std::endl;
+    }
+
+    virtual void doSomethingElse() {
+        std::cout << "BaseClass Doing something else with ptr: " << *data_ << std::endl;
     }
 
 public:
-    std::thread th_;
-    std::shared_ptr<int> data_{nullptr}; // 使用智能指针管理资源
+    std::thread thread_;
+    std::shared_ptr<int> data_{nullptr};
+    int count_{0};
 };
 
 class DerivedClass : public BaseClass {
 public:
-    DerivedClass():data_(std::make_shared<int>(10)) { 
+    DerivedClass():ptr_(std::make_shared<int>(10)) { 
         std::cout << "DerivedClass constructed" << std::endl; 
     }
-    ~DerivedClass() { std::cout << "DerivedClass destructed" << std::endl; }
+    ~DerivedClass() { 
+      std::cout << "DerivedClass destructed" << std::endl;
+#if 0
+    /**
+     * 程序奔溃：
+     *  - ptr释放资源
+     *  - 但此时线程还在，在子类未完全析构之前，线程还是会多态调用了子类的doSomething方法，
+     *  - 但此时子类的ptr已经被释放了，导致访问了已释放的内存。
+     *  - 这就是为什么永远不要在构造函数和析构函数
+     */
+    ptr_.reset();
+#endif
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 public:
     void doSomething() override{
-        std::cout << "DerivedClass doing something with data: " << *data_ << std::endl;
+        std::cout << "DerivedClass doing something with data: " << *ptr_ << std::endl;
     }
 
     void Init() override {
         std::cout << "DerivedClass Init called" << std::endl;
     }
 
+    void doSomethingElse() override {
+        std::cout << "DerivedClass doing something else with data: " << *ptr_ << std::endl;
+    }
+
     void Fun() {
         std::cout << "DerivedClass Fun called" << std::endl;
     }
 
-    std::shared_ptr<int> data_{nullptr};
+    std::shared_ptr<int> ptr_{nullptr};
 };
 
 void vittual_in_construct() {
+    std::cout << "-------------------vittual_in_construct------------------" << std::endl;
     std::shared_ptr<BaseClass> basePtr = std::make_shared<DerivedClass>();
     basePtr->doSomething();
-    std::this_thread::sleep_for(std::chrono::seconds(2)); // 等待
+    basePtr->doSomethingElse();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::cout << "-------------------vittual_in_construct end------------------" << std::endl;
 }
 
 int main() {
