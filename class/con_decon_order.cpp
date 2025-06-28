@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <memory>
+#include <functional>
 
 class A {
 public:
@@ -122,39 +123,65 @@ void drive_class_init() {
  *    - 如何在保证执行成员函数的时候，对象不会在另一个线程中被析构？
  *    - 在调用某个对象的成员函数之前，如何得知这个对象还活着？它的析构函数会不会刚执行到一半？
  */
-class ThreadSafeClass {
+class BaseClass {
 public:
-    ThreadSafeClass() {
-        std::cout << "ThreadSafeClass constructed" << std::endl;
+    BaseClass():data_(std::make_shared<int>(42)) {
+        std::cout << "BaseClass constructed" << std::endl;
+        Init(); // 调用Init函数
+        this->Init(); // 调用Init函数
+        th_ = std::thread([this](){
+            while(true) {
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+                this->doSomething();
+                Init(); // 调用Init函数
+            }
+        });
     }
-    ~ThreadSafeClass() {
-        std::cout << "ThreadSafeClass destructed" << std::endl;
-        th_1_.join();
-        th_2_.join();
+
+    virtual void Init() {
+        std::cout << "BaseClass Init called" << std::endl;
+    }
+
+    virtual ~BaseClass() { 
+        std::cout << "BaseClass destructed" << std::endl;
+        th_.join(); // 等待线程结束
+    }
+
+    virtual void doSomething() {
+        std::cout << "Doing something with ptr: " << *data_ << std::endl;
     }
 
 public:
-    std::thread th_1_;
-    std::thread th_2_;
-    std::shared_ptr<int> ptr_{nullptr};
+    std::thread th_;
+    std::shared_ptr<int> data_{nullptr}; // 使用智能指针管理资源
+};
+
+class DerivedClass : public BaseClass {
+public:
+    DerivedClass():data_(std::make_shared<int>(10)) { 
+        std::cout << "DerivedClass constructed" << std::endl; 
+    }
+    ~DerivedClass() { std::cout << "DerivedClass destructed" << std::endl; }
+public:
+    void doSomething() override{
+        std::cout << "DerivedClass doing something with data: " << *data_ << std::endl;
+    }
+
+    void Init() override {
+        std::cout << "DerivedClass Init called" << std::endl;
+    }
+
+    void Fun() {
+        std::cout << "DerivedClass Fun called" << std::endl;
+    }
+
+    std::shared_ptr<int> data_{nullptr};
 };
 
 void thread_safe_class_init() {
-    std::cout << "------------------thread safe class init------------------" << std::endl;
-    ThreadSafeClass tsc;
-    tsc.ptr_ = std::make_shared<int>(42); // 使用智能指针管理资源
-    tsc.th_1_ = std::thread([&]() {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        std::cout << "Thread 1 accessing shared pointer: " << *tsc.ptr_ << std::endl;
-#if 0
-        // 模拟资源释放，会导致其他线程访问已释放资源
-        tsc.ptr_.reset(); // 模拟资源释放
-#endif
-    });
-    tsc.th_2_ = std::thread([&]() {
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-        std::cout << "Thread 2 accessing shared pointer: " << *tsc.ptr_ << std::endl;
-    });
+    std::shared_ptr<BaseClass> basePtr = std::make_shared<DerivedClass>();
+    basePtr->doSomething();
+    std::this_thread::sleep_for(std::chrono::seconds(2)); // 等待
 }
 
 int main() {

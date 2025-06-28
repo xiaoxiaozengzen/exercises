@@ -3,6 +3,7 @@ project(class_example)
 
 add_executable(operator operator.cpp)
 add_executable(virtual_exe virtual.cpp)
+target_link_libraries(virtual_exe pthread)
 add_executable(this_exe this.cpp)
 add_executable(point point.cpp)
 add_executable(friend_class friend_class.cpp)
