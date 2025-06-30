@@ -38,6 +38,8 @@ void MemType() {
     if(std::is_same<std::string::const_pointer, const char*>::value) {
         std::cout << "string::const_pointer is const char*" << std::endl;
     }
+
+    std::cout << "string::npos: " << std::string::npos << std::endl;
 }
 
 void ConFun() {
@@ -249,6 +251,20 @@ void OperationsTest() {
     }
 }
 
+void NoMemberFunction() {
+    // 1.operator+
+    std::string s1("abc");
+    std::string s2("def");
+    const char* cstr = "ghi";
+    char ch = 'j';
+    std::string s3 = s1 + s2; // string + string
+    std::cout << "s3: " << s3 << std::endl;
+    std::string s4 = s1 + cstr; // string + const char*
+    std::cout << "s4: " << s4 << std::endl;
+    std::string s5 = s1 + ch; // string + char
+    std::cout << "s5: " << s5 << std::endl;
+}
+
 int main() {
     std::cout << "======================MemType======================" << std::endl;
     MemType();
@@ -264,5 +280,7 @@ int main() {
     ModifiersTest();
     std::cout << "======================OperationsTest======================" << std::endl;
     OperationsTest();
+    std::cout << "======================NoMemberFunction======================" << std::endl;
+    NoMemberFunction();
     return 0;
 }
