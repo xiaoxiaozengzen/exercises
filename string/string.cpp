@@ -1,10 +1,17 @@
-// template<
-//     class CharT,
-//     class Traits = std::char_traits<CharT>,
-//     class Allocator = std::allocator<CharT>
-// > class basic_string;
+/**
+ * template < class charT, 
+ *            class traits = char_traits<charT>,    // basic_string::traits_type
+ *            class Alloc = allocator<charT>        // basic_string::allocator_type
+ * > class basic_string;
+ */
 
-// using string=basic_string<char>
+/**
+ * 别名：
+ * 1. using std::string = std::basic_string<char>;
+ * 2. using std::wstring = std::basic_string<wchar_t>;
+ * 3. using std::u16string = std::basic_string<char16_t>;
+ * 4. using std::u32string = std::basic_string<char32_t>;
+ */
 
 #include <iostream>
 #include <string>
@@ -218,7 +225,7 @@ void OperationsTest() {
     std::cout << "arr: " << arr << ", ret: " << ret << std::endl;
     // 5.4. find
     std::string another_string("cdefg");
-    char* another_char = "def";
+    const char* another_char = "def";
     std::size_t pos1 = s1.find(another_string, 0);
     std::cout << "find another_string: " << another_string << ", pos1: " << pos1 << std::endl;
     std::size_t pos2 = s1.find(another_char, 0);

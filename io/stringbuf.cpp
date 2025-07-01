@@ -17,7 +17,7 @@ void Confun() {
   std::stringbuf sb2(std::move(sb1));
   // std::stringbuf sb3(std::stringbuf()); // delete
 
-  // explicit stringbuf (const string& str,                    ios_base::openmode which = ios_base::in | ios_base::out)
+  // explicit stringbuf (const string& str, ios_base::openmode which = ios_base::in | ios_base::out)
   std::string str = "hello world";
   std::stringbuf sb4(str);
 }
