@@ -1,10 +1,28 @@
-/**
- * Stream buffer to read from and write to files.
- */
-
 #include <iostream>
 #include <fstream>
 #include <type_traits>
+
+
+/**
+ * template <class charT, class traits = char_traits<charT> >  
+ * class basic_streambuf;
+ * 
+ * @note filebuf继承了basic_streambuf。
+ */
+void basic_stream_buf_example() {
+#if 0
+  // 无法直接构造basic_streambuf，因为它的构造函数是protected的
+  protected:basic_streambuf();
+#endif
+
+}
+
+/**
+ * emplate < class charT, class traits = char_traits<charT> >  
+ * class basic_filebuf;
+ * 
+ * typedef basic_filebuf<char> filebuf;
+ */
 
 void MemType(){
     if(std::is_same<std::filebuf::char_type, char>::value){
@@ -171,6 +189,8 @@ void PubMemFunInhertStreambuff() {
 }
 
 int main() {
+  std::cout << "======================basic_stream_buf_example======================" << std::endl;
+  basic_stream_buf_example();
   std::cout << "======================MemType======================" << std::endl;
   MemType();
   std::cout << "======================ConFun======================" << std::endl;
