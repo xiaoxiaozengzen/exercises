@@ -2,12 +2,34 @@
 #include <iterator>
 #include <typeinfo>
 #include <vector>
+#include <unordered_set>
+
+/**
+ * 迭代器需要支持的操作：
+ * 1.基本属性：
+ *   - 支持拷贝构造和赋值操作
+ *   - 支持自增操作：++a和a++，返回值为迭代器自身
+ * 2.输入/输出迭代器：
+ *   - 支持解引用操作： 
+ *     - 输入迭代器：返回右值，不能修改容器中的元素
+ *     - 输出迭代器：返回左值，可以修改容器中的元素
+ *   - 支持比较操作：a == b和a != b
+ * 3.前向迭代器：
+ *   - 拥有输入/输出迭代器的所有特性
+ * 4.双向迭代器：
+ *   - 支持自减操作：--a和a--
+ * 5.随机访问迭代器：
+ *   - 支持加法和减法操作：a + n和a - n
+ *   - 支持比较操作：a < b, a <= b, a > b, a >= b
+ *   - 支持复合操作符号：a += n, a -= n
+ *   - 支持下标操作：a[n]和a[-n]
+ */
 
 // template <class Category,              // iterator::iterator_category
 //           class T,                     // iterator::value_type
 //           class Distance = ptrdiff_t,  // iterator::difference_type
 //           class Pointer = T*,          // iterator::pointer
-//           class Reference = T&         // iterator::reference          >
+//           class Reference = T&         // iterator::reference>
 // class iterator;
 
 /**
