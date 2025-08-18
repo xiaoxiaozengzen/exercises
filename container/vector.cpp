@@ -234,10 +234,24 @@ void CapacityTest() {
   std::vector<A> arr(10);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
 
-  // Requests that the vector capacity be at least enough to contain n elements.
+  /**
+   * Requests that the vector capacity be at least enough to contain n elements.
+   * If n is greater than the current capacity, new storage is allocated,
+   * otherwise the call has no effect on the vector.
+   * @param n The minimum capacity to reserve.
+   * @note This function does not change the size of the vector.
+   */
   arr.reserve(3);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
 
+  /**
+   * Resizes the vector to contain n elements.
+   * If n is smaller than the current size, the vector is reduced to its first n elements.
+   * If n is greater than the current size, additional elements are appended and initialized with value.
+   * @param n The new size of the vector.
+   * @param value The value to initialize new elements with (default is T()).
+   * @note This function may cause a reallocation if the new size exceeds the current capacity.
+   */
   arr.resize(4);
   std::cout << "capacity: " << arr.capacity() << ", size: " << arr.size() << std::endl;
   for (const auto& val : arr) {

@@ -203,6 +203,103 @@ void replace_test() {
     std::cout << std::endl;
 }
 
+/**
+ * template <class ForwardIterator, class T>  
+ * void fill (ForwardIterator first, ForwardIterator last, const T& val);
+ * 
+ * @brief 将[first, last)范围内的所有元素都设置为val。
+ */
+void fill_test() {
+    std::vector<int> vec(10); // 创建一个包含10个元素的vector
+    std::cout << "Original vector: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+
+    // 使用fill将所有元素设置为42
+    std::fill(vec.begin(), vec.end(), 42);
+    
+    std::cout << "After fill: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+}
+
+/**
+ * template <class ForwardIterator, class Generator>  
+ * void generate (ForwardIterator first, ForwardIterator last, Generator gen);
+ * 
+ * @brief 使用生成器gen返回的结果，填充[first, last)范围内的元素。
+ */
+void generate_test() {
+    std::vector<int> vec(10); // 创建一个包含10个元素的vector
+    std::cout << "Original vector: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+
+    int n = 0;
+    // 使用generate将所有元素设置为0到9
+    std::generate(vec.begin(), vec.end(), [&n]() { return n++; });
+    
+    std::cout << "After generate: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+}
+
+/**
+ * template <class ForwardIterator, class T>  
+ * ForwardIterator remove (ForwardIterator first, ForwardIterator last, const T& val);
+ * 
+ * @brief 移除[first, last)范围内所有等于val的元素，返回一个迭代器，指向新的逻辑结尾。
+ * @note 注意，这个函数并不会真正删除元素，而是将不等于val的元素移动到前面，并返回新的逻辑结尾。
+ *       之前的元素仍然存在于容器中，但被认为是“已删除”的。如果需要真正删除这些元素，可以使用erase函数。
+ */
+void remove_test() {
+    std::vector<int> vec = {1, 2, 3, 2, 4, 2, 5};
+    std::cout << "Original vector: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+
+    // 移除所有的2
+    auto new_end = std::remove(vec.begin(), vec.end(), 2);
+    
+    std::cout << "After remove (logical end): ";
+    for (auto it = vec.begin(); it != new_end; ++it) std::cout << *it << " ";
+    std::cout << std::endl;
+
+    std::cout << "New logical end value: " << (*new_end) << std::endl;
+    std::cout << "New logical end+1 value: " << (*(new_end + 1)) << std::endl;
+    std::cout << "New logical end+2 value: " << (*(new_end + 2)) << std::endl;
+
+    // 实际上vec的大小并没有改变，仍然是7
+    std::cout << "Vector size after remove: " << vec.size() << std::endl;
+}
+
+/**
+ * template <class ForwardIterator>  
+ * ForwardIterator unique (ForwardIterator first, ForwardIterator last);
+ * 
+ * @brief 移除[first, last)范围内的连续重复元素，返回一个迭代器，指向新的逻辑结尾。
+ */
+void unique_test() {
+    std::vector<int> vec = {6, 6, 1, 3, 2, 2, 3, 6, 4, 4, 5};
+    std::cout << "Original vector: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+
+    // 移除连续重复元素
+    auto new_end = std::unique(vec.begin(), vec.end());
+    
+    std::cout << "After unique (logical end): ";
+    for (auto it = vec.begin(); it != new_end; ++it) std::cout << *it << " ";
+    std::cout << std::endl;
+
+    std::cout << "New logical end value: " << (*new_end) << std::endl;
+    std::cout << "New logical end+1 value: " << (*(new_end + 1)) << std::endl;
+    std::cout << "New logical end+2 value: " << (*(new_end + 2)) << std::endl;
+
+    // 实际上vec的大小并没有改变
+    std::cout << "Vector size after unique: " << vec.size() << std::endl;
+}
+
 int main() {
     std::cout << "====================== copy_test ======================" << std::endl;
     copy_test();
@@ -220,6 +317,14 @@ int main() {
     transform_test();
     std::cout << "====================== replace_test ======================" << std::endl;
     replace_test();
+    std::cout << "====================== fill_test ======================" << std::endl;
+    fill_test();
+    std::cout << "====================== generate_test ======================" << std::endl;
+    generate_test();
+    std::cout << "====================== remove_test ======================" << std::endl;
+    remove_test();
+    std::cout << "====================== unique_test ======================" << std::endl;
+    unique_test();
 
     return 0;
 }
