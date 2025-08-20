@@ -1,12 +1,25 @@
-// template <class ForwardIterator, class T> 
-// std::pair<ForwardIterator,ForwardIterator> equal_range (ForwardIterator first, ForwardIterator last, const T& val);
-
-// template <class ForwardIterator, class T, class Compare>
-// std::pair<ForwardIterator,ForwardIterator> equal_range (ForwardIterator first, ForwardIterator last, const T& val, Compare comp);
-
 #include <iostream>
 #include <vector>
 #include <algorithm>
+
+/**
+ * template <class ForwardIterator, class T>
+ * std::pair<ForwardIterator, ForwardIterator> equal_range (ForwardIterator first, ForwardIterator last, const T& val);
+ * 
+ * @brief 在已排序的范围内查找与给定值相等的元素范围
+ * 
+ * @param first 范围的起始迭代器
+ * @param last 范围的结束迭代器
+ * @param val 要查找的值
+ * @return
+ *    如果val不等于范围内的任何元素，则子范围的长度是0，且两个迭代器都指向第一个大于val的元素。
+ *    如果val等于范围内的某些元素，则第一个迭代器执行lower_bound返回的元素，第二个迭代器执行upper_bound返回的元素。
+ */
+
+/**
+ * template <class ForwardIterator, class T, class Compare>
+ * std::pair<ForwardIterator, ForwardIterator> equal_range (ForwardIterator first, ForwardIterator last, const T& val, Compare comp);
+ */
 
 bool mygreater (int i,int j) { return (i>j); }
 

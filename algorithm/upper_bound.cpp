@@ -1,21 +1,23 @@
-// template <class ForwardIterator, class T>
-// ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const T& val);
+#include <iostream>
+#include <algorithm>
+#include <vector>
 
-// template <class ForwardIterator, class T, class Compare>
-// ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const T& val, Compare comp);
+/**
+ * template <class ForwardIterator, class T>
+ * ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const T& val);
+ * 
+ * template <class ForwardIterator, class T, class Compare>
+ * ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const T& val, Compare comp);
+ * 
+ * @brief 在[first, last)范围内查找第一个大于val的元素位置，并返回指向该元素的迭代器。
+ */
 
 /**
  * Compare comp
  * @note 接收两个参数，返回bool值
- * @param first 第一个参数是const T& val中的val
- * @param second 被迭代器指向的元素
- * @return true: first < second
- * @return false: first >= second
+ * @param first 容器的迭代器指向的元素
+ * @param second 用来机型查找的元素，即val
  */
-
-#include <iostream>
-#include <algorithm>
-#include <vector>
 
 void normal() {
   int myints[] = {10,20,30,30,20,10,10,20};
@@ -72,6 +74,7 @@ void abnormal() {
 
 struct MyLess {
   bool operator() (const int& first, const int& second) {
+    std::cout << "first: " << first << ", second: " << second << std::endl;
     return (first < second);
   }
 };

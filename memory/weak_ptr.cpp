@@ -2,8 +2,15 @@
 #include <iostream>
 #include <memory>
 #include <thread>
-// template <class T> class weak_ptr;
 
+/**
+ * weak_ptr
+ * 1. weak_ptr是一个智能指针，但它不拥有所指向的对象，因此不会影响引用计数。
+ * 2. weak_ptr主要用于解决shared_ptr的循环引用问题。
+ * 3. weak_ptr可以通过lock()方法获取一个shared_ptr，如果所指向的对象已经被销毁，lock()会返回一个空的shared_ptr。
+ * 4. weak_ptr提供了expired()方法来检查所指向的对象是否已经被销毁。
+ * 5. weak_ptr还提供了use_count()方法来获取所指向的对象的引用计数。
+ */
 class A {
  public:
   A() { std::cout << "construct" << std::endl; }
@@ -72,8 +79,14 @@ void MemFun() {
   std::shared_ptr<A> sp2(sp1);
   std::weak_ptr<A> wp1 = sp1;
   std::weak_ptr<A> wp2;
-  std::cout << "wp1.use_count(): " << wp1.use_count() << ", wp2.use_count: " << wp2.use_count()
-            << std::endl;
+  std::cout << "wp1.use_count(): " << wp1.use_count() << ", wp2.use_count: " << wp2.use_count() << std::endl;
+
+  /**
+   * 判断当前的weak_ptr是否已经过期
+   * expired() 返回 true 表示 weak_ptr 指向的对象已经被销毁，false 表示对象仍然存在。
+   * 注意：expired() 方法不会增加引用计数，因此不会影响对象的生命周期。
+   * 等价于：use_count() == 0
+   */
   bool wp1_expired = wp1.expired();
   std::cout << "wp1.expired(): " << wp1_expired << std::endl;
   bool wp2_expired = wp2.expired();
@@ -82,13 +95,16 @@ void MemFun() {
   wp1.swap(wp2);
 
   long int use_count = wp1.use_count();
-  std::cout << "wp1.use_count(): " << use_count << ", wp2.use_count: " << wp2.use_count()
-            << std::endl;
+  std::cout << "wp1.use_count(): " << use_count << ", wp2.use_count: " << wp2.use_count() << std::endl;
 
   wp2.reset();
-  std::cout << "wp2.use_count: " << wp2.use_count() << ", wp2.expired(): " << wp2.expired()
-            << std::endl;
+  std::cout << "wp2.use_count: " << wp2.use_count() << ", wp2.expired(): " << wp2.expired() << std::endl;
 
+  /**
+   * lock() 方法尝试获取一个 shared_ptr，如果 weak_ptr 指向的对象已经被销毁，则返回一个空的 shared_ptr。
+   * 如果对象仍然存在，则返回一个指向该对象的 shared_ptr。
+   * 注意：lock() 方法会增加引用计数，因此如果成功获取到 shared_ptr，则会延长对象的生命周期。
+   */
   std::shared_ptr<A> sp3 = wp1.lock();
   if (sp3 == nullptr) {
     std::cout << "wp1 is expired" << std::endl;
@@ -97,14 +113,14 @@ void MemFun() {
   }
 
   wp2 = sp1;
-  std::cout << "wp2.use_count: " << wp2.use_count() << ", wp2.expired(): " << wp2.expired()
-            << std::endl;
+  std::cout << "wp2.use_count: " << wp2.use_count() << ", wp2.expired(): " << wp2.expired() << std::endl;
   std::shared_ptr<A> sp4 = wp2.lock();
   if (sp4 == nullptr) {
     std::cout << "wp2 is expired" << std::endl;
   } else {
     std::cout << "wp2 is not expired, " << *sp4 << std::endl;
   }
+  std::cout << "wp2.use_count: " << wp2.use_count() << ", wp2.expired(): " << wp2.expired() << std::endl;
 
   std::weak_ptr<A> wp3 = sp1;
   std::cout << "wp2 has same ownership with wp3: "

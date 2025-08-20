@@ -1,13 +1,18 @@
-// template <class ForwardIterator, class T>
-// bool binary_search (ForwardIterator first,
-//                     ForwardIterator last,
-//                     const T& val);
+/**
+ * template <class ForwardIterator, class T>
+ * bool binary_search (ForwardIterator first,
+ *                     ForwardIterator last,
+ *                     const T& val);
+ */
 
-// template <class ForwardIterator, class T, class Compare>
-// bool binary_search (ForwardIterator first,
-//                     ForwardIterator last,
-//                     const T& val,
-//                     Compare comp);
+/**
+ * template <class ForwardIterator, class T, class Compare>
+ * bool binary_search (ForwardIterator first,
+ *                     ForwardIterator last,
+ *                     const T& val,
+ *                     Compare comp);
+ */
+
 
 /**
  * 对于第一个版本：使用operator<进行比较，且当(!(a<b) && !(b<a))时，认为a==b

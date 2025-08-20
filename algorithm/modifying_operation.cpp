@@ -3,6 +3,7 @@
 #include <vector>
 #include <iterator>
 #include <memory>
+#include <random>
 
 #include <algorithm>
 
@@ -300,6 +301,68 @@ void unique_test() {
     std::cout << "Vector size after unique: " << vec.size() << std::endl;
 }
 
+/**
+ * template <class BidirectionalIterator>  
+ * void reverse (BidirectionalIterator first, BidirectionalIterator last);
+ * 
+ * @brief 反转[first, last)范围内的元素顺序。
+ */
+void reverse_test() {
+    std::vector<int> vec = {1, 2, 3, 4, 5};
+    std::cout << "Original vector: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+
+    // 反转元素顺序
+    std::reverse(vec.begin(), vec.end());
+    
+    std::cout << "After reverse: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+}
+
+/**
+ * template <class ForwardIterator>  
+ * void rotate (ForwardIterator first, ForwardIterator middle, ForwardIterator last);
+ * 
+ * @brief 将[first, last)范围内的元素进行旋转，使得middle位置的元素成为新的起始位置。
+ * @note 即按照middle为界限，将middle之前的元素移动到末尾(这部分数据的相对位置保持不变)，middle之后的元素移动到开头(这部分数据的相对位置保持不变)。
+ */
+void rotate_test() {
+    std::vector<int> vec = {1, 3, 5, 7, 9, 2, 4, 6, 8, 0};
+    std::cout << "Original vector: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+
+    // 旋转，使得3成为新的起始位置
+    std::rotate(vec.begin(), vec.begin() + 3, vec.end());
+    
+    std::cout << "After rotate: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+}
+
+/**
+ * template <class RandomAccessIterator, class URNG>  
+ * void shuffle (RandomAccessIterator first, RandomAccessIterator last, URNG&& g);
+ * 
+ * @brief 随机打乱[first, last)范围内的元素顺序，使用g作为随机数生成器。
+ */
+void shuffle_test() {
+    std::vector<int> vec = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::cout << "Original vector: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+
+    // 使用std::default_random_engine作为随机数生成器
+    std::default_random_engine rng;
+    std::shuffle(vec.begin(), vec.end(), rng);
+    
+    std::cout << "After shuffle: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+}
+
 int main() {
     std::cout << "====================== copy_test ======================" << std::endl;
     copy_test();
@@ -325,6 +388,12 @@ int main() {
     remove_test();
     std::cout << "====================== unique_test ======================" << std::endl;
     unique_test();
+    std::cout << "====================== reverse_test ======================" << std::endl;
+    reverse_test();
+    std::cout << "====================== rotate_test ======================" << std::endl;
+    rotate_test();
+    std::cout << "====================== shuffle_test ======================" << std::endl;
+    shuffle_test();
 
     return 0;
 }

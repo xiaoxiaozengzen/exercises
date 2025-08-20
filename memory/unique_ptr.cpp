@@ -1,10 +1,24 @@
 #include <iostream>
 #include <memory>
 
-// non-specialized
-// template <class T, class D = default_delete<T>> class unique_ptr;
-// array specialization
-// template <class T, class D> class unique_ptr<T[],D>;
+/**
+ * // non-specialized
+ * template <class T, class D = default_delete<T>> class unique_ptr;
+ * 
+ * // array specialization
+ * template <class T, class D> class unique_ptr<T[],D>;
+ */
+
+/**
+ * 一个unique_ptr对象包含两个组件：
+ * stored pointer：指向其管理的对象。
+ *                 调用构造函数的时候，会设置stored pointer。
+ *                 可以通过assignement或者reset()来修改stored pointer。
+ *                 可以通过get和release来访问stored pointer。
+ * stored deleter：一个可调用对象，只有一个参数，参数类型跟stored pointer一致。
+ *                 当unique_ptr被销毁时调用，用于释放stored pointer指向的对象。   
+ */
+
 
 class A {
  public:
@@ -53,6 +67,22 @@ class A {
   int a = 0;
 };
 
+/**
+ * @brief Deleter test function
+ * 
+ * template <class T> class default_delete;
+ * template <class T> class default_delete<T[]>;
+ */
+void deleter_test() {
+  // 构造函数
+  std::default_delete<A> d1; // 默认删除器
+
+  // operator() 重载
+  A *ptr = new A(10);
+  d1(ptr); // 调用删除器，释放ptr指向的内存
+
+}
+
 void MemType() {
   if (std::is_same<std::unique_ptr<int>::element_type, int>::value) {
     std::cout << "unique_ptr<int>::element_type is int" << std::endl;
@@ -60,9 +90,6 @@ void MemType() {
   if (std::is_same<std::unique_ptr<int>::deleter_type, std::default_delete<int>>::value) {
     std::cout << "unique_ptr<int>::deleter_type is std::default_delete<int>" << std::endl;
   }
-  std::default_delete<int> d;
-  int* p = new int(1);
-  d(p);
   if (std::is_same<std::unique_ptr<int>::pointer, int*>::value) {
     std::cout << "unique_ptr<int>::pointer is int*" << std::endl;
   }
@@ -116,17 +143,24 @@ void ConFun() {
 void MemFun() {
   std::unique_ptr<A> a(new A(1));
   std::unique_ptr<A, DelFun> b(new A(2), DelFun());
+  std::unique_ptr<A> c;
 
+  std::cout << "---- get" << std::endl;
   std::unique_ptr<A>::pointer p = a.get();
   std::cout << "p: " << *p << ", *a: " << *a << std::endl;
 
+  std::cout << "---- get_deleter" << std::endl;
   std::unique_ptr<A, DelFun>::deleter_type d = b.get_deleter();
   A* q = new A(3);
   d(q);
 
+  std::cout << "---- operator bool" << std::endl;
   bool no_null{a};
   std::cout << "no_null: " << no_null << std::endl;
+  bool is_null{c};
+  std::cout << "is_null: " << is_null << std::endl;
 
+  std::cout << "---- release" << std::endl;
   std::unique_ptr<A>::pointer r = a.release();
   if (a == nullptr) {
     std::cout << "a is nullptr" << std::endl;
@@ -136,6 +170,7 @@ void MemFun() {
     std::cout << "r: " << *r << ", *a: " << *a << std::endl;
   }
 
+  std::cout << "---- reset" << std::endl;
   std::unique_ptr<A> s(new A(4));
   s.reset();
   if (s == nullptr) {
@@ -146,6 +181,7 @@ void MemFun() {
   s.reset(new A(5));
   std::cout << "*s: " << *s << std::endl;
 
+  std::cout << "---- swap" << std::endl;
   s.swap(a);
   if (s == nullptr) {
     std::cout << "s is nullptr" << std::endl;
@@ -157,16 +193,14 @@ void MemFun() {
 void NoMemFun() { std::unique_ptr<A> a = std::make_unique<A>(1); }
 
 int main() {
-  std::cout << "================================ MemType ================================"
-            << std::endl;
+  std::cout << "================================ Deleter ================================" << std::endl;
+  deleter_test();
+  std::cout << "================================ MemType ================================" << std::endl;
   MemType();
-  std::cout << "================================ ConFun ================================"
-            << std::endl;
+  std::cout << "================================ ConFun ================================" << std::endl;
   ConFun();
-  std::cout << "================================ MemFun ================================"
-            << std::endl;
+  std::cout << "================================ MemFun ================================" << std::endl;
   MemFun();
-  std::cout << "================================ NoMemFun ================================"
-            << std::endl;
+  std::cout << "================================ NoMemFun ================================" << std::endl;
   NoMemFun();
 }
