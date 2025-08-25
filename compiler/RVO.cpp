@@ -12,6 +12,14 @@
 //     5.通过显式调用 std::move 返回函数结果往往是错误的. 即使如此,
 //     这试图使对象显式调用移动构造函数, 导致返回值优化被抑制.
 
+/**
+ * RVO：返回值优化(Return Value Optimization)
+ *    - 是编译器的一种抑制拷贝的优化机制，避免代码发生不必要的拷贝
+ *    - 一般分为RVO和NRVO(不具名返回值优化)，其中NRVO是RVO的一种特殊情况
+ *      - NRVO：发生在返回一个无名对象或者临时对象，一般是Return语句中直接创建并返回的对象
+ *      - RVO：一般发生在返回一个已经创建的对象
+ */
+
 class A {
  public:
   A() { std::cout << "construct" << std::endl; }
@@ -61,25 +69,43 @@ class A {
   std::string a = "";
 };
 
-A getA() {
+A rvo_test() {
   std::cout << "getA start" << std::endl;
   A a("getA");
   std::cout << "getA end" << std::endl;
   return a;
 }
 
-A getB() {
+A nrvo_test() {
   std::cout << "getA start" << std::endl;
   return A("getB");
 }
 
-int main() {
-  A a = getA();
-  std::cout << "===============================" << std::endl;
-  A b = getB();
-  std::cout << "===============================" << std::endl;
+void move_assign_return() {
   A c = A("c");
-  c = getA();
-  std::cout << "===============================" << std::endl;
+  c = rvo_test();
+}
+
+int main() {
+  std::cout << "================ rvo_test ================" << std::endl;
+  /**
+   * 关闭返回值优化后，日志打印如下：
+   * getA start
+   * another construct
+   * getA end
+   * 
+   * move construct // 第一次移动构造：a作为局部变量被移动到一个临时变量
+   * deconstruct
+   * move construct // 第二次移动构造：临时变量被移动到a_val
+   * deconstruct
+   * deconstruct
+   */
+  A a_val = rvo_test();
+  std::cout << "================ nrvo_test ================" << std::endl;
+  A b = nrvo_test();
+  std::cout << "================ move_assign_return ================" << std::endl;
+  move_assign_return();
+  std::cout << "================ end ================" << std::endl;
+
   return 0;
 }
