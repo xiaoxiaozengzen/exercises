@@ -5,6 +5,172 @@
 #include <string>
 #include <sstream>
 
+/**
+ * 输入输出库，使用stream的方式，在字符序列(例如文件、字符串)上进行输入输出操作
+ */
+
+
+/**
+ * @brief ios_base类是所有I/O流类的基类，提供大部分与流状态和格式化相关的功能，无关具体的字符类型。
+ * 
+ * @note 该类不处理具体的输入输出操作，而是提供了一组通用的接口和成员变量，
+ * @note 以便派生类可以继承和扩展这些功能。
+ * @note 构造函数是protected的，不能直接创建对象
+ */
+void ios_base_example() {
+#if 0
+    // ios_base的构造函数是protected的，不能直接创建对象
+    protected: ios_base();
+    ios_base (const ios_base&) = delete;
+#endif
+
+    /**
+     * 成员函数
+     * 1. formatting
+     *   - flags
+     *   - setf
+     *   - unsetf
+     *   - precision
+     *   - width
+     * 2. locale
+     *   - imbue
+     *   - getloc
+     * 3.others
+     *   - void register_callback (event_callback fn, int index);
+     *      * 注册一个fn函数，改函数会在stream event发生的时候自动调用，并且使用之前传入的index
+     *   - sync_with_stdio
+     */
+
+     /**
+      * 成员类型：
+      * 1. event： 
+      *   - enum class event {
+      *         copyfmt_event,
+      *         erase_event,
+      *         imbue_event
+      *     }
+      * 2. event_callback: 
+      *   - typedef void (*event_callback) (event ev, ios_base& obj, int index);
+      * 3. fmtflags:
+      *   - 一个bitmap类型来表示流的格式化标志
+      *     - adjustfield：调整域的标志位掩码
+      *       * left：左对齐
+      *       * right：右对齐
+      *       * internal：符号位在最左边，数字右对齐
+      *     - 等其他流格式
+      * 4. iostate: 一个bitmap类型来表示当前流的状态
+      *   - eofbit：已经到达流的末尾
+      *   - failbit：上一次的input操作失败
+      *   - badbit：由于之前的输入或者输出流操作失败导致位于流的错误状态
+      *   - goodbit：流的状态正常
+      * 5. openmode: 一个bitmap类型来表示流的打开模式
+      *   - app：追加模式
+      *   - ate：打开流时，定位到流的末尾
+      *   - binary：二进制模式
+      *   - in：输入模式
+      *   - out：输出模式
+      *   - trunc：截断模式
+      * 6. seekdir: 一个枚举类型来表示流的定位方式
+      *   - beg：从流的开头开始定位
+      *   - cur：从流的当前位置开始定位
+      *   - end：从流的末尾开始定位
+      * 
+      * 成员类：
+      * 1. init: class init；
+      *    - 内部类，一般给标准库的实现人员使用。
+      *    - 保证std::cin, std::cout, std::cerr, std::clog在main函数开始前被正确初始化
+      * 2. failure： class failure;
+      *   - 该类继承自system_error，用于表示I/O流操作中的错误
+      *   - 该类含有code()成员函数，返回一个std::error_code对象，表示具体的错误类型
+      *   - 该类含有what()成员函数，返回一个C风格的字符串，描述错误信息
+      */
+}
+
+/**
+ * template <class charT, class traits = char_traits<charT> >  
+ * class basic_ios;
+ * 
+ * @brief 该类继承了ios_base。该类跟ios_base一起实现了无关输出/输出类型的流的操作。
+ * 
+ * @note 区别是：ios_base实现了无关字符类型的流的操作，而basic_ios则实现了与具体字符类型相关的流的操作。
+ * @note 其中 using ios = basic_ios<char>;
+ */
+void basic_ios_example() {
+    // 1. 除了继承自ios_base的成员类型外，basic_ios还定义了以下成员类型
+    if(std::is_same<std::basic_ios<char>::char_type, char>::value) {
+        std::cout << "std::basic_ios<char>::char_type is char" << std::endl;
+    } else {
+        std::cout << "std::basic_ios<char>::char_type is not char" << std::endl;
+    }
+
+    // 2, constructor
+    /**
+     * public: explicit basic_ios (basic_streambuf<char_type,traits_type>* sb);
+     * 
+     * protected: basic_ios();
+     * 
+     * basic_ios (const basic_ios&) = delete;basic_ios& operator= (const basic_ios&) = delete;
+     */
+
+    // 3. 除了继承自ios_base的成员函数外，basic_ios还定义了以下成员函数
+    /**
+     * 1. state flag fun
+     *   - good
+     *   - eof
+     *   - fail
+     *   - bad
+     *   - rdstate
+     *   - setstate
+     *   - clear
+     *   - operator bool
+     *   - operator!
+     * 2. formatting fun
+     *   - fill
+     *   - copyfmt
+     * 3. others
+     *   - exception
+     *   - imbue
+     *   - tie
+     *   - rdbuf
+     *     - basic_streambuf<char_type,traits_type>* rdbuf() const; // 获取当前关联的streambuf对象
+     *     - basic_streambuf<char_type,traits_type>* rdbuf(basic_streambuf<char_type,traits_type>* sb); // 设置关联的streambuf对象
+     *   - narrow
+     *   - widen
+     */
+
+    std::string str = "hello world";
+    std::stringbuf sb(str);
+    std::basic_ios<char> ios(&sb);
+
+    bool is_good = ios.good();
+    if(is_good) {
+        std::cout << "ios is good" << std::endl;
+    } else {
+        std::cout << "ios is not good" << std::endl;
+    }
+    bool is_eof = ios.eof();
+    if(is_eof) {
+        std::cout << "ios is eof" << std::endl;
+    } else {
+        std::cout << "ios is not eof" << std::endl;
+    }
+    std::ios_base::iostate state = ios.rdstate();
+    if(state == std::ios_base::goodbit) {
+        std::cout << "ios rdstate is goodbit" << std::endl;
+    } else if(state == std::ios_base::eofbit) {
+        std::cout << "ios rdstate is eofbit" << std::endl;
+    } else if(state == std::ios_base::failbit) {
+        std::cout << "ios rdstate is failbit" << std::endl;
+    } else if(state == std::ios_base::badbit) {
+        std::cout << "ios rdstate is badbit" << std::endl;
+    } else {
+        std::cout << "ios rdstate is unknown" << std::endl;
+    }
+
+    int size = ios.width();
+    std::cout << "ios width is " << size << std::endl;
+}
+
 std::string get_current_time() {
     auto now = std::chrono::system_clock::now();
     int sec = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
@@ -112,149 +278,15 @@ void sync_test() {
     std::ios_base::sync_with_stdio(true);  // 恢复同步
 }
 
-void ios_base_example() {
-#if 0
-    // ios_base的构造函数是protected的，不能直接创建对象
-    protected: ios_base();ios_base (const ios_base&) = delete;
-#endif
-
-    /**
-     * 成员函数
-     * 1. formatting
-     *   - flags
-     *   - setf
-     *   - unsetf
-     *   - precision
-     *   - width
-     * 2. locale
-     *   - imbue
-     *   - getloc
-     * 3.others
-     *   - void register_callback (event_callback fn, int index);
-     *      * 注册一个fn函数，改函数会在stream event发生的时候自动调用，并且使用之前传入的index
-     *   - sync_with_stdio
-     */
-
-     /**
-      * 成员类型：
-      * 1. event： 
-      *   - enum class event {
-      *         copyfmt_event,
-      *         erase_event,
-      *         imbue_event
-      *     }
-      * 2. event_callback: 
-      *   - typedef void (*event_callback) (event ev, ios_base& obj, int index);
-      * 3. fmtflags:
-      * 4. iostate: 一个bitmap类型来表示当前流的状态
-      *   - eofbit：已经到达流的末尾
-      *   - failbit：上一次的input操作失败
-      *   - badbit：由于之前的输入或者输出流操作失败导致位于流的错误状态
-      *   - goodbit：流的状态正常
-      * 5. openmode: 一个bitmap类型来表示流的打开模式
-      *   - app：追加模式
-      *   - ate：打开流时，定位到流的末尾
-      *   - binary：二进制模式
-      *   - in：输入模式
-      *   - out：输出模式
-      *   - trunc：截断模式
-      * 6. seekdir: 一个枚举类型来表示流的定位方式
-      *   - beg：从流的开头开始定位
-      *   - cur：从流的当前位置开始定位
-      *   - end：从流的末尾开始定位
-      * 
-      * 成员类：
-      * 1. init: class init；
-      * 2. failure： class failure;
-      */
-}
-
-/**
- * template <class charT, class traits = char_traits<charT> >  
- * class basic_ios;
- * 
- * @brief 该类继承了ios_base。该类实现了和流类型无关的流操作。
- * @note ios_base实现了和字符类型无关的流操作，
- * @note 其中 using ios = basic_ios<char>;
- */
-void basic_ios_example() {
-    // 1. member types
-    if(std::is_same<std::basic_ios<char>::char_type, char>::value) {
-        std::cout << "std::basic_ios<char>::char_type is char" << std::endl;
-    } else {
-        std::cout << "std::basic_ios<char>::char_type is not char" << std::endl;
-    }
-
-    // 2, constructor
-    /**
-     * explicit basic_ios (basic_streambuf<char_type,traits_type>* sb);
-     */
-
-    // 3. member functions
-    /**
-     * 1. state flag fun
-     *   - good
-     *   - eof
-     *   - fail
-     *   - bad
-     *   - rdstate
-     *   - setstate
-     *   - clear
-     * 2. formatting fun
-     *   - fill
-     *   - copyfmt
-     * 3. others
-     *   - exception
-     *   - imbue
-     *   - tie
-     *   - rdbuf
-     *   - narrow
-     *   - widen
-     */
-
-    std::string str = "hello world";
-    std::stringbuf sb(str);
-    std::basic_ios<char> ios(&sb);
-
-    bool is_good = ios.good();
-    if(is_good) {
-        std::cout << "ios is good" << std::endl;
-    } else {
-        std::cout << "ios is not good" << std::endl;
-    }
-    bool is_eof = ios.eof();
-    if(is_eof) {
-        std::cout << "ios is eof" << std::endl;
-    } else {
-        std::cout << "ios is not eof" << std::endl;
-    }
-    std::ios_base::iostate state = ios.rdstate();
-    if(state == std::ios_base::goodbit) {
-        std::cout << "ios rdstate is goodbit" << std::endl;
-    } else if(state == std::ios_base::eofbit) {
-        std::cout << "ios rdstate is eofbit" << std::endl;
-    } else if(state == std::ios_base::failbit) {
-        std::cout << "ios rdstate is failbit" << std::endl;
-    } else if(state == std::ios_base::badbit) {
-        std::cout << "ios rdstate is badbit" << std::endl;
-    } else {
-        std::cout << "ios rdstate is unknown" << std::endl;
-    }
-
-    int size = ios.width();
-    std::cout << "ios width is " << size << std::endl;
-
-}
-
 int main() {
-    std::cout << "======================tie_test=========================" << std::endl;
-    tie_test();
-    std::cout << "======================sync_test=========================" << std::endl;
-    sync_test();
     std::cout << "======================ios_base_example=========================" << std::endl;
     ios_base_example();
     std::cout << "======================basic_ios_example=========================" << std::endl;
     basic_ios_example();
+    std::cout << "======================tie_test=========================" << std::endl;
+    tie_test();
+    std::cout << "======================sync_test=========================" << std::endl;
+    sync_test();
 
     return 0;
 }

@@ -2,28 +2,76 @@
 #include <fstream>
 #include <type_traits>
 
-
 /**
  * template <class charT, class traits = char_traits<charT> >  
  * class basic_streambuf;
  * 
- * @note filebuf继承了basic_streambuf。
+ * @note 改模板类是所有流缓冲区的基类。
+ * 
+ * @note stream buffer用于管理stream的读写操作
  */
 void basic_stream_buf_example() {
 #if 0
   // 无法直接构造basic_streambuf，因为它的构造函数是protected的
   protected:basic_streambuf();
 #endif
+  
+  // 1. member types
+  if(std::is_same<std::basic_streambuf<char>::char_type, char>::value) {
+    std::cout << "std::streambuf::char_type is char" << std::endl;
+  }
+  if(std::is_same<std::basic_streambuf<char>::traits_type, std::char_traits<char>>::value) {
+    std::cout << "std::streambuf::traits_type is std::char_traits<char>" << std::endl;
+  }
+  if(std::is_same<std::basic_streambuf<char>::int_type, int>::value) {
+    std::cout << "std::streambuf::int_type is int" << std::endl;
+  }
+  if(std::is_same<std::basic_streambuf<char>::pos_type, std::streampos>::value) {
+    std::cout << "std::streambuf::pos_type is streampos" << std::endl;
+  }
+  if(std::is_same<std::basic_streambuf<char>::off_type, std::streamoff>::value) {
+    std::cout << "std::streambuf::off_type is streamoff" << std::endl;
+  }
 
+  // 2. constructor
+#if 0
+  // 无法直接构造basic_streambuf，因为它的构造函数是protected的
+  protected:basic_streambuf();
+  basic_streambuf (const basic_streambuf&) = delete;
+#endif
+
+  // 3. member functions
+  /**
+   * 1. locale
+   *    - pubimbue
+   *    - getloc
+   * 2. buffer management
+   *    - pubsetbuf
+   *    - pubseekoff
+   *    - pubseekpos
+   *    - pubsync
+   * 3. input
+   *    - in_avail
+   *    - sgetc
+   *    - snextc
+   *    - sbumpc
+   *    - sgetn
+   *    - sputbackc
+   *    - sungetc
+   * 4. output
+   *    - sputc
+   *    - sputn
+   * 5. protected virtual functions
+   */
 }
 
 /**
- * emplate < class charT, class traits = char_traits<charT> >  
+ * template < class charT, class traits = char_traits<charT> >  
  * class basic_filebuf;
  * 
- * typedef basic_filebuf<char> filebuf;
+ * @note 该类继承了basic_streambuf
+ * @note typedef basic_filebuf<char> filebuf;
  */
-
 void MemType(){
     if(std::is_same<std::filebuf::char_type, char>::value){
         std::cout << "filebuf::char_type is char" << std::endl;
@@ -49,7 +97,7 @@ void MemType(){
 
 void ConFun() {
   std::filebuf fb = std::filebuf();
-  // std::filebuf fb2(std::filebuf()); delete
+  // std::filebuf fb2(std::filebuf()); copy constructor is deleted
   std::filebuf fb2(std::move(fb));
 }
 

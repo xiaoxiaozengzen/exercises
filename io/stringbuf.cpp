@@ -1,16 +1,11 @@
-/**
- * Stream buffer to read from and write to string objects.
- */
-
 #include <iostream>
 #include <sstream>
 
-// typedef basic_stringbuf<char> stringbuf;
-
-void MemType() {
-  std::cout << "reference ifstream" << std::endl;
-}
-
+/**
+ * @brief basic_stringbuf继承自basic_streambuf，并且实现了在basic_string上进行输入输出操作的功能。
+ * 
+ * @note 该类提供了在内存中读写字符串的能力，类似于文件流(file stream)。
+ */
 void Confun() {
   // explicit stringbuf (ios_base::openmode which = ios_base::in | ios_base::out);
   std::stringbuf sb1;
@@ -37,8 +32,6 @@ void MemFun() {
 }
 
 int main() {
-  std::cout << "====================MemType====================" << std::endl;
-  MemType();
   std::cout << "====================Confun====================" << std::endl;
   Confun();
   std::cout << "====================MemFun====================" << std::endl;
