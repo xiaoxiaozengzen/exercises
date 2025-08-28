@@ -3,6 +3,8 @@
 #include <typeinfo>
 #include <vector>
 #include <unordered_set>
+#include <string>
+#include <sstream>
 
 /**
  * 迭代器需要支持的操作：
@@ -23,20 +25,22 @@
  *   - 支持比较操作：a < b, a <= b, a > b, a >= b
  *   - 支持复合操作符号：a += n, a -= n
  *   - 支持下标操作：a[n]和a[-n]
+ * 
+ * @note 注意：
+ *   1.并不是所有的迭代器都支持所有的操作，需要根据迭代器的类型来判断。
+ *   2.迭代器的类型可以通过std::iterator_traits来获取
+ *   3.空迭代器不能被解引用，否则会报异常
  */
-
-// template <class Category,              // iterator::iterator_category
-//           class T,                     // iterator::value_type
-//           class Distance = ptrdiff_t,  // iterator::difference_type
-//           class Pointer = T*,          // iterator::pointer
-//           class Reference = T&         // iterator::reference>
-// class iterator;
 
 /**
- * 注意：
- * 1.空迭代器不能被解引用，否则会报异常
- * 2.迭代器不一定支持所有的指针操作，需要根据迭代器的类型来判断。
+ * template <class Category,              // iterator::iterator_category
+ *           class T,                     // iterator::value_type
+ *           class Distance = ptrdiff_t,  // iterator::difference_type
+ *           class Pointer = T*,          // iterator::pointer
+ *           class Reference = T&         // iterator::reference>
+ * class iterator;
  */
+
 
 class MyIterator : public std::iterator<std::input_iterator_tag, int> {
   int* p;
@@ -262,6 +266,37 @@ void PreIterator() {
   std::cout << std::endl;
 }
 
+/**
+ * template <class charT, class traits = char_traits<charT> >
+ * class istreambuf_iterator;
+ * 
+ * @note 一种输入迭代器，用于从输入流中读取字符。它读取的是流缓冲区中的字符，而不是流中的字符。
+ * @note 只能用于输入流，不能用于输出流。
+ * @note 不能用于标准输入流cin，因为cin的缓冲区是不可读的。
+ */
+void istreambuf_iterator_test() {
+  // 1. construct
+  std::istreambuf_iterator<char> eos;                    // default construct，等价于end-of-range iterator
+  std::istreambuf_iterator<char> it1 (std::cin.rdbuf()); // 基于basic_streambuf或者basic_istream构造
+  std::string str = "Hello, World!";
+  std::stringbuf sbuf(str);
+  std::istreambuf_iterator<char> it2 (&sbuf);            // 基于basic_streambuf或者basic_istream构造
+
+  // 2. member functions
+  std::string mystring;
+  std::cout << "Please, enter your name: ";
+  while (it1 != eos && *it1 != '\n'){
+    std::cout << *it1 << std::endl;
+    mystring+=*it1++;
+  }
+  std::cout << "Your name is " << mystring << ".\n";
+  std::cout << "it2:" << std::endl;
+  while(it2 != eos){
+    std::cout << *it2 << std::endl;
+    ++it2;
+  }
+}
+
 int main() {
   std::cout << "--------------------------------BasicIter--------------------------------" << std::endl;
   BasicIter();
@@ -281,5 +316,8 @@ int main() {
   iterator_operations();
   std::cout << "--------------------------------PreIterator--------------------------------" << std::endl;
   PreIterator();
+  std::cout << "--------------------------------istreambuf_iterator_test--------------------------------" << std::endl;
+  istreambuf_iterator_test();
+
   return 0;
 }
