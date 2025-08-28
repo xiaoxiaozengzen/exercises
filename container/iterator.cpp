@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 /**
  * 迭代器需要支持的操作：
@@ -297,6 +298,74 @@ void istreambuf_iterator_test() {
   }
 }
 
+/**
+ * template <class T,
+ *           class charT=char,
+ *           class traits=char_traits<charT>,
+ *           class Distance = ptrdiff_t>
+ * class istream_iterator;
+ * 
+ * @brief 一种输入迭代器，用于从输入流中读取数据。它读取的是流中的数据，而不是流缓冲区中的数据。
+ * @note 只能用于输入流，不能用于输出流。
+ * @note T是读取的数据类型，charT是字符类型(跟basic_stream的第一个模板参数类型一致)
+ */
+void istream_iterator_test() {
+  // 1. member types
+  if(std::is_same<std::istream_iterator<int>::value_type, int>::value) {
+    std::cout << "value_type is int" << std::endl;
+  }
+  if(std::is_same<std::istream_iterator<int>::char_type, char>::value) {
+    std::cout << "char_type is char" << std::endl;
+  }
+  if(std::is_same<std::istream_iterator<int>::pointer, const int*>::value) {
+    std::cout << "pointer is int*" << std::endl;
+  }
+  if(std::is_same<std::istream_iterator<int>::reference, const int&>::value) {
+    std::cout << "reference is int&" << std::endl;
+  }
+
+  // 2. construct
+  std::istream_iterator<int> eos;                    // default construct，等价于end-of-stream iterator
+  std::istream_iterator<int> it (std::cin);         // 基于basic_istream对象构造
+
+  // 3. member functions
+  // 3.1 reference operator*() const;
+  // 3.2 istream_iterator& operator++(); // 前置自增
+  // 3.3 istream_iterator operator++(int); // 后置自增
+  // 3.4 pointer operator->() const;
+  double value1, value2;
+  std::cout << "Please, insert two values: ";
+  std::istream_iterator<double> eos1;
+  std::istream_iterator<double> it1 (std::cin);
+  if (it1 != eos1) {
+    value1=*it1;
+  }
+  ++it1;
+  if (it1 != eos1) {
+    value2=*it1;
+  }
+  std::cout << value1 << "*" << value2 << "=" << (value1*value2) << '\n';
+
+  std::string file = "/mnt/workspace/cgz_workspace/Exercise/exercises/container/iterator_text.txt";
+  std::ifstream fin(file);
+  if (!fin) {
+    std::cerr << "Cannot open the input file: " << file << std::endl;
+    return;
+  }
+  std::istream_iterator<char> eos2;          // default construct，等价于end-of-stream iterator
+  std::istream_iterator<char> it2 (fin);     // 基于basic_istream对象构造
+  if(it2 != eos2) {
+    std::cout << *it2 << std::endl;
+  }
+  
+  std::istream_iterator<std::string> eos3;
+  std::istream_iterator<std::string> it3 (fin);
+  if(it3 != eos3) {
+    std::cout << *it3 << std::endl;
+  }
+  std::cout << "it3.size(): " << it3->size() << std::endl;
+}
+
 int main() {
   std::cout << "--------------------------------BasicIter--------------------------------" << std::endl;
   BasicIter();
@@ -318,6 +387,8 @@ int main() {
   PreIterator();
   std::cout << "--------------------------------istreambuf_iterator_test--------------------------------" << std::endl;
   istreambuf_iterator_test();
+  std::cout << "--------------------------------istream_iterator_test--------------------------------" << std::endl;
+  istream_iterator_test();
 
   return 0;
 }

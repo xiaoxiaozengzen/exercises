@@ -171,6 +171,123 @@ void basic_ios_example() {
     std::cout << "ios width is " << size << std::endl;
 }
 
+/**
+ * template <class charT, class traits = char_traits<charT> >
+ * class basic_istream;
+ * 
+ * @brief 该类继承自basic_ios，提供了输入流的功能：从字符序列(例如文件、字符串)中读取数据，并解析数据。
+ */
+void basic_istream_test() {
+  // 1.除了继承自basic_ios的成员类型外，basic_istream还定义了以下成员类型
+
+  // 2. constructor
+  /**
+   * explicit basic_istream (basic_streambuf<char_type,traits_type>* sb);
+   */
+
+  // 3. 除了继承自basic_ios的成员函数外，basic_istream还定义了以下成员函数
+  /**
+   * 1.Formatting functions
+   *   - operator>> // 重载输入运算符
+   * 2. Unformatted input functions
+   *   - gcount // 返回上一次未格式化输入操作中读取的字符数
+   *   - get // 从流中读取字符
+   *   - getline // 从流中读取一行字符，区别于read是read接口不管'\n'，而getline会以'\n'为结束符提前结束读取
+   *   - ignore // 忽略指定数量的字符。或者直到遇到指定的分隔符为止
+   *   - peek // 查看下一个字符，但不从流中提取它
+   *   - read // 从流中读取指定数量的字符，并存储到指定的缓冲区中
+   *   - readsome // 从流中读取可用的字符，并存储到指定的缓冲区中
+   *   - putback // 将一个字符放回流
+   *   - putback // 将一个字符放回流
+   *   - unget // 将最后一个提取的字符放回流
+   * 3. positioning
+   *   - tellg // 返回当前读位置相对于流开头的偏移量
+   *   - seekg // 设置读位置相对于流开头的偏移量
+   * 4. synchronization
+   *   - sync // 同步流的缓冲区与其底层设备
+   */
+  std::string str = "1234567\nHello, World!\n";
+  std::stringbuf sbuf(str);
+  std::basic_istream<char> istream(&sbuf);
+  std::cout << "+++++++ 1 +++++++" << std::endl;
+  char ret1 = istream.get(); // 读取一个字符
+  std::cout << "gcount: " << istream.gcount() << ", ret1: " << ret1 << std::endl;
+  char ret2 = istream.peek(); // 查看下一个字符
+  std::cout << "gcount: " << istream.gcount() << ", ret2: " << ret2 << std::endl;
+  char buf[10];
+  istream.getline(buf, 10); // 读取一行字符，遇到'\n'结束
+  std::cout << "gcount: " << istream.gcount() << ", buf: " << buf << std::endl;
+  istream.ignore(2); // 忽略2个字符
+  std::cout << "gcount: " << istream.gcount() << std::endl;
+  istream.read(buf, 4); // 读取4个字符
+  buf[4] = '\0';
+  std::cout << "gcount: " << istream.gcount() << ", buf: " << buf << std::endl;
+
+}
+
+/**
+ * template <class charT, class traits = char_traits<charT> >  
+ * class basic_streambuf;
+ * 
+ * @note 改模板类是所有流缓冲区的基类。
+ * 
+ * @note stream buffer用于管理stream的读写操作
+ */
+void basic_streambuf_test() {
+#if 0
+  // 无法直接构造basic_streambuf，因为它的构造函数是protected的
+  protected:basic_streambuf();
+#endif
+  
+  // 1. member types
+  if(std::is_same<std::basic_streambuf<char>::char_type, char>::value) {
+    std::cout << "std::streambuf::char_type is char" << std::endl;
+  }
+  if(std::is_same<std::basic_streambuf<char>::traits_type, std::char_traits<char>>::value) {
+    std::cout << "std::streambuf::traits_type is std::char_traits<char>" << std::endl;
+  }
+  if(std::is_same<std::basic_streambuf<char>::int_type, int>::value) {
+    std::cout << "std::streambuf::int_type is int" << std::endl;
+  }
+  if(std::is_same<std::basic_streambuf<char>::pos_type, std::streampos>::value) {
+    std::cout << "std::streambuf::pos_type is streampos" << std::endl;
+  }
+  if(std::is_same<std::basic_streambuf<char>::off_type, std::streamoff>::value) {
+    std::cout << "std::streambuf::off_type is streamoff" << std::endl;
+  }
+
+  // 2. constructor
+#if 0
+  // 无法直接构造basic_streambuf，因为它的构造函数是protected的
+  protected:basic_streambuf();
+  basic_streambuf (const basic_streambuf&) = delete;
+#endif
+
+  // 3. member functions
+  /**
+   * 1. locale
+   *    - pubimbue
+   *    - getloc
+   * 2. buffer management
+   *    - pubsetbuf
+   *    - pubseekoff
+   *    - pubseekpos
+   *    - pubsync
+   * 3. input
+   *    - in_avail
+   *    - sgetc
+   *    - snextc
+   *    - sbumpc
+   *    - sgetn
+   *    - sputbackc
+   *    - sungetc
+   * 4. output
+   *    - sputc
+   *    - sputn
+   * 5. protected virtual functions
+   */
+}
+
 std::string get_current_time() {
     auto now = std::chrono::system_clock::now();
     int sec = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
@@ -283,6 +400,10 @@ int main() {
     ios_base_example();
     std::cout << "======================basic_ios_example=========================" << std::endl;
     basic_ios_example();
+    std::cout << "======================basic_streambuf_test=========================" << std::endl;
+    basic_streambuf_test();
+    std::cout << "======================basic_istream_test=========================" << std::endl;
+    basic_istream_test();
     std::cout << "======================tie_test=========================" << std::endl;
     tie_test();
     std::cout << "======================sync_test=========================" << std::endl;
