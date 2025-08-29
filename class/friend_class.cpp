@@ -1,10 +1,13 @@
 #include <iostream>
 
-// C++中的friend关键字其实做这样的事情：在一个类中指明其他的类（或者）函数能够直接访问该类中的private和protected成员。
-// friend在类中的声明可以再public、protected和private的如何一个控制域中，而不影响其效果
-
-// 前置声明中，类Node中只能声明AnotherNode指针和引用，不能声明对象，因为对象的大小是未知的
-// 函数Print(Node* node)不能载类中定义。若在类中定义，则需要让编译器事先知道AnotherNode的大小
+/**
+ * C++中的friend关键字其实做这样的事情：
+ *   - 在一个类中指明其他的类（或者）函数能够直接访问该类中的private和protected成员。
+ *   - friend在类中的声明可以再public、protected和private的如何一个控制域中，而不影响其效果
+ * 
+ * 前置声明中，类Node中只能声明AnotherNode指针和引用，不能声明对象，因为对象的大小是未知的
+ *  - 函数Print(Node* node)不能载类中定义。若在类中定义，则需要让编译器事先知道AnotherNode的大小
+ */
 
 class BinaryTree;
 class AnotherNode;
