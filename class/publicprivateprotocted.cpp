@@ -94,22 +94,87 @@ public:
   }
 };
 
-int main() {
-  std::cout << "============= DerivedPublic =============" << std::endl;
+void publicprivateprotocted_test() {
+  std::cout << "+++++++++++++ DerivedPublic +++++++++++++" << std::endl;
   DerivedPublic dp;
   dp.access();
   std::cout << "dp.base_pub: " << dp.base_pub << std::endl;
 
-  std::cout << "============= DerivedProtected =============" << std::endl;
+  std::cout << "+++++++++++++ DerivedProtected +++++++++++++" << std::endl;
   DerivedProtected dpr;
   dpr.access();
   // dpr.base_pub_func(); // error: ‘void Base::base_pub_func()’ is inaccessible within this context
 
-  std::cout << "============= DerivedPrivate =============" << std::endl;
+  std::cout << "+++++++++++++ DerivedPrivate +++++++++++++" << std::endl;
   DerivedPrivate dpt;
   dpt.access();
 
-  std::cout << "============== End ==============" << std::endl;
+  std::cout << "+++++++++++++= End +++++++++++++=" << std::endl;
+}
+
+class Fa {
+public:
+  Fa() {
+    std::cout << "Fa construct" << std::endl;
+  }
+  Fa(int v) : fa_pub(v) {
+    std::cout << "Fa construct with value: " << v << std::endl;
+  }
+  ~Fa() {
+    std::cout << "Fa deconstruct" << std::endl;
+  }
+
+private:
+  Fa(const Fa &other) {
+    std::cout << "Fa copy construct" << std::endl;
+    this->fa_pub = other.fa_pub;
+  }
+
+  Fa &operator=(const Fa &other) {
+    std::cout << "Fa copy assign construct" << std::endl;
+    this->fa_pub = other.fa_pub;
+    return *this;
+  }
+
+public:
+  int fa_pub = 1;
+};
+
+class Son : public Fa {
+public:
+  Son(){
+    std::cout << "Son construct" << std::endl;
+  }
+  ~Son() {
+    std::cout << "Son deconstruct" << std::endl;
+  }
+
+  int son_pub = 2;
+};
+
+void test_inherit_copy() {
+  Son s1;
+  s1.fa_pub = 10;
+  s1.son_pub = 20;
+
+  /**
+   * 注意：
+   *   - 父类的拷贝构造函数是private或者delete时，子类的拷贝构造函数会被隐式删除，需要自己实现子类的拷贝构造函数
+   */
+#if 0
+  // error: use of deleted function ‘Son::Son(const Son&)’
+  // note: ‘Son::Son(const Son&)’ is implicitly deleted because the default definition would be ill-formed:
+  // error: ‘Fa::Fa(const Fa&)’ is private within this context
+  Son s2 = s1;
+  std::cout << "s2.fa_pub: " << s2.fa_pub << ", s2.son_pub: " << s2.son_pub << std::endl;
+#endif
+}
+
+int main() {
+  std::cout << "================== publicprivateprotocted_test ====================" << std::endl;
+  publicprivateprotocted_test();
+  std::cout << "================== test_inherit_copy ====================" << std::endl;
+  test_inherit_copy();
 
   return 0;
 }
