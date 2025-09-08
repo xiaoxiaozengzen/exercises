@@ -1,7 +1,3 @@
-/**
-https://cplusplus.com/reference/atomic/atomic/
-*/
-
 #include <sched.h>
 #include <time.h>
 
@@ -29,13 +25,19 @@ void show_atomic_base() {
   int before_ret = value.exchange(30);
   std::cout << "before_ret: " << before_ret << ", value: " << value << std::endl;
 
-  // Compares the contents of the atomic object's contained value with expected:
-  // if true, it replaces the contained value with value
-  // if false, it replaces expected with the contained value .
-
-  // 区别：
-  // compare_exchange_weak() 允许失败，即实际obtain值和expected相等，但是函数返回false
-  // compare_exchange_strong() 不允许失败，
+  /**
+   * bool compare_exchange_weak (T& expected, T val, memory_order sync = memory_order_seq_cst) volatile noexcept
+   * @brief 比较原子变量对象contained value和expected的值是否相等
+   *        如果相等，则将原子变量对象contained value的值修改为val
+   *        如果不相等，则将expected的值修改为原子变量对象contained value的值
+   * @param expected 传入时表示预期值，传出时表示实际值
+   * @param val 新值
+   * @param sync 内存序，默认是memory_order_seq_cst
+   * @return 如果原子变量对象contained value和expected的值相等，返回true，否则返回false
+   * 
+   * @note compare_exchange_weak() 允许失败，即实际obtain值和expected相等，但是函数返回false
+   * @note compare_exchange_strong() 不允许失败，
+   */
   int expected_value = 30;
   int new_value = 35;
   std::cout << "value: " << value << std::endl;
@@ -72,19 +74,27 @@ void show_atomic_specifaction() {
 }
 
 /******************************CAS******************************* */
-// CPU提供的一种原子操作CAS（Compare and Swap）,即比较并交换，这是一个原子操作
-// 它包含三个操作数，内存值V、旧的预期值oldval、要修改的新值newval
-// 当且仅当内存值V等于旧的预期值oldval时，将内存值V修改为新值newval，否则什么都不做
+/**
+ * CPU提供的一种原子操作CAS（Compare and Swap）,即比较并交换，这是一个原子操作，它包含三个操作数
+ *    - 内存值V
+ *    - 旧的预期值oldval 
+ *    - 要修改的新值newval
+ * 当且仅当内存值V等于旧的预期值oldval时，将内存值V修改为新值newval，否则什么都不做
+ */
 
-// Atomic flags are boolean atomic objects that support two operations:
-// test-and-set and clear.
+/**
+ * atomic_flag提供了两种操作：
+ *  - test_and_set(): 以原子方式将标志设置为true，并返回标志的先前值
+ *  - clear(): 以原子方式将标志设置为false
+ */
 void show_atomic_flag() {
-  // The atomic_flag is in an unspecified state on construction (either set or clear) when no explicit enable 
-  // This macro ATOMIC_FLAG_INIT is defined in such a way that it can be used to initialize an object of type atomic_flag to the clear state.
+  /**
+   * atomic_flag创建的时候状态是不确定的（可能是set，也可能是clear），除非显式地初始化
+   * 这个宏ATOMIC_FLAG_INIT被定义成可以用来初始化atomic_flag对象为clear状态
+   */
   std::atomic_flag fl = ATOMIC_FLAG_INIT;
 
   auto append = [&](int id) {
-    // test_and_set()函数会将标志位设置为true，并返回原来的标志位
     while (fl.test_and_set()) {
     }
     std::cout << "id: " << id << std::endl;
