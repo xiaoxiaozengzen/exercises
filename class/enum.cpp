@@ -31,7 +31,7 @@ int main() {
   std::cout << "RosMsgType FRONT_LEFT_RADAR: " << front_left_radar << std::endl;
 
 #if 0
-  编译报错:error: cannot convert 'RosMsgType' to 'int' in initialization
+  // 编译报错:error: cannot convert 'RosMsgType' to 'int' in initialization
   int ret = RosMsgType::FRONT_LEFT_RADAR;
 #endif
 
