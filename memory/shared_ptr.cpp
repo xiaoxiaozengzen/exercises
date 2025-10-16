@@ -200,9 +200,11 @@ struct DelFun {
 };
 
 /**
- * @brief enable_shared_from_this:让类的成员函数内部安全地获得指向自身的 shared_ptr
+ * @brief enable_shared_from_this，安全的获取类对象的this指针
+ *
+ * @note 直接return std::shared_ptr<T>(this);是不安全的，会导致多次delete同一块内存，从而引发未定义行为。
  * 
- * @note 该类提供了shared_from_this()成员函数，用于在当前成员函数中安全的获取当前对象的shared_ptr。
+ * @note 该类提供了shared_from_this()成员函数，用于返回一个shared_ptr，指向当前对象。
  *       需要注意的是，只有当当前对象已经被shared_ptr管理时，才能调用shared_from_this()。
  *       否则会抛出std::bad_weak_ptr异常。
  */
@@ -211,8 +213,7 @@ struct ShaFT : public std::enable_shared_from_this<ShaFT> {
   ~ShaFT() { std::cout << "ShaFT deconstruct" << std::endl; }
 
   void show() {
-    std::shared_ptr<ShaFT> self = shared_from_this();
-    std::cout << "self use_count: " << self.use_count() << std::endl;
+    std::cout << "show" << std::endl;
   }
 };
 
@@ -226,7 +227,15 @@ void NoMemFun() {
 
   std::shared_ptr<ShaFT> c = std::make_shared<ShaFT>();
   c->show();
+  std::shared_ptr<ShaFT> c2 = c->shared_from_this();
   std::cout << "c.use_count(): " << c.use_count() << std::endl;
+
+  try {
+    ShaFT* p = new ShaFT();
+    std::shared_ptr<ShaFT> c3 = p->shared_from_this();
+  } catch (const std::bad_weak_ptr& e) {
+    std::cout << "bad_weak_ptr caught: " << e.what() << std::endl;
+  }
 }
 
 int main() {
