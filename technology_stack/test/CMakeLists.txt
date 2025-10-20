@@ -29,3 +29,5 @@ add_executable(lwrb_test lwrb_test.cpp)
 target_link_libraries(lwrb_test PUBLIC
   lwrb
 )
+
+add_executable(rate_test rate_test.cpp)
