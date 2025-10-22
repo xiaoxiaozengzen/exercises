@@ -136,12 +136,18 @@ void future_base() {
   } else {
     std::cout << "f2 is unknowned" << std::endl;
   }
+  // get默认会阻塞直到有结果返回
   int ret = f2.get();
-  // ret = f2.get();  直接报异常
+#if 0
+  // 再次get会抛出std::future_error异常
+  ret = f2.get();
+#endif
   std::cout << "f2.get = " << ret << std::endl;
 
   std::promise<int> p3;
   std::future<int> f3 = p3.get_future();
+  // shared_future会将future的状态共享，可以多次get。f3被move到shared_1中，并且自身的状态被置为无效
+  // 需要get返回值类型支持拷贝，因为get多次调用就是多次返回同一个值
   std::shared_future<int> shared_1(std::move(f3));
   std::shared_future<int> shared_2(shared_1);
   std::thread t3([&]() { p3.set_value(1000); });
