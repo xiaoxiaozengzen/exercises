@@ -59,15 +59,28 @@ void MemFun() {
 
 void Inherit_istream() {
     std::ifstream ifs = std::ifstream("/mnt/workspace/cgz_workspace/Exercise/exercises/io/test2.txt", std::ios::in);
+    std::streamsize size;
+    size = ifs.tellg();
+    std::cout << "tellg: " << size << std::endl;
+
     std::string str;
+    // 按行读取
     ifs >> str;
     std::cout << "str: " << str << std::endl;
+    // 返回上一次 unformatted input operations 读取的字符数
+    // unformatted input operations有：get，getline，ignore，peek，read，readsome，putback，unget
+    size = ifs.gcount();
+    std::cout << "gcount: " << size << std::endl;
     ifs >> str;
     std::cout << "str: " << str << std::endl;
+    size = ifs.gcount();
+    std::cout << "gcount: " << size << std::endl;
 
     int ret = ifs.get();
-    std::cout << "get: " << ret << std::endl;
-    std::streamsize size = ifs.gcount();
+    std::cout << "get: " << ret << ", char:" << static_cast<char>(ret) << std::endl;
+    ret = ifs.get();
+    std::cout << "get: " << ret << ", char:" << static_cast<char>(ret) << std::endl;
+    size = ifs.gcount();
     std::cout << "gcount: " << size << std::endl;
     char ret2;
     ifs.get(ret2);
