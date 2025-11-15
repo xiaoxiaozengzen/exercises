@@ -45,10 +45,30 @@ void sscanf_example() {
     std::cout << "strValue: " << strValue << std::endl;
 }
 
+void sprintf_example() {
+    int intValue = 123;
+    float floatValue = 45.67f;
+    const char *strValue = "Hello";
+
+    char buffer[100];
+    /**
+     * @brief 将格式化数据写入字符串
+     * @param buffer 输出字符串缓冲区
+     * @param format 格式字符串
+     * @param ... 输入变量
+     * @return 写入的字符数
+     */
+    int count = sprintf(buffer, "intValue: %d, floatValue: %.2f, strValue: %s", intValue, floatValue, strValue);
+    std::cout << "写入的字符数: " << count << std::endl;
+    std::cout << "buffer: " << buffer << std::endl;
+}
+
 int main() {
     std::cout << "===================stracasecmp example===================" << std::endl;
     stracasecmp_example();
     std::cout << "===================sscanf example===================" << std::endl;
     sscanf_example();
+    std::cout << "===================sprintf example===================" << std::endl;
+    sprintf_example();
     return 0;
 }
