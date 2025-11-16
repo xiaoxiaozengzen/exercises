@@ -1,4 +1,5 @@
 #include <strings.h> // POSIX: strncasecmp
+#include <string.h> // POSIX: strcpy
 
 #include <iostream>
 
@@ -63,6 +64,48 @@ void sprintf_example() {
     std::cout << "buffer: " << buffer << std::endl;
 }
 
+void strcpy_example() {
+    const char *source = "Hello, World!";
+    char destination[50];
+
+    /**
+     * @brief 复制字符串
+     * @param dest 目标字符串缓冲区
+     * @param src 源字符串
+     * @return 指向目标字符串的指针
+     */
+    char *result = strcpy(destination, source);
+    std::cout << "源字符串: " << source  << ", address: " << reinterpret_cast<void*>(const_cast<char*>(source)) << std::endl;
+    std::cout << "目标字符串: " << destination << ", address: " << reinterpret_cast<void*>(destination) << std::endl;
+    std::cout << "返回值: " << result << ", address: " << reinterpret_cast<void*>(result) << std::endl;
+}
+
+void strcat_example() {
+    char buf[16] = "abc";
+    const char *app = "123456789123456";
+    
+    /**
+     * @brief 将dest的\0去掉，并将src的第一个字符写到该位置，然后在dest的末尾添加\0
+     * @param dest 目标字符串缓冲区
+     * @param src 源字符串
+     * @return 指向目标字符串的指针
+     */
+    char* result = strcat(buf, app); // 可能会导致缓冲区溢出
+    std::cout << "buf after strcat: " << buf << std::endl;
+    std::cout << "result of strcat: " << result << std::endl;
+
+    char buf_safe[10] = "abc";
+    /**
+     * @brief 将source的前num字符拼接到dest的末尾，并添加\0。若source的长度小于num，则只拼接source的全部内容。
+     * @param destination 目标字符串缓冲区
+     * @param source 源字符串
+     * @param num 目标缓冲区大小
+     * @return 指向目标字符串的指针
+     */
+    strncat(buf_safe, app, sizeof(buf_safe) - strlen(buf_safe) - 1); // 保证不会导致缓冲区溢出
+    std::cout << "buf_safe after strncat: " << buf_safe << std::endl;
+}
+
 int main() {
     std::cout << "===================stracasecmp example===================" << std::endl;
     stracasecmp_example();
@@ -70,5 +113,9 @@ int main() {
     sscanf_example();
     std::cout << "===================sprintf example===================" << std::endl;
     sprintf_example();
+    std::cout << "===================strcpy example===================" << std::endl;
+    strcpy_example();
+    std::cout << "===================strcat example===================" << std::endl;
+    strcat_example();
     return 0;
 }
