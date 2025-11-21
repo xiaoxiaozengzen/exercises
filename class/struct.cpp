@@ -55,7 +55,40 @@ void Init() {
   std::cout << "p6: " << p6.name << ", " << p6.x << ", " << p6.y << ", " << p6.z << std::endl;
 }
 
+struct Data {
+  int a;
+  double b;
+  // Data(int a_, double b_) : a(a_), b(b_) {}
+};
+
+void struct_construct() {
+  Data d1{};          // OK，值初始化，a=0, b=0.0
+  Data d2{1, 2.0};    // OK，直接初始化，a=1, b=2.0
+  Data d3;         // OK，默认初始化，a和b未定义
+#if 0
+  /**
+   * 编译报错：error: no matching function for call to ‘Data::Data()’
+   *
+   * 并且会提示(编译器尝试找默认提供的构造函数)：
+   * note: candidate: ‘Data::Data()’
+   * note:   candidate expects 0 arguments, 2 provided
+   * note: candidate: ‘constexpr Data::Data(const Data&)’
+   * note:   candidate expects 1 argument, 2 provided
+   * note: candidate: ‘constexpr Data::Data(Data&&)’
+   * note:   candidate expects 1 argument, 2 provided
+   */
+  Data d4(1, 2.0);    // ERROR，没有定义构造函数
+
+  std::vector<Data> vec(5);
+  vec.emplace_back(1, 2.0);  // ERROR，没有定义构造函数
+#endif
+}
+
 int main() {
   std::cout << "======================Init======================" << std::endl;
   Init();
+  std::cout << "==================struct_construct==================" << std::endl;
+  struct_construct();
+
+  return 0;
 }
