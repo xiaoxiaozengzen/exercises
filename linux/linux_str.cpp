@@ -64,6 +64,33 @@ void sprintf_example() {
     std::cout << "buffer: " << buffer << std::endl;
 }
 
+void fprintf_example() {
+    int intValue = 123;
+    float floatValue = 45.67f;
+    const char *strValue = "Hello";
+
+    /**
+     * int fprintf(FILE *stream, const char *format, ...)
+     * @brief 将格式化数据写入指定的文件流
+     * @param stream 文件流指针
+     * @param format 格式字符串
+     * @param ... 输入变量
+     * @return 写入的字符数
+     */
+    int count = fprintf(stdout, "intValue: %d, floatValue: %.2f, strValue: %s\n", intValue, floatValue, strValue);
+    std::cout << "写入的字符数: " << count << std::endl;
+
+    const char *filePath = "/mnt/workspace/cgz_workspace/Exercise/exercises/linux/output/test.txt";
+    FILE *file = fopen(filePath, "w");
+    if (file != nullptr) {
+        count = fprintf(file, "intValue: %d, floatValue: %.2f, strValue: %s\n", intValue, floatValue, strValue);
+        std::cout << "写入文件的字符数: " << count << std::endl;
+        fclose(file);
+    } else {
+        std::cerr << "无法打开文件: " << filePath << std::endl;
+    }
+}
+
 void strcpy_example() {
     const char *source = "Hello, World!";
     char destination[50];
@@ -113,6 +140,8 @@ int main() {
     sscanf_example();
     std::cout << "===================sprintf example===================" << std::endl;
     sprintf_example();
+    std::cout << "===================fprintf example===================" << std::endl;
+    fprintf_example();
     std::cout << "===================strcpy example===================" << std::endl;
     strcpy_example();
     std::cout << "===================strcat example===================" << std::endl;
