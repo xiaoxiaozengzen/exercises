@@ -85,19 +85,42 @@ void shell_sort(std::vector<int>& arr) {
  * 空间复杂度：O(n)
  * 稳定排序
  */
-void merge_sort(std::vector<int>& arr) {
-
+void merge_sort(std::vector<int>& arr, int left, int right) {        
 }
 
 /**
- * @brief 快速排序：取第一个元素作为分界点，把整个数组分成左右两侧，左边的元素小于或者等于分界点，右边的元素大于分界点，然后把分界点移动到中间；
+ * @brief 快速排序：取第一个/最后一个元素作为分界点，把整个数组分成左右两侧，左边的元素小于或者等于分界点，右边的元素大于分界点，然后把分界点移动到中间；
  *        然后对左右子数组递归进行上述操作，直到子数组长度为1或者0时结束。
  * 时间复杂度：O(nlogn) ~ O(n^2)
  * 空间复杂度：O(logn)
  * 不稳定排序
  */
-void quick_sort(std::vector<int>& arr) {
+void quick_sort(std::vector<int>& arr, int left, int right) {
+    if(left >= right) {
+        return;
+    }
 
+    // 选取做左边的第一个元素作为分界点
+    int lo = left + 1;  // 小于等于分界点元素的最右侧位置
+    int hi = right;  // 大于分界点元素的最左侧位置
+
+    while(lo <= hi) {
+        // 大于分界点的元素放到右侧
+        if(arr[lo] > arr[left]) {
+            std::swap(arr[lo], arr[hi]);
+            hi--;
+        } else {
+            lo++;
+        }
+    }
+
+    // 将分界点放到中间
+    lo--;
+    std::swap(arr[left], arr[lo]);
+
+    // 递归排序左右子数组
+    quick_sort(arr, left, lo-1);
+    quick_sort(arr, lo+1, right);
 }
 
 // 堆排序
@@ -139,9 +162,11 @@ int main() {
     std::cout << std::endl;
 
     std::cout << "======= Merge Sort =======" << std::endl;
-    std::vector<int> data5 = {64, 34, 25, 34, 125, 22, 11, 90};
-    merge_sort(data5);
-    for(const auto& num : data5) {
+    
+    std::cout << "======= Quick Sort =======" << std::endl;
+    std::vector<int> data6 = {64, 34, 25, 34, 125, 22, 11, 90};
+    quick_sort(data6, 0, data6.size() - 1);
+    for(const auto& num : data6) {
         std::cout << num << " ";
     }
     std::cout << std::endl;
