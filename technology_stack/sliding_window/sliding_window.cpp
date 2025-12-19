@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     
+    std::cout << "=============== Longest Unique Substring ===============" << std::endl;
     int max_size = 0;
     std::string result = longest_unique_substring(input, max_size);
     std::cout << "Size: " << max_size << ", Substring: " << result << ", str.size: " << result.size() << std::endl;
