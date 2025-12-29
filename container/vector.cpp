@@ -290,19 +290,35 @@ void CapacityTest() {
   std::cout << std::endl;
 }
 
+/**
+ * @brief it++：先把当前 it 的值复制为临时值，返回该临时值，再对 it 增 1
+ * @note 在进行for循环时，建议使用 ++it，避免不必要的临时变量创建和销毁开销
+ */
+void iter_test() {
+  std::vector<A> arr(5);
+
+  std::vector<A>::iterator it = arr.begin();
+  ++it;
+  std::cout << *it << std::endl;
+  it++;
+  std::cout << *it << std::endl;
+  for(it = arr.begin(); it != arr.end(); it++) {
+    std::cout << *it << " ";
+  }
+  std::cout << std::endl;
+}
+
 int main() {
-  std::cout << "-------------------------------------MemberType-----------------------------------"
-            << std::endl;
+  std::cout << "---------------------------- MemberType ----------------------------" << std::endl;
   MemberType();
-  std::cout
-      << "-------------------------------------ConstructFun-----------------------------------"
-      << std::endl;
+  std::cout << "---------------------------- ConstructFun ----------------------------" << std::endl;
   ConstructFun();
-  std::cout << "-------------------------------------MemberFun-----------------------------------"
-            << std::endl;
+  std::cout << "---------------------------- MemberFun ----------------------------" << std::endl;
   MemberFun();
-  std::cout
-      << "-------------------------------------CapacityTest-----------------------------------"
-      << std::endl;
+  std::cout << "---------------------------- CapacityTest ----------------------------" << std::endl;
   CapacityTest();
+  std::cout << "---------------------------- iter_test ----------------------------" << std::endl;
+  iter_test();
+
+  return 0;
 }
