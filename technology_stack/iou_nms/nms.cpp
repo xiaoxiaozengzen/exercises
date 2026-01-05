@@ -28,12 +28,9 @@ double IOU_compute(const bbox& b1, const bbox& b2)
 	double y_top = std::min(b1.m_top, b2.m_top);
 	double x_right = std::min(b1.m_left + b1.m_width, b2.m_left + b2.m_width);
 	double y_bottom = std::max(b1.m_top - b1.m_height, b2.m_top - b2.m_height);
-    std::cout << "x_left: " << x_left << ", y_top: " << y_top << ", x_right: " << x_right << ", y_bottom: " << y_bottom << std::endl;
 
 	double w = std::max(0.0, x_right - x_left);
-    std::cout << "w: " << w << std::endl;
 	double h = std::max(0.0, y_top - y_bottom);
-    std::cout << "h: " << h << std::endl;
 
 	double inter = w * h;
 	double area1 = b1.m_width * b1.m_height;
@@ -89,26 +86,17 @@ std::vector<int> non_max_suppression(const std::vector<bbox>& boxes, double iou_
 int main()
 {
     std::vector<bbox> boxes = {
-        // Cluster A (重叠密集，靠左上)
-        bbox(10, 10, 50, 50, 0.95),
-        bbox(12, 14, 48, 48, 0.90),
-        bbox(15, 18, 30, 30, 0.85),
-        bbox(40, 12, 20, 40, 0.60),
-
-        // Cluster B (中间，部分重叠)
-        bbox(200, 200, 50, 50, 0.80),
-        bbox(205, 205, 48, 48, 0.78),
-        bbox(190, 195, 60, 60, 0.70),
-        bbox(300, 220, 80, 40, 0.65),
-        bbox(305, 225, 78, 38, 0.62),
-
-        // Scattered / small / edge cases
-        bbox(400, 50, 30, 30, 0.60),
-        bbox(0, 0, 10, 10, 0.50),        // near origin
-        bbox(5, 5, 12, 12, 0.45),        // overlaps small origin box
-        bbox(639, 479, 2, 2, 0.40),      // near bottom-right pixel
-        bbox(250, 50, 100, 120, 0.55),   // large box
-        bbox(255, 60, 90, 100, 0.53)     // overlaps the large box
+        bbox(4.21716537e+01, 1.28230896e+02, 2.26547668e+02, 6.00434631e+02, 0.5247661),
+        bbox(3.18562988e+02, 1.23168472e+02, 4.79000000e+02, 6.05688416e+02, 0.51759845),
+        bbox(2.62704697e+01, 1.39430557e+02, 2.20587097e+02, 6.38959656e+02, 0.86075854),
+        bbox(4.24965363e+01, 1.42706665e+02, 2.25955185e+02, 6.35671204e+02, 0.9910175),
+        bbox(2.37462646e+02, 1.35731537e+02, 4.79000000e+02, 6.31451294e+02, 0.39170712),
+        bbox(3.19390472e+02, 1.29295090e+02, 4.79000000e+02, 6.33003845e+02, 0.9297706),
+        bbox(3.28933838e+02, 1.22736115e+02, 4.79000000e+02, 6.39000000e+02, 0.5115228),
+        bbox(4.44292603e+01, 1.70438187e+02, 2.26841858e+02, 6.39000000e+02, 0.270992),
+        bbox(2.17988785e+02, 3.02472412e+02, 4.06062927e+02, 6.29106628e+02, 0.19087596),
+        bbox(2.00241089e+02, 3.23755096e+02, 3.96929321e+02, 6.36386108e+02, 0.64201415),
+        bbox(2.14310303e+02, 3.23443665e+02, 4.06732849e+02, 6.35775269e+02, 0.879036)
     };
 
     double iou_thresh = 0.5;
