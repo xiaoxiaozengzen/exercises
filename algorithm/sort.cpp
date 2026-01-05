@@ -10,10 +10,16 @@
  * void sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp);
  */
 
-bool myfunction (int i,int j) { return (i>j); }
+bool myfunction (int i,int j) {
+  std::cout << "comparing " << i << " and " << j << std::endl;
+  return (i<j); 
+}
 
 struct myclass {
-  bool operator() (int i,int j) { return (i>j);}
+  bool operator() (int i,int j) { 
+    std::cout << "comparing " << i << " and " << j << std::endl;
+    return (i<j);
+  }
 } myobject;
 
 int main() {
