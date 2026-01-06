@@ -265,6 +265,14 @@ void PreIterator() {
     std::cout << i << " ";
   }
   std::cout << std::endl;
+
+  std::vector<int> v2 = {10, 11, 12};
+  my_back_insert_iterator<std::vector<int>> my_back_it2(v2);
+  my_back_it2 = 13;  // 将13插入到v2的
+  for(const auto& i : v2) {
+    std::cout << i << " ";
+  }
+  std::cout << std::endl;
 }
 
 /**

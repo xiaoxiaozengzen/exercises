@@ -159,6 +159,7 @@ void swap_test() {
  * template <class InputIterator, class OutputIterator, class UnaryOperation>
  * OutputIterator transform (InputIterator first1, InputIterator last1, OutputIterator result, UnaryOperation op);
  * @brief 对[first1, last1)中的每个元素应用一元操作op，并从result开始存储结果。
+ * @note 等价for(it = first1; it != last1; ++it) {*result = op(*it); ++result;}
  * 
  * template <class InputIterator1, class InputIterator2, class OutputIterator, class BinaryOperation>  
  * OutputIterator transform (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, OutputIterator result, BinaryOperation binary_op);
