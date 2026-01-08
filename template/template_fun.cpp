@@ -1,4 +1,5 @@
 #include <iostream>
+#include "template_fun.hpp"
 
 
 /****************************** 数组引用 **************************************** */
@@ -158,6 +159,37 @@ void template_metaprogramming_test() {
     my_print("Hello, %s! Number: %d \n", str.value, 42);  // 使用模板函数打印字符串和数字
 }
 
+/***************************** 6.显示实例化 ****************************************** */
+template <typename T>
+int mv_convert(T value) {
+    std::cout << "typeid(T).name(): " << typeid(T).name() << std::endl;
+    return static_cast<int>(value);
+}
+
+template int mv_convert<int>(int value);
+template int mv_convert<double>(double value);
+extern template void my_swap<int>(int& a, int& b);
+
+void explict_instantiation_test() {
+    int int_value = mv_convert<int>(42);
+    int double_value = mv_convert<double>(3.14);
+    int float_value = mv_convert<float>(2.71f);  // 隐式实例化
+    int char_value = mv_convert<char>('A');    // 隐式实例化
+    std::cout << "Converted int value: " << int_value << std::endl;
+    std::cout << "Converted double value: " << double_value << std::endl;
+
+    int a = 10, b = 20;
+    my_swap(a, b);
+    std::cout << "After swap: a = " << a << ", b = " << b << std::endl;
+#if 0
+    // 编译报错：undefined reference to `void my_swap<double>(double&, double&)'
+    // 因为在其他编译单元中没有显示实例化 double 类型的 my_swap
+    // 在同一个编译单元中(例如当前源文件)，还是可以正常调用mv_convert<float>的隐式实例化
+    double x = 1.5, y = 2.5;
+    my_swap(x, y);  // 隐式实例化
+#endif
+}
+
 int main() {
   std::cout << "===================== array_test=====================" << std::endl;
   array_test();
@@ -169,5 +201,7 @@ int main() {
   template_sfinane_test();
   std::cout << "===================== template_metaprogramming_test=====================" << std::endl;
   template_metaprogramming_test();
+  std::cout << "===================== explict_instantiation_test=====================" << std::endl;
+  explict_instantiation_test();
   return 0;
 }
