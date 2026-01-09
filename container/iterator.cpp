@@ -244,7 +244,7 @@ class my_back_insert_iterator
   my_back_insert_iterator<Container> operator++(int) { return *this; }
 };
 
-void PreIterator() {
+void MyBackIterator() {
   std::vector<int> v = {1, 2, 3, 4, 5};
 
   /**
@@ -279,9 +279,10 @@ void PreIterator() {
  * template <class charT, class traits = char_traits<charT> >
  * class istreambuf_iterator;
  * 
- * @note 一种输入迭代器，用于从输入流中读取字符。它读取的是流缓冲区中的字符，而不是流中的字符。
+ * @note 一种输入迭代器，用于从stream buffer中读取字符。它读取的是流缓冲区中的字符，而不是流中的字符。
  * @note 只能用于输入流，不能用于输出流。
  * @note 不能用于标准输入流cin，因为cin的缓冲区是不可读的。
+ * @note 该迭代器有一种end-of-range迭代器，等价于访问到stream的末尾
  */
 void istreambuf_iterator_test() {
   // 1. construct
@@ -290,18 +291,34 @@ void istreambuf_iterator_test() {
   std::string str = "Hello, World!";
   std::stringbuf sbuf(str);
   std::istreambuf_iterator<char> it2 (&sbuf);            // 基于basic_streambuf或者basic_istream构造
+  std::string file = "/mnt/workspace/cgz_workspace/Exercise/exercises/container/iterator_text.txt";
+  std::ifstream fin(file);
+  if (!fin) {
+    std::cerr << "Cannot open the input file: " << file << std::endl;
+    return;
+  }
+  std::istreambuf_iterator<char> it3 (fin.rdbuf());       // 基于ifstream的streambuf构造
+  // 基于ifstream构造也行，等价于：istreambuf_iterator(istream_type& s) throw(): sbuf_(s.rdbuf()) { }
+  // std::istreambuf_iterator<char> it4 (fin);              
+  std::vector<char> vec3(it3, eos);
+  std::cout << "vec3: ";
+  for(const auto& c : vec3) {
+    std::cout << c;
+  }
+  std::cout << std::endl;
 
   // 2. member functions
   std::string mystring;
   std::cout << "Please, enter your name: ";
   while (it1 != eos && *it1 != '\n'){
-    std::cout << *it1 << std::endl;
-    mystring+=*it1++;
+    std::cout << "current: " <<*it1 << std::endl;
+    mystring+=*it1;
+    it1++;
   }
+  
   std::cout << "Your name is " << mystring << ".\n";
-  std::cout << "it2:" << std::endl;
   while(it2 != eos){
-    std::cout << *it2 << std::endl;
+    std::cout << "it2: " << *it2 << std::endl;
     ++it2;
   }
 }
@@ -313,7 +330,7 @@ void istreambuf_iterator_test() {
  *           class Distance = ptrdiff_t>
  * class istream_iterator;
  * 
- * @brief 一种输入迭代器，用于从输入流中读取数据。它读取的是流中的数据，而不是流缓冲区中的数据。
+ * @brief 一种输入迭代器，用于从输入流(例如std::cin)中读取数据。它读取的是流中的数据，而不是流缓冲区中的数据。
  * @note 只能用于输入流，不能用于输出流。
  * @note T是读取的数据类型，charT是字符类型(跟basic_stream的第一个模板参数类型一致)
  */
@@ -391,8 +408,8 @@ int main() {
   Traits();
   std::cout << "--------------------------------iterator_operations--------------------------------" << std::endl;
   iterator_operations();
-  std::cout << "--------------------------------PreIterator--------------------------------" << std::endl;
-  PreIterator();
+  std::cout << "--------------------------------MyBackIterator--------------------------------" << std::endl;
+  MyBackIterator();
   std::cout << "--------------------------------istreambuf_iterator_test--------------------------------" << std::endl;
   istreambuf_iterator_test();
   std::cout << "--------------------------------istream_iterator_test--------------------------------" << std::endl;
