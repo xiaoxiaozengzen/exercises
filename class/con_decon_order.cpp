@@ -6,29 +6,59 @@
 
 class A {
 public:
+    int a;
+public:
     A() { std::cout << "A constructed" << std::endl; }
-    A(int x) { std::cout << "A constructed with parameter: " << x << std::endl; }
+    A(int x):a(x) { std::cout << "A constructed with parameter: " << x << std::endl; }
     ~A() { std::cout << "A destructed" << std::endl; }
-    A(const A&) { std::cout << "A copy constructed" << std::endl; }
-    A& operator=(const A&) { std::cout << "A copy assigned" << std::endl; return *this; }
+    A(const A& other) { 
+        a = other.a;
+        std::cout << "A copy constructed" << std::endl; 
+    }
+    A& operator=(const A& other) { 
+        a = other.a;
+        std::cout << "A copy assigned" << std::endl; return *this; 
+    }
 };
 
 class B {
 public:
+    int b;
+public:
     B() { std::cout << "B constructed" << std::endl; }
-    B(int x) { std::cout << "B constructed with parameter: " << x << std::endl; }
+    B(int x):b(x) { std::cout << "B constructed with parameter: " << x << std::endl; }
     ~B() { std::cout << "B destructed" << std::endl; }
-    B(const B&) { std::cout << "B copy constructed" << std::endl; }
-    B& operator=(const B&) { std::cout << "B copy assigned" << std::endl; return *this; }
+    B(const B& other) { 
+        b = other.b;
+        std::cout << "B copy constructed" << std::endl; 
+    }
+    B& operator=(const B& other) { 
+        b = other.b;
+        std::cout << "B copy assigned" << std::endl; return *this; 
+    }
 };
 
 class C {
 public:
-    C() { std::cout << "C constructed" << std::endl; }
-    C(int x) { std::cout << "C constructed with parameter: " << x << std::endl; }
+    int c;
+public:
+    C(int x):c(x) { 
+        std::cout << "C constructed with parameter: " << this->c << std::endl; 
+    }
     ~C() { std::cout << "C destructed" << std::endl; }
-    C(const C&) { std::cout << "C copy constructed" << std::endl; }
-    C& operator=(const C&) { std::cout << "C copy assigned" << std::endl; return *this; }
+    C(const C& other) {
+        c = other.c;
+        std::cout << "C copy constructed" << std::endl; 
+    }
+    C& operator=(const C& other) {
+        c = other.c;
+        std::cout << "C copy assigned" << std::endl; return *this; 
+    }
+};
+
+class E {
+public:
+    int e;
 };
 
 class ClassInit {
@@ -36,14 +66,14 @@ public:
     A a;
     A a1;
     B b;
-    C c;
+    C c{1};
 
     ClassInit() {
         std::cout << "ClassInit constructed" << std::endl;
     }
 
     ClassInit(int x):a(A(2)) {
-        c = C(2); // 构造函数内部做初始化
+        c = C(2); // 构造函数内部做初始化, 属于赋值操作
         std::cout << "ClassInit constructed with parameter: " << x << std::endl;
     }
 
@@ -51,6 +81,14 @@ public:
         std::cout << "ClassInit destructed" << std::endl;
     }
 };
+
+/**
+ * 统一初始化(c++11引入)：也被称为{}初始化或列表初始化
+ *   - 防止隐式类型转换
+ *   - 防止窄化转换(例如double转int)
+ *   - 统一初始化语法
+ *   - 防止最常见的坑-VLA(变长数组)
+ */
 
 /**
  * 类成员的三种初始化方式:
@@ -82,6 +120,23 @@ public:
  */
 void class_init() {
     A a = A(); // 默认初始化
+    std::cout << "a.a: " << a.a << std::endl;
+    A a1;
+    std::cout << "a1.a: " << a1.a << std::endl;
+    A a2{}; // 默认初始化
+    std::cout << "a2.a: " << a2.a << std::endl;
+    A a3 = A(5); // 列表初始化
+    std::cout << "a3.a: " << a3.a << std::endl;
+    /**
+     * E e; // 默认初始化，会调用默认构造函数。若构造函数不初始化成员变量，则成员变量值未定义
+     * E e1{}; // 列表初始化
+     *  - 若没有用户定义的构造函数，则会将内置类型成员变量初始化为0
+     *  - 若有用户定义的构造函数，则调用该构造函数，若构造函数不初始化成员变量，则成员变量值未定义
+     */
+    E e;
+    std::cout << "e.e: " << e.e << std::endl; // 未初始化，值未定义
+    E e1{};
+    std::cout << "e1.e: " << e1.e << std::endl; // 值为0
     std::cout << "------------------start class init------------------" << std::endl;
     ClassInit ci1(1);
     std::cout << "------------------end class init------------------" << std::endl;
