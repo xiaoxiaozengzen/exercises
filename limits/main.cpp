@@ -83,6 +83,13 @@ void big_small_test() {
     std::cout << std::setprecision(10) << "normal big: " << (1000.0f + sum) << std::endl;
 }
 
+void math_example() {
+  double val = 3.14;
+  std::cout << "Value: " << val << std::endl;
+  std::cout << "ceil: " << std::ceil(val) << std::endl;  // 向上取整
+  std::cout << "floor: " << std::floor(val) << std::endl;  // 向下取整
+}
+
 int main() {
   std::cout << "============= int example =============" << std::endl;
   int_example();
@@ -90,6 +97,8 @@ int main() {
   float_example();
   std::cout << "============= big small test =============" << std::endl;
   big_small_test();
+  std::cout << "============= math example =============" << std::endl;
+  math_example();
 
   return 0;
 }
