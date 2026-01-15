@@ -73,9 +73,67 @@ void errorcode() {
             << ", message: " << ec3.message() << std::endl;
 }
 
-int main() {
-  errorcode();
+class A {
+ public:
+  A() {}  // 默认构造函数
+  virtual ~A() noexcept {}  // 析构函数
+  void first() noexcept {
+    std::cout << "A::first()" << std::endl;
+  }
+  virtual void second() noexcept {
+    std::cout << "A::second()" << std::endl;
+  }
+};
 
+class B : public A {
+ public:
+  B() {}
+  ~B() {}  // 重写基类的析构函数
+  void first() {
+    std::cout << "B::first()" << std::endl;
+  }
+
+  // 不加noexcept会编译报错，
+  // error: looser throw specifier for ‘virtual void B::second()’
+  void second() noexcept override {
+    std::cout << "B::second()" << std::endl;
+  }
+};
+
+/**
+ * @brief c++11新增的noexcept说明符，用于指示函数不会抛出异常
+ * @note 作用：
+ * 1. 优化性能：编译器可以进行更好的优化，因为它知道某个函数不会抛出异常。
+ *    编译器不会为其额外生成的异常处理代码，从而减少了开销。
+ * 2. 增强代码的可读性：通过明确标注哪些函数不会抛出异常，代码的意图更加清晰。
+ * 3. 标识了noexcept函数：如果一个noexcept函数在运行时抛出异常，程序会调用std::terminate()终止执行。无法被捕获。
+ *
+ * @note 使用：
+ * 1. 在函数声明或定义中使用noexcept关键字，例如：
+ *    void myFunction() noexcept {
+ *        // 函数体
+ *    }
+ * 2. 可以使用条件表达式来决定函数是否为noexcept，例如：
+ *    void myFunction() noexcept(condition) {
+ *        // 函数体
+ *    }
+ *    其中condition是一个常量表达式，返回true或false。
+ * 3. 可以在移动构造函数和移动赋值运算符中使用noexcept，以确保在容器（如std::vector）中使用这些类型时的性能优化。
+ *    例如：扩容的时候，如果移动构造函数是noexcept的，std::vector可以安全地使用它，而不需要回退到拷贝构造函数。
+ * 4. 在继承关系中，父类的虚函数如果被标记为noexcept，子类重写该函数时也必须保持noexcept，否则会导致编译错误。
+ *    即，重写函数的异常规范必须与基类函数兼容。
+ */
+void noexcept_example() {
+  B b{};
+}
+
+int main() {
+  std::cout << "=================errorcode=================" << std::endl;
+  errorcode();
+  std::cout << "=================noexcept_example=================" << std::endl;
+  noexcept_example();
+
+  std::cout << "=================MyException=================" << std::endl;
   try {
     MyException ex;
     throw ex;
