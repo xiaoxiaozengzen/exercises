@@ -102,6 +102,17 @@ void ConFun() {
   } else {
     std::cout << "a is not nullptr" << std::endl;
   }
+  // 空指针的一些操作
+  if(a1 == nullptr) {
+    std::cout << "a1 is nullptr" << std::endl;
+  }
+  if(a1 == a2) {
+    std::cout << "a1 == a2" << std::endl;
+  }
+  std::shared_ptr<A>& a9 = a1;
+  if(a9 == nullptr) {
+    std::cout << "a9 is nullptr" << std::endl;
+  }
 
   /**
    * template <class U> 
