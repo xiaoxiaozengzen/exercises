@@ -197,6 +197,20 @@ void iterator_operations() {
   std::vector<int> v = {1, 2, 3, 4, 5};
   int arr[] = {1, 2, 3, 4, 5};
   int(&arrd)[5] = arr;
+
+  // 迭代器的默认构造函数
+  // 不能和bool/nullptr进行比较
+  std::vector<int>::iterator it_default;
+  std::vector<int>::iterator it_default2 = std::vector<int>::iterator();
+  std::vector<int>::iterator it_default3{};
+
+  it_default = v.begin();
+  std::cout << "it_default after assignment: " << *it_default << std::endl;
+  it_default2 = v.begin();
+  std::cout << "it_default2 after assignment: " << *it_default2 << std::endl;
+  it_default3 = v.begin();
+  std::cout << "it_default3 after assignment: " << *it_default3 << std::endl;
+
   std::vector<int>::iterator it = v.begin();
 
   std::advance(it, 2);
