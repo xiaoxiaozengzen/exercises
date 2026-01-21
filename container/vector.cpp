@@ -183,6 +183,8 @@ void MemberFun() {
   std::cout << "empty: " << arr.empty() << std::endl;
 
   arr.push_back(6);
+  int temp = 7;
+  arr.push_back(std::move(temp));
   arr.pop_back();
 
   std::vector<int>::iterator it9 = arr.insert(arr.begin(), 0);
@@ -308,6 +310,29 @@ void iter_test() {
   std::cout << std::endl;
 }
 
+void pushback_emplaceback_test() {
+  std::vector<A> arr;
+  arr.reserve(10); // 提前分配内存，避免多次扩容
+
+  A a1;
+  std::cout << "push_back copy" << std::endl;
+  arr.push_back(a1);        // 调用拷贝构造函数
+  std::cout << "push_back move" << std::endl;
+  arr.push_back(std::move(a1)); // 调用移动构造函数
+  std::cout << "---push_back end---" << std::endl;
+
+  std::cout << "emplace_back default" << std::endl;
+  arr.emplace_back();       // 直接在容器内构造对象，避免了不必要的拷贝或移动
+  std::cout << "emplace_back with a" << std::endl;
+  arr.emplace_back(42);     // 直接传递参数，在容器内构造对象
+  std::cout << "emplace_back with copy" << std::endl;
+  arr.emplace_back(a1);     // 传递一个已有对象的引用，调用拷贝构造函数在容器内构造对象
+  std::cout << "emplace_back with move" << std::endl;
+  arr.emplace_back(std::move(a1)); // 传递一个将亡值，调用移动构造函数在容器内构造对象
+
+  std::cout << "---emplace_back end---" << std::endl;
+}
+
 int main() {
   std::cout << "---------------------------- MemberType ----------------------------" << std::endl;
   MemberType();
@@ -319,6 +344,8 @@ int main() {
   CapacityTest();
   std::cout << "---------------------------- iter_test ----------------------------" << std::endl;
   iter_test();
+  std::cout << "---------------------------- pushback_emplaceback_test ----------------------------" << std::endl;
+  pushback_emplaceback_test();
 
   return 0;
 }

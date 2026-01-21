@@ -59,6 +59,11 @@ public:
 class E {
 public:
     int e;
+    A a;
+#if 0
+    // 编译报错：因为c只有带参数的构造，E的默认构造函数被删除了。找不到合适的构造函数对于e
+    C c;
+#endif
 };
 
 class ClassInit {
