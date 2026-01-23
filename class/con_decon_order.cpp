@@ -66,66 +66,134 @@ public:
 #endif
 };
 
-class ClassInit {
+class F{
+public:
+    int f1;
+    int f2;
+    double f3;
+public:
+    F() {
+        std::cout << "F constructed" << std::endl;
+    }
+    ~F() {
+        std::cout << "F destructed" << std::endl;
+    }
+    explicit F(int a):f1(a), f2(0), f3(0.0) {
+        std::cout << "F constructed with one parameter: " << f1 << std::endl;
+    }
+    F(int a, int b, double c):f1(a), f2(b), f3(c) {
+        std::cout << "F constructed with parameters: " << f1 << ", " << f2 << ", " << f3 << std::endl;
+    }
+    F(const F& other) {
+        f1 = other.f1;
+        f2 = other.f2;
+        f3 = other.f3;
+        std::cout << "F copy constructed" << std::endl;
+    }
+    F& operator=(const F& other) {
+        f1 = other.f1;
+        f2 = other.f2;
+        f3 = other.f3;
+        std::cout << "F copy assigned" << std::endl; return *this;
+    }
+};
+
+class G {
+public:
+    int data1;
+    double data2;
+    float data3;
+};
+
+/******************************1.现代c++的初始化问题 ******************************/
+/**
+ * 1.内置类型/类类型
+ *   - 内置类型：char, int, float, double, 指针等
+ *   - 类类型：用户自定义的类/结构体/联合体等
+ * 2.c++初始化方式(内置类型跟类类型都支持)：
+ *  - A a = ...; // 拷贝初始化
+ *  - A a = {...}; // 拷贝列表初始化
+ *  - A a{...}; // 直接列表初始化
+ *  - A a(...); // 直接初始化
+ * 2.1.四种初始化方式的区别：
+ *  - 拷贝初始化：
+ *    - 调用非explicit的构造函数，不可调用explicit的单参构造函数(否则编译报错)
+ *    - 允许隐式类型转换
+ *  - 直接初始化：
+ *    - 直接按照参数匹配构造函数，可以调用explicit构造函数
+ *    - 不涉及优先调用initializer_list构造函数的规则
+ *    - 对聚合类不可用，聚合类必须用{...}初始化
+ *  - 拷贝列表初始化：
+ *    - 不允许窄化转换，例如double转int
+ *    - 不可调用explicit的单参构造函数(否则编译报错)
+ *    - 如果是聚合类，等同于聚合初始化
+ *    - auto a = {...}; 会被推导为std::initializer_list<T>类型
+ *    - 不允许construct():member(...)这种形式的成员初始化
+ *  - 直接列表初始化：
+ *    - 不允许窄化转换，例如double转int
+ *    - 可以使用explicit构造函数
+ *    - 如果是聚合类，等同于聚合初始化
+ *    - auto a{...}; 会被推导为普通类型，而不是std::initializer_list<T>
+ *    - 优先调用initializer_list构造函数(如果有的话)
+ * 2.2.聚合类(aggregate)的定义：只包含数据成员的类/结构体/联合体，且满足以下条件：
+ *   - 没有用户定义的构造函数
+ *   - 没有私有/受保护的非静态数据成员
+ *   - 没有基类
+ *   - 没有虚函数
+ * 3.默认初始化/值初始化/零初始化(从创建对象后的值来说)：
+ *   - 默认初始化：对象未被显示赋值，例如：A a;
+ *     - 内置类型：值未定义
+ *     - 类类型：调用默认构造函数，若无默认构造函数则编译报错
+ *   - 值初始化：一种特殊的默认初始化，例如：A a = A(); 或 A a{};
+ *     - 内置类型：初始化为0
+ *     - 类类型：调用默认构造函数，若无默认构造函数则编译报错
+ *   - 零初始化：将对象的内存全部置为0，例如：memset(&a, 0, sizeof(A));
+ *     - 内置类型：初始化为0
+ *     - 类类型：所有成员都被零初始化，若有类类型成员，则递归进行零初始化
+ */
+void initlize() {
+    F f1 = {1, 2, 3.0}; // 拷贝列表初始化
+    std::cout << "f1: " << f1.f1 << ", " << f1.f2 << ", " << f1.f3 << std::endl;
+    F f2{4, 5, 6.0}; // 直接列表初始化
+    std::cout << "f2: " << f2.f1 << ", " << f2.f2 << ", " << f2.f3 << std::endl;
+    
+    auto a = {1}; // 列表初始化，推导为std::initializer_list<int>
+    auto b{1};  // 直接初始化，推导为int
+    std::cout << "type of a: " << typeid(a).name() << std::endl; // std::initializer_list<int>
+    std::cout << "type of b: " << typeid(b).name() << std::endl; // int
+
+    G g1; // 默认初始化，内置类型未定义
+    std::cout << "g1: " << g1.data1 << ", " << g1.data2 << ", " << g1.data3 << std::endl;
+    G g2 = G(); // 值初始化，内置类型初始化为0
+    std::cout << "g2: " << g2.data1 << ", " << g2.data2 << ", " << g2.data3 << std::endl;
+    G g3{}; // 值初始化，内置类型初始化为0
+    std::cout << "g3: " << g3.data1 << ", " << g3.data2 << ", " << g3.data3 << std::endl;
+    G g4 = {}; // 值初始化，内置类型初始化为0
+    std::cout << "g4: " << g4.data1 << ", " << g4.data2 << ", " << g4.data3 << std::endl;
+    G g5{1}; // 直接列表初始化，data1=1, data2和data3初始化为0
+    std::cout << "g5: " << g5.data1 << ", " << g5.data2 << ", " << g5.data3 << std::endl;
+}
+
+class ClassInitOrder {
 public:
     A a;
     A a1;
     B b;
     C c{1};
 
-    ClassInit() {
-        std::cout << "ClassInit constructed" << std::endl;
+    ClassInitOrder() {
+        std::cout << "ClassInitOrder constructed" << std::endl;
     }
 
-    ClassInit(int x):a(A(2)) {
+    ClassInitOrder(int x):a(A(2)) {
         c = C(2); // 构造函数内部做初始化, 属于赋值操作
-        std::cout << "ClassInit constructed with parameter: " << x << std::endl;
+        std::cout << "ClassInitOrder constructed with parameter: " << x << std::endl;
     }
 
-    ~ClassInit() {
-        std::cout << "ClassInit destructed" << std::endl;
+    ~ClassInitOrder() {
+        std::cout << "ClassInitOrder destructed" << std::endl;
     }
 };
-
-/**
- * 统一初始化(c++11引入)：也被称为{}初始化或列表初始化
- *   - 防止隐式类型转换
- *   - 防止窄化转换(例如double转int)
- *   - 统一初始化语法
- *   - 防止最常见的坑-VLA(变长数组)
- * 默认初始化：
- *   - 定义对象但是不给出初始化器，例如：T x; new T(不加括号)
- *   - 内置类型的成员变量不会被初始化，值未定义
- *   - 类类型的成员变量会调用默认构造函数进行初始化
- * 值初始化：
- *   - 使用空的括号或大括号进行初始化，例如：T x(); T x{};
- *   - T有用户定义的构造函数，则调用默认构造函数进行初始化
- *   - T没有用户定义的构造函数，所有标量设置成0，类类型的成员变量调用默认构造函数进行初始化
- * 零初始化：
- *   - 将对象的内存全部设置为0
- *   - 全局变量、静态变量会被自动零初始化
- *   - 跟默认初始化/值初始化不是一个概念，这种是静态存储期对象特有的初始化方式
- */
-void initlize() {
-    A a = A(); // 默认初始化
-    std::cout << "a.a: " << a.a << std::endl;
-    A a1;
-    std::cout << "a1.a: " << a1.a << std::endl;
-    A a2{}; // 默认初始化
-    std::cout << "a2.a: " << a2.a << std::endl;
-    A a3 = A(5); // 列表初始化
-    std::cout << "a3.a: " << a3.a << std::endl;
-    /**
-     * E e; // 默认初始化，会调用默认构造函数。若构造函数不初始化成员变量，则成员变量值未定义
-     * E e1{}; // 列表初始化
-     *  - 若没有用户定义的构造函数，则会将内置类型成员变量初始化为0
-     *  - 若有用户定义的构造函数，则调用该构造函数，若构造函数不初始化成员变量，则成员变量值未定义
-     */
-    E e;
-    std::cout << "e.e: " << e.e << std::endl; // 未初始化，值未定义
-    E e1{};
-    std::cout << "e1.e: " << e1.e << std::endl; // 值为0
-}
 
 /**
  * 类成员的三种初始化方式:
@@ -157,7 +225,7 @@ void initlize() {
  */
 void class_init_order() {
     std::cout << "------------------start class init order------------------" << std::endl;
-    ClassInit ci1(1);
+    ClassInitOrder ci1(1);
     std::cout << "------------------end class init order------------------" << std::endl;
 }
 
@@ -170,9 +238,9 @@ public:
     D& operator=(const D&) { std::cout << "D copy assigned" << std::endl; return *this; }
 };
 
-class Derive : public ClassInit {
+class Derive : public ClassInitOrder {
 public:
-    Derive() : ClassInit(3), d(4) { // 使用成员初始化列表进行初始化
+    Derive() : ClassInitOrder(3), d(4) { // 使用成员初始化列表进行初始化
         std::cout << "Derive constructed" << std::endl;
     }
 

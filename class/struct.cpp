@@ -3,9 +3,9 @@
 
 struct Point {
   std::string name;
-    int x;
-    int y;
-    int z;
+  int x;
+  int y;
+  int z;
 };
 
 typedef struct {
