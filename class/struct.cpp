@@ -61,10 +61,18 @@ struct Data {
   // Data(int a_, double b_) : a(a_), b(b_) {}
 };
 
+struct DataStatic {
+  int a;
+  double b;
+  static int c;  // 静态成员变量不占用类的内存空间
+};
+
 void struct_construct() {
   Data d1{};          // OK，值初始化，a=0, b=0.0
   Data d2{1, 2.0};    // OK，直接初始化，a=1, b=2.0
   Data d3;         // OK，默认初始化，a和b未定义
+  std::cout << "sizeof(Data) = " << sizeof(Data) << std::endl;
+  std::cout << "sizeof(DataStatic) = " << sizeof(DataStatic) << std::endl;
 #if 0
   /**
    * 编译报错：error: no matching function for call to ‘Data::Data()’
