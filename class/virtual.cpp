@@ -370,13 +370,23 @@ public:
     std::shared_ptr<int> ptr_{nullptr};
 };
 
-void vittual_in_construct() {
-    std::cout << "-------------------vittual_in_construct------------------" << std::endl;
+void virtual_in_construct() {
+    std::cout << "-------------------virtual_in_construct------------------" << std::endl;
     std::shared_ptr<BaseClass> basePtr = std::make_shared<DerivedClass>();
     basePtr->doSomething();
     basePtr->doSomethingElse();
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    std::cout << "-------------------vittual_in_construct end------------------" << std::endl;
+    std::cout << "-------------------virtual_in_construct end------------------" << std::endl;
+}
+
+/**
+  * 虚函数的调用开销：
+  *   - 虚函数调用时间接的，即先通过对象的虚函数表指针（vptr）找到虚函数表（vtable），
+  *     然后在虚函数表中找到对应的函数指针，最后调用函数。这种方式有额外开销，但是通常是可以接受的，尤其是在需要多态性的情况下。
+  *   - 阻碍了编译器内联函数和各种函数级别的优化，导致性能开销较大。
+  */
+void virtual_fun_cost() {
+
 }
 
 int main() {
@@ -388,8 +398,8 @@ int main() {
   SharedPtrExample();
   std::cout << "=================PureVirtualExample()===============" << std::endl;
   PureVirtualExample();
-  std::cout << "=================vittual_in_construct()===============" << std::endl;
-  vittual_in_construct();
+  std::cout << "=================virtual_in_construct()===============" << std::endl;
+  virtual_in_construct();
 
   return 0;
 }
