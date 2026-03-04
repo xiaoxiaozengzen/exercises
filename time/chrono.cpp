@@ -113,6 +113,12 @@ void timepoint_class() {
   std::cout << "dtn_1: " << dtn_1.count() << std::endl;
   std::cout << "dtn_2: " << dtn_2.count() << std::endl;
 
+  // static functions，实际是调用duration::min()和duration::max()
+  std::chrono::system_clock::time_point min = std::chrono::system_clock::time_point::min();
+  std::chrono::system_clock::time_point max = std::chrono::system_clock::time_point::max();
+  std::cout << "min time_point: " << min.time_since_epoch().count() << std::endl;
+  std::cout << "max time_point: " << max.time_since_epoch().count() << std::endl;
+
   // display time_point:
   std::time_t tt = std::chrono::system_clock::to_time_t(tp);
   std::cout << "time_point tp is: " << ctime(&tt);
