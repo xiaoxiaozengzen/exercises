@@ -3,6 +3,16 @@
 #include <vector>
 
 /**
+ * 堆的核心价值是：快速拿到当前最大/最小值，同时支持动态插入。
+ * 1. 堆只保证堆顶元素是最大/最小的，其他元素满足堆的性质，但不保证完全有序。
+ * 2. 全排序代价高，堆只维护部分有序
+ * 3. 实际应用：
+ *    - 优先队列：需要频繁获取最大/最小元素的场景，如任务调度、事件驱动系统等。
+ *    - 堆排序：一种基于堆的数据结构的排序算法，时间复杂度为O(n log n)，空间复杂度为O(1)。
+ *    - Top K问题：在大量数据中快速找到前K个最大/最小元素，如排行榜、流式数据处理等。
+ */
+
+/**
  * template <class RandomAccessIterator>  
  * void make_heap (RandomAccessIterator first, RandomAccessIterator last);
  *
@@ -10,7 +20,6 @@
  * void make_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp );
  *
  * @note make_heap()函数将范围[first, last)内的元素重新排列成一个堆。
- * @note heap是一种包含一定范围元素的数据，支持快速检索当前最大元素。一般元素中highest元素排在第一个。默认使用operator<进行比较，也可以自定义比较函数。
  */
 void make_heap_example() {
     std::vector<int> v = {3, 1, 4, 1, 5, 9};
