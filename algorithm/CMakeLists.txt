@@ -9,3 +9,5 @@ add_executable(algorithm_sort sort.cpp)
 
 add_executable(non_modifying_operation non_modifying_operation.cpp)
 add_executable(modifying_operation modifying_operation.cpp)
+add_executable(heap heap.cpp)
+add_executable(max_min max_min.cpp)

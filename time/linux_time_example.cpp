@@ -13,6 +13,8 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <iomanip>
+#include <sstream>
 
 /**
  * 在Linux中有硬件时钟与系统时钟两种时钟:
@@ -117,6 +119,10 @@ void tm_example() {
             << param.tm_sec << std::endl;
 }
 
+/**
+ * @brief 在time.h中，定义了time_t
+ * typedef long int time_t; // time_t是一个整数类型，通常用来表示从1970年1月1日00:00:00 UTC到某个时间点的秒数
+ */
 void time_example() {
   /**
    * time_t time (time_t* timer);
@@ -127,6 +133,18 @@ void time_example() {
   time_t t;
   t = time(NULL);
   std::cout << "time(NULL): " << t << " s" << std::endl;
+
+  // 隐式转换成double类型，单位是秒
+  double time_sec = t;
+  std::stringstream ss;
+  ss << std::fixed << std::setprecision(6) << time_sec;
+  std::cout << "time_sec: " << ss.str() << " s" << std::endl;
+
+  // 隐式转换成time_t类型，单位是秒
+  double time_d = 1772767128.56789; // 2025-06-03 09:48:00.567890 PM CST
+  time_t time_t_d = time_d; // 隐式转换成time_t类型，单位是秒
+  std::cout << "time_t_d: " << time_t_d << " s" << std::endl;
+
 }
 
 void gettimeoftoday_example() {
