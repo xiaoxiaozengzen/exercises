@@ -287,24 +287,30 @@ void PureVirtualExample() {
 
 /*************************virtual never in construct********************************* */
 /**
- * 永远不要在构造函数中调用虚函数，因为在构造函数执行时，派生类的部分还没有被构造完成。
- * 永远不要在析构函数中调用虚函数，因为在析构函数执行时，派生类的部分已经被析构了。
+ * 不建议在构造函数和析构函数中调用虚函数，但是语法上是允许的
  * 
- * 派生类与基类的构造函数初始化时，虚函数表是不一样的，意味着构造函数中调用虚函数是当前类的虚函数，无法多态调用。
- * 即使允许多态调用，如果在基类中调用派生类的虚函数，由于派生类还未开始初始化，如果访问了还未初始化的数据，那就有很大的问题了。
+ * 构造跟析构中不会体现多态：
+ * - 类的构造顺序先构造基类然后再派生类，所以在构造函数中调用虚函数，虚函数是不会呈现出多态的。
+ * - 类的析构顺序是先析构派生类然后再析构基类，所以当调用继承层次中某一层次的类的析构函数时，
+ *   这代表其派生类已经进行了析构，所以也并不会呈现多态。
  */
 class BaseClass {
 public:
     BaseClass():data_(std::make_shared<int>(42)) {
-        std::cout << "BaseClass constructed" << std::endl;
+        std::cout << "BaseClass constructed start" << std::endl;
+        
+        // 构造函数中调用虚函数，虽然语法上允许，但不建议这样做，因为在构造函数中，虚函数不会表现出多态性。
         Init();
+
+        // 父类构造完成才会创建线程，线程中调用虚函数时，
+        // 已经是子类的虚函数了，此时子类的成员变量也已经初始化了，所以不会有问题。
         thread_ = std::thread([&](){
-          while(count_ < 5) {
-            count_++;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+          while(cycle_) {
             doSomething();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
           }
         });
+        std::cout << "BaseClass constructed end" << std::endl;
     }
 
     virtual void Init() {
@@ -312,9 +318,14 @@ public:
     }
 
     virtual ~BaseClass() { 
-        std::cout << "BaseClass destructed" << std::endl;
+        std::cout << "BaseClass destructed start" << std::endl;
         doSomethingElse();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+
+        // 析构函数中调用虚函数，虽然语法上允许，但不建议这样做，因为在析构函数中，虚函数也不会表现出多态性。
+        cycle_ = false;  // 停止线程循环
         thread_.join();  // 确保线程结束
+        std::cout << "BaseClass destructed end" << std::endl;
     }
 
     virtual void doSomething() {
@@ -328,7 +339,7 @@ public:
 public:
     std::thread thread_;
     std::shared_ptr<int> data_{nullptr};
-    int count_{0};
+    bool cycle_ = true;
 };
 
 class DerivedClass : public BaseClass {
@@ -373,9 +384,7 @@ public:
 void virtual_in_construct() {
     std::cout << "-------------------virtual_in_construct------------------" << std::endl;
     std::shared_ptr<BaseClass> basePtr = std::make_shared<DerivedClass>();
-    basePtr->doSomething();
-    basePtr->doSomethingElse();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(4));
     std::cout << "-------------------virtual_in_construct end------------------" << std::endl;
 }
 
