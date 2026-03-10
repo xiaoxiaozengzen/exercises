@@ -317,6 +317,8 @@ public:
         std::cout << "BaseClass Init called" << std::endl;
     }
 
+    virtual void start() = 0;
+
     virtual ~BaseClass() { 
         std::cout << "BaseClass destructed start" << std::endl;
         doSomethingElse();
@@ -345,7 +347,9 @@ public:
 class DerivedClass : public BaseClass {
 public:
     DerivedClass():ptr_(std::make_shared<int>(10)) { 
-        std::cout << "DerivedClass constructed" << std::endl; 
+        std::cout << "DerivedClass constructed start" << std::endl; 
+        Init();
+        std::cout << "DerivedClass constructed end" << std::endl;
     }
     ~DerivedClass() { 
       std::cout << "DerivedClass destructed" << std::endl;
@@ -368,6 +372,10 @@ public:
 
     void Init() override {
         std::cout << "DerivedClass Init called" << std::endl;
+    }
+
+    void start() override {
+        std::cout << "DerivedClass start called" << std::endl;
     }
 
     void doSomethingElse() override {
