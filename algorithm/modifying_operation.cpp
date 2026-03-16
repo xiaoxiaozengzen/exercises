@@ -172,18 +172,32 @@ void transform_test() {
     std::vector<int> dst(src.size());
 
     // 使用一元操作
-    std::transform(src.begin(), src.end(), dst.begin(), [](int x) { return x * x; });
+    std::vector<int>::iterator ret = std::transform(src.begin(), src.end(), dst.begin(), [](int x) { return x * x; });
     std::cout << "Transformed (squared): ";
     for (int v : dst) std::cout << v << " ";
     std::cout << std::endl;
+    int diff = std::distance(dst.begin(), ret);
+    std::cout << "diff: " << diff << std::endl;
+    if(ret == dst.end()) {
+        std::cout << "ret points to the end of dst." << std::endl;
+    } else {
+        std::cout << "ret points to: " << *ret << std::endl;
+    }
 
     // 使用二元操作
     std::vector<int> src2 = {10, 20, 30, 40, 50};
     std::vector<int> dst2(src.size());
-    std::transform(src.begin(), src.end(), src2.begin(), dst2.begin(), [](int x, int y) { return x + y; });
+    std::vector<int>::iterator ret2 = std::transform(src.begin(), src.end(), src2.begin(), dst2.begin(), [](int x, int y) { return x + y; });
     std::cout << "Transformed (added): ";
     for (int v : dst2) std::cout << v << " ";
     std::cout << std::endl;
+    int diff2 = std::distance(dst2.begin(), ret2);
+    std::cout << "diff2: " << diff2 << std::endl;
+    if(ret2 == dst2.end()) {
+        std::cout << "ret2 points to the end of dst2." << std::endl;
+    } else {
+        std::cout << "ret2 points to: " << *ret2 << std::endl;
+    }
 }
 
 /**
