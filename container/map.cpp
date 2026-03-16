@@ -254,6 +254,12 @@ void MemberFun() {
             << value_comp(std::pair<char, int>('a', 1), std::pair<char, int>('b', 2)) << std::endl;
 
   // 6. operations
+  for(auto it = map1.begin(); it != map1.end(); it++) {
+    std::cout << "key: " << it->first << ", value: " << it->second << std::endl;
+  }
+  map1.insert({'c', 3});
+  map1.insert({'d', 4});
+  map1.insert({'e', 5});
   std::map<char, int>::iterator it15 = map1.find('a');
   if (it15 != map1.end()) {
     std::cout << "find: " << it15->first << ", " << it15->second << std::endl;
@@ -262,7 +268,7 @@ void MemberFun() {
   }
   std::map<char, int>::size_type n3 = map1.count('a');
   std::cout << "count: " << n3 << std::endl;
-  std::map<char, int>::iterator it16 = map1.lower_bound('a');
+  std::map<char, int>::iterator it16 = map1.lower_bound('b');
   if (it16 != map1.end()) {
     std::cout << "lower_bound: " << it16->first << ", " << it16->second << std::endl;
   } else {
@@ -305,13 +311,10 @@ void MemberFun() {
 }
 
 int main() {
-  std::cout << "--------------------------------BasicSetMemberTypes--------------------------------"
-            << std::endl;
+  std::cout << "------------------BasicSetMemberTypes------------------" << std::endl;
   BasicSetMemberTypes();
-  std::cout << "--------------------------------ConstructFun--------------------------------"
-            << std::endl;
+  std::cout << "------------------ConstructFun------------------" << std::endl;
   ConstructFun();
-  std::cout << "--------------------------------MemberFun--------------------------------"
-            << std::endl;
+  std::cout << "------------------MemberFun------------------" << std::endl;
   MemberFun();
 }
