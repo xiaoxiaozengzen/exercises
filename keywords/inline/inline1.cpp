@@ -1,5 +1,9 @@
 #include "inline1.hpp"
 
+inline void inline_function_example_error() {
+    std::cout << "This is an inline function example error." << std::endl;
+}
+
 void fun1() {
     std::cout << "fun1: " 
     << "value_global: " << value_global << ", "
@@ -9,4 +13,6 @@ void fun1() {
     << "value_global2: " << value_global2 << ", "
     << "value_global2 address: " << &value_global2
     << std::endl;
+
+    inline_function_example();
 }

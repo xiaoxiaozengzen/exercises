@@ -2,6 +2,8 @@
 #define INLINE_HPP
 // 不能使用#pragma once，要不然还是会报错
 
+#include <iostream>
+
 /**
  * inline的问题在于，它的含义在c++的发展历程中，发生了转变:
  *    1.早期的inline表示建议编译器在这里进行优化
@@ -21,6 +23,15 @@ constexpr int value_global1 = 2;
  * 这意味着即使头文件被多个源文件包含，每个源文件都会有自己的const副本，不会发生重定义错误
  */
 const int value_global2 = 3;
+
+/**
+ * @brief inline函数的定义必须放在头文件中，因为编译器需要在编译阶段看到函数的实现，以便进行内联优化。
+ *        如果inline函数的定义放在源文件中，其他源文件无法访问到该函数的实现，导致链接错误。
+ *        这也是为什么inline函数通常被定义在头文件中的原因之一。
+ */
+inline void inline_function_example() {
+    std::cout << "This is an inline function example." << std::endl;
+}
 
 #if 0
 // 报错：multiple definition of `value_global2'
