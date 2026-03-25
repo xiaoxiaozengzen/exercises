@@ -249,6 +249,14 @@ void NoMemFun() {
   }
 }
 
+// shared_ptr对象被置为nullptr时，use_count()会变为0，会调用deleter释放资源
+void set_nullptr_test() {
+  std::shared_ptr<A> a1(new A(1));
+  std::cout << "before set nullptr, a1.use_count(): " << a1.use_count() << std::endl;
+  a1 = nullptr;
+  std::cout << "after set nullptr, a1.use_count(): " << a1.use_count() << std::endl;
+}
+
 int main() {
   std::cout << "================================ MemType ================================" << std::endl;
   MemType();
@@ -258,6 +266,8 @@ int main() {
   MemFun();
   std::cout << "================================ NoMemFun ================================" << std::endl;
   NoMemFun();
+  std::cout << "================================ set_nullptr_test ================================" << std::endl;
+  set_nullptr_test();
 
   return 0;
 }
