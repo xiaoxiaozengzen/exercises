@@ -4,8 +4,15 @@
 #include <type_traits>
 #include <array>
 
-// std::string_view记录了对应的字符串指针和偏移位置，无需管理内存，
-// 相对std::string拥有一份字符串拷贝，如字符串查找和拷贝，效率更高。
+/**
+ * std::string跟std::string_view的区别：
+ * 1. 是否拥有数据：
+ *    std::string是一个拥有字符串数据的类，
+ *    std::string_view只是一个指向字符串数据的视图。
+ * 2. 内存管理：
+ *    std::string需要管理内存，可能会进行动态分配和释放，
+ *    std::string_view不需要管理内存，只是一个轻量级的对象。
+ */
 
 #if 0
 template<
@@ -42,47 +49,50 @@ void MemFun() {
   std::cout << "arr: " << arr << std::endl;
 }
 
+/**
+ * SSO（Small String Optimization）小字符串优化(std::string实现的一个重要特性)：
+ *  1. 当字符串长度小于等于15时，优化使用栈空间存储字符串数据，避免动态分配内存，提高性能。
+ *  2. 当字符串长度大于15时，使用堆空间存储字符串数据，动态分配内存。
+ *
+ * 为什么要有SSO：
+ *  1.高频次小对象的创建和销毁会导致频繁的内存分配和释放，增加系统开销。
+ *  2.缓存命中率低，频繁的内存分配和释放会导致内存碎片化，降低性能。
+ *  3.内存碎片化会导致内存使用效率降低，增加内存占用。
+ */
 void Test() {
-  std::cout << "====================== Test1 ======================" << std::endl;
-  const char* str = "Hello111111111111111111111111111111";
-  std::string s(str);
-  std::string_view sv(str);
+  std::cout << "-------------------- Test1 --------------------" << std::endl;
+  const char* cs = "1234567";
+  std::string s(cs);
+  std::string_view sv(cs);
 
-  // str address: 0x55f2c002702d
-  std::cout << "str address: " << (void*)str << std::endl;
-  // s address: 当长度小于16时，开辟新的内存，否则指向str
+  // cs address: 0x55f2c002702d
+  std::cout << "cs address: " << (void*)cs << std::endl;
+  // s address: 当长度小于16时，在栈上存储字符串数据，地址和cs不同；当长度大于15时，在堆上存储字符串数据，地址和cs不同。
   std::cout << "s address: " << (void*)s.data() << std::endl;
-  // sv address: 0x55f2c002702d
+  // sv address: 0x55f2c002702d,和cs地址相同，因为sv只是一个指向字符串数据的视图，不拥有数据。
   std::cout << "sv address: " << (void*)sv.data() << std::endl;
 
-  char* single = static_cast<char*>(s.data());
-  std::cout << "single: " << *single << std::endl;
+  char* first = static_cast<char*>(s.data());
+  std::cout << "first: " << *first << std::endl;
+  char* second = first + 1;
+  std::cout << "second: " << *second << std::endl;
 
-  std::cout << "====================== Test2 ======================" << std::endl;
+  std::cout << "-------------------- Test2 --------------------" << std::endl;
   char arr[] = "Hello111111111111111111111111111111";
   std::string s1(arr);
   std::string_view sv1(arr);
-  std::cout << "arr address: " << (void*)arr
-            << ", s1 address: " << (void*)s1.data()
-            << ", sv1 address: " << (void*)sv1.data()
-            << std::endl;
-  // 发现s1的地址和arr的地址不一样，说明s1开辟了新的内存。难道是因为arr不是const char*?
-  // 但是sv1的地址和arr的地址一样，说明sv1没有开辟新的内存。
-  
-  std::cout << "====================== Test3 ======================" << std::endl;
   std::cout << "arr[0]: " << arr[0]
             << ", s1[0]: " << s1[0]
             << ", sv1[0]: " << sv1[0]
             << std::endl;
+  // 修改arr[0]，s1[0]不变，sv1[0]改变，因为s1拥有数据，sv1只是一个视图。
   arr[0] = 'h';
   std::cout << "arr[0]: " << arr[0]
             << ", s1[0]: " << s1[0]
             << ", sv1[0]: " << sv1[0]
             << std::endl;
-  // 发现arr的第一个元素改变了，s1的第一个元素没有变，但是sv1的第一个元素变了。
-  // 看起来string_view适用于原字符串不变的情况，如果原字符串改变了，string_view也会改变。
 
-  std::cout << "====================== Test4 ======================" << std::endl;
+  std::cout << "-------------------- Test3 --------------------" << std::endl;
 #if 0
   // 会报错，因为sv1[0]返回的是const char&，不能修改。
   sv1[0] = 'i';
