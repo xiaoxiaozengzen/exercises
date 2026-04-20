@@ -31,3 +31,5 @@ target_link_libraries(lwrb_test PUBLIC
 )
 
 add_executable(rate_test rate_test.cpp)
+
+add_executable(fixed_point_test ${CMAKE_CURRENT_SOURCE_DIR}/../utility/fixed_point.cpp)
