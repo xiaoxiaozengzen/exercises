@@ -1,3 +1,4 @@
+#include <bits/stdint-uintn.h>
 #include <iostream>
 
 /**
@@ -53,10 +54,51 @@ void fixed_point_round_example() {
     std::cout << "Result (int): " << result_int << std::endl;
 }
 
+/**
+ * 在进行数学运算(加减乘除)时：
+ *  1.中间结果：编译器或者CPU会选用对应类型的寄存器保存中间结果
+ *  2.溢出处理：如果中间结果超过了类型的范围，可能会发生溢出，导致结果不正确。
+ *  3.性能优化：在某些情况下，编译器可能会对定点数运算进行优化，例如使用位移操作代替乘除法，以提高性能
+ *
+ * 整型提升：
+ * 1.在表达式计算时，各种整形首先要提升为int类型，
+ *   如果int类型不足以表示的话，就需要提升为unsigned int类型，然后再执行表达式的运算
+ */
+void multiply_example() {
+    std::cout << "--------- uint8_t example ---------" << std::endl;
+    uint8_t a = 200;
+    uint8_t b = 200;
+
+    // 溢出：200 * 200 = 40000(0x9C40)，但uint8_t只能存储0-255，所以结果会溢出
+    uint8_t result = a * b;
+    // 较小的类型(uint8_t、uint16_t)相乘的时候，C++会先提升到int类型进行计算
+    uint16_t result_correct = a * b;
+    // 稳妥的方式就是提升到更大的类型进行计算，避免溢出
+    uint16_t result_safe = static_cast<uint16_t>(a) * static_cast<uint16_t>(b);
+    std::cout << "result (uint8_t): " << static_cast<int>(result) << " (溢出)" << std::endl;
+    std::cout << "result_correct (uint16_t): " << result_correct << " (正确结果)" << std::endl;
+    std::cout << "result_safe (uint16_t): " << result_safe << " (安全结果)" << std::endl;
+
+    std::cout << "--------- uint32_t example ---------" << std::endl;
+    uint32_t c = 1<<30; // 1073741824
+    uint32_t d = 1<<30; // 1073741824
+    uint32_t result32 = c * d;
+    // 对于uint32_t或者更大类型，其乘法运算会直接在该类型的寄存器中进行计算，如果结果超过了uint32_t的范围，就会发生溢出
+    uint64_t result32_correct = c * d;
+    // 正确结果应该是1073741824 * 1073741824 = 1152921504606846976 (0x10000000000000000)，但由于uint32_t的范围是0-4294967295，所以结果会溢出
+    uint64_t result32_safe = static_cast<uint64_t>(c) * static_cast<uint64_t>(d);
+    std::cout << "result (uint32_t): " << result32 << " (溢出)" << std::endl;
+    std::cout << "result_correct (uint64_t): " << result32_correct << " (溢出)" << std::endl;
+    std::cout << "result_safe (uint64_t): " << result32_safe << " (安全结果)" << std::endl;
+}
+
 int main() {
     std::cout << "===================== Fixed Point Example =====================" << std::endl;
     fixed_point_example();
     std::cout << "===================== Fixed Point Round Example =====================" << std::endl;
     fixed_point_round_example();
+    std::cout << "===================== Multiply Example =====================" << std::endl;
+    multiply_example();
+
     return 0;
 }
