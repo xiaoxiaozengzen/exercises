@@ -265,7 +265,7 @@ void generate_test() {
  * ForwardIterator remove (ForwardIterator first, ForwardIterator last, const T& val);
  * 
  * @brief 移除[first, last)范围内所有等于val的元素，返回一个迭代器，指向新的逻辑结尾。
- * @note 注意，这个函数并不会真正删除元素，而是将不等于val的元素移动到前面，并返回新的逻辑结尾。
+ * @note 注意，这个函数并不会真正删除元素，而是将不等于val的元素移动到前面(覆盖改位置元素），并返回新的逻辑结尾。
  *       之前的元素仍然存在于容器中，但被认为是“已删除”的。如果需要真正删除这些元素，可以使用erase函数。
  */
 void remove_test() {
@@ -287,6 +287,36 @@ void remove_test() {
 
     // 实际上vec的大小并没有改变，仍然是7
     std::cout << "Vector size after remove: " << vec.size() << std::endl;
+}
+
+/**
+ * template <class ForwardIterator, class UnaryPredicate>
+ * ForwardIterator remove_if (ForwardIterator first, ForwardIterator last, UnaryPredicate pred);
+ *
+ * 遍历[first, last)范围内的元素，将pred返回true的元素移除，返回一个迭代器，指向新的逻辑结尾。
+ * @note 注意，这个函数并不会真正删除元素，而是将不满足条件的元素移动到前面，并返回新的逻辑结尾。
+ *       之前的元素仍然存在于容器中，但被认为是“已删除”的。如果需要真正删除这些元素，可以使用erase函数。
+ * @note pred函数接受一个元素作为参数，返回一个bool值，表示该元素是否满足被移除的条件。
+ */
+void remove_if_test() {
+    std::vector<int> vec = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::cout << "Original vector: ";
+    for (int v : vec) std::cout << v << " ";
+    std::cout << std::endl;
+
+    // 移除所有的偶数
+    auto new_end = std::remove_if(vec.begin(), vec.end(), [](int x) { return x % 2 == 0; });
+    
+    std::cout << "After remove_if (logical end): ";
+    for (auto it = vec.begin(); it != new_end; ++it) std::cout << *it << " ";
+    std::cout << std::endl;
+
+    std::cout << "New logical end value: " << (*new_end) << std::endl;
+    std::cout << "New logical end+1 value: " << (*(new_end + 1)) << std::endl;
+    std::cout << "New logical end+2 value: " << (*(new_end + 2)) << std::endl;
+
+    // 实际上vec的大小并没有改变，仍然是10
+    std::cout << "Vector size after remove_if: " << vec.size() << std::endl;
 }
 
 /**
@@ -401,6 +431,8 @@ int main() {
     generate_test();
     std::cout << "====================== remove_test ======================" << std::endl;
     remove_test();
+    std::cout << "====================== remove_if_test ======================" << std::endl;
+    remove_if_test();
     std::cout << "====================== unique_test ======================" << std::endl;
     unique_test();
     std::cout << "====================== reverse_test ======================" << std::endl;
