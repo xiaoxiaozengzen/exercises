@@ -65,6 +65,16 @@ struct DataStatic {
   int a;
   double b;
   static int c;  // 静态成员变量不占用类的内存空间
+  void fun() {
+    static int d = 0;  // 静态局部变量在函数调用结束后仍然存在，且在所有函数调用中共享
+    d++;
+    std::cout << "d = " << d << std::endl;
+  }
+  static void static_fun() {
+    static int e = 0;  // 静态局部变量在函数调用结束后仍然存在，且在所有函数调用中共享
+    e++;
+    std::cout << "e = " << e << std::endl;
+  }
 };
 
 void struct_construct() {
@@ -90,6 +100,13 @@ void struct_construct() {
   std::vector<Data> vec(5);
   vec.emplace_back(1, 2.0);  // ERROR，没有定义构造函数
 #endif
+
+  DataStatic ds1{1, 2.0};    // OK，值初始化，a=1, b=2.0
+  DataStatic ds2;         // OK，默认初始化，a和b未定义
+  ds1.fun();  // d = 1
+  ds2.fun();  // d = 2，静态局部变量d在所有函数调用中共享
+  DataStatic::static_fun();  // e = 1
+  DataStatic::static_fun();  // e = 2，静态局部变量e在所有函数调用中共享
 }
 
 /**
