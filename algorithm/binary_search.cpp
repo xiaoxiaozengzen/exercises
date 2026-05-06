@@ -34,6 +34,7 @@ class SensorData {
   double threshold_;
 
   bool operator<(const SensorData& other) const {
+    std::cout << "operator<(const SensorData& other) called, this: " << std::fixed << std::setprecision(3) << *this << ", other: " << std::fixed << std::setprecision(3) << other << std::endl;
     return timestamp_ < other.timestamp_;
   }
 
@@ -43,10 +44,12 @@ class SensorData {
   }
 
   friend bool operator<(const SensorData& lhs, const double& rhs) {
+    std::cout << "operator<(const SensorData& lhs, const double& rhs) called, lhs: " << std::fixed << std::setprecision(3) << lhs << ", rhs: " << std::fixed << std::setprecision(3) << rhs << std::endl;
     return lhs.timestamp_ < rhs;
   }
 
   friend bool operator<(const double& lhs, const SensorData& rhs) {
+    std::cout << "operator<(const double& lhs, const SensorData& rhs) called, lhs: " << std::fixed << std::setprecision(3) << lhs << ", rhs: " << std::fixed << std::setprecision(3) << rhs << std::endl;
     return lhs < rhs.timestamp_;
   }
 };
@@ -129,6 +132,7 @@ void binary_search_example() {
   data.push_back(SensorData(1741155872.398));
   data.push_back(SensorData(1741155872.498));
 
+  std::cout << "+------------------ binary_search_example ------------------+" << std::endl;
   std::stringstream ss;
   // T类型跟迭代器元素类型不一样，使用自定义的比较函数
   double target_timestamp = 1741155871.799;
@@ -142,6 +146,7 @@ void binary_search_example() {
   }
   ss.str("");
 
+  std::cout << "------------------ binary_search_example with custom compare ------------------" << std::endl;
   // T类型跟迭代器元素类型一样，使用自定义的比较函数
   SensorData target_timestamp2(1741155871.799);
   bool existed2 = std::binary_search(data.begin(), data.end(), target_timestamp2, my_compare_less);
@@ -154,6 +159,7 @@ void binary_search_example() {
   }
   ss.str("");
 
+  std::cout << "------------------ binary_search_example with MyCompare ------------------" << std::endl;
   // T类型跟迭代器元素类型不一样，使用自定义的比较函数
   double target_timestamp3 = 1741155871.799;
   bool existed3 = std::binary_search(data.begin(), data.end(), target_timestamp3, MyCompare());
