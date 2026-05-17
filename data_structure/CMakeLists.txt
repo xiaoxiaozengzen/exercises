@@ -3,3 +3,4 @@ project(data_structure)
 
 add_executable(binary_search_tree binary_search_tree.cpp)
 add_executable(hash_tabel hash_tabel.cpp)
+add_executable(list_tabel list_tabel.cpp)

@@ -148,6 +148,42 @@ void arr_point() {
   std::cout << "*((*pp)+1): " << *((*pp) + 1) << std::endl;
 }
 
+void point_reference() {
+  int * p = new int(10);
+  int * p_null = nullptr;
+
+  std::cout << "before: p: " << *p << std::endl;
+  auto lambda = [](int * value) {
+    *value = 20;
+    std::cout << "lambda: value: " << *value << std::endl;
+  };
+  lambda(p);
+  std::cout << "after: p: " << *p << std::endl;
+
+  /**
+   * 函数参数是按值传递，因此是传入指针p的一份拷贝。
+   * lambda2函数中，修改了指针变量value的值，使其指向了一个新的内存地址，但这并不会影响到外部的指针p，因为p和value是两个独立的变量。
+   */
+  auto lamdba2 = [](int* value) {
+    int * temp = new int(100);
+    value = temp;
+    std::cout << "lambda2: value: " << *value << std::endl;
+  };
+  lamdba2(p);
+  std::cout << "after lambda2: p: " << *p << std::endl;
+
+  /**
+   * 函数参数是按引用传递，因此传入的是指针p的引用，修改value的值会直接影响到外部的指针p，使其指向一个新的内存地址。
+   */
+  auto lanbda3 = [](int*& value) {
+    int * temp = new int(100);
+    value = temp;
+    std::cout << "lambda3: value: " << *value << std::endl;
+  };
+  lanbda3(p);
+  std::cout << "after lambda3: p: " << *p << std::endl;
+}
+
 int main() {
   std::cout << "=================one_point=================" << std::endl;
   one_point();
@@ -157,4 +193,8 @@ int main() {
   const_point();
   std::cout << "=================arr_point=================" << std::endl;
   arr_point();
+  std::cout << "=================point_reference=================" << std::endl;
+  point_reference();
+
+  return 0;
 }
