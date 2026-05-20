@@ -115,6 +115,34 @@ void trunc_example() {
     std::cout << "Trunc of " << z << " is " << result_z << " (as int: " << int_result_z << ")" << std::endl; // 输出: Trunc of 3.5 is 3
 }
 
+void division_and_modulus() {
+    int a = 10;
+    int b = 3;
+    int c = -10;
+    int d = -3;
+
+    // 整数除法，结果向0方向取整，结果为3
+    int result = a / b;
+    std::cout << "Integer division: " << a << " / " << b << " = " << result << std::endl;
+    result = a / d;
+    std::cout << "Integer division: " << a << " / " << d << " = " << result << std::endl;
+    result = c / b;
+    std::cout << "Integer division: " << c << " / " << b << " = " << result << std::endl;
+    result = c / d;
+    std::cout << "Integer division: " << c << " / " << d << " = " << result << std::endl;
+
+    // 取余运算，结果符号与被除数相同。只对整数类型有效，且当除数为0时会抛出运行时错误
+    // 即满足关系：a = （a / b）* b + （a % b）
+    int mod_result = a % b;
+    std::cout << "Integer modulus: " << a << " % " << b << " = " << mod_result << std::endl;
+    mod_result = a % d;
+    std::cout << "Integer modulus: " << a << " % " << d << " = " << mod_result << std::endl;
+    mod_result = c % b;
+    std::cout << "Integer modulus: " << c << " % " << b << " = " << mod_result << std::endl;
+    mod_result = c % d;
+    std::cout << "Integer modulus: " << c << " % " << d << " = " << mod_result << std::endl;
+}
+
 int main() {
     std::cout << "=========== Ceil Example ============" << std::endl;
     ceil_example();
@@ -126,6 +154,8 @@ int main() {
     round_example();
     std::cout << "=========== Trunc Example ============" << std::endl;
     trunc_example();
+    std::cout << "=========== Division and Modulus Example ============" << std::endl;
+    division_and_modulus();
 
     return 0;
 }
