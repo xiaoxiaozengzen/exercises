@@ -3,19 +3,35 @@
 #include <unistd.h>
 
 #include <atomic>
+#include <chrono>
 #include <iostream>
 #include <memory>
 #include <thread>
 
-void ThreadType() {
+/**
+ * 一个类，表示执行线程
+ * 1.一个已经初始化的线程对象，表示一个active状态下的 thread of execution，
+ *   这样的线程是joinable的，并且包含独一无二的thread id
+ * 2.未初始化的线程对象，表示一个non-thread, 这样的线程不是joinable的，并且和所有非joinable的线程共享同一个id
+ * 3.joinable的线程可以通过join和detach变成非joinable的线程，非joinable的线程不能再变成joinable的线程
+ */
+
+void MemberType() {
+  // id
   std::thread::id id = std::this_thread::get_id();
   std::cout << "std::thread::id: " << id << std::endl;
+  std::thread t_no_init;
+  std::thread::id id_no_init = t_no_init.get_id();
+  std::cout << "std::thread::id of no init thread: " << id_no_init << std::endl;
+
   std::thread t = std::thread([]() {
     std::thread::id id = std::this_thread::get_id();
     std::cout << "std::thread::id: " << id << std::endl;
     pid_t posix_thread_id = syscall(SYS_gettid);
     std::cout << "posix_thread_id: " << posix_thread_id << std::endl;
   });
+
+  // native_handle_type
   std::thread::native_handle_type handle = t.native_handle();
   pthread_t t_id = t.native_handle();
   if (t.joinable()) {
@@ -27,7 +43,7 @@ void thread_pthread() {
   int i = 2;
   std::thread t([&]() {
     while (i > 0) {
-      std::this_thread::sleep_for(std::chrono::seconds(1));
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
       i--;
     }
   });
@@ -35,27 +51,53 @@ void thread_pthread() {
   pthread_t t_id = t.native_handle();
   pthread_setname_np(t_id, "nihao");
 
+  char name[16];
+  pthread_getname_np(t_id, name, sizeof(name));
+  std::cout << "Thread name: " << name << std::endl;
+
   if (t.joinable()) {
     t.join();
   }
 }
 
+/**
+ * thread会检查传入的参数是否可调用，如果不可调用会编译报错
+ * 1.如果传入的参数是一个值，那么会进行一次复制，线程函数中使用的是复制的参数，因此对参数的修改不会影响到外部的变量
+ * 2.如果传入的参数是一个引用，那么线程函数中使用的是外部的变量，因此对参数的修改会影响到外部的变量
+ * 3.如果传入的参数是一个右值，那么会进行一次移动，线程函数中使用的是移动后的参数，因此对参数的修改会影响到外部的变量
+ */
 void thread_ref() {
+#if 0
+  // 编译报错：
+  // error: static assertion failed: std::thread arguments must be invocable after conversion to rvalues
   int a = 10;
-  std::thread t([](int& a) { a += 1; }, std::ref(a));
-
-  int b = 20;
-  std::thread t2([](int& b) { b += 1; }, std::ref(b));
-
+  std::thread t([](int& a) { a += 1; }, a);
   if (t.joinable()) {
     t.join();
   }
+  std::cout << "thread_ref a: " << a << std::endl;
+#endif
+
+  int b = 20;
+  std::thread t2([](int& b) { b += 1; }, std::ref(b));
   if (t2.joinable()) {
     t2.join();
   }
-
-  std::cout << "thread_ref a: " << a << std::endl;
   std::cout << "thread_ref b: " << b << std::endl;
+
+  int c = 30;
+  std::thread t3([](int&& c) { c += 1; }, std::move(c));
+  if (t3.joinable()) {
+    t3.join();
+  }
+  std::cout << "thread_ref c: " << c << std::endl;
+
+  int d = 40;
+  std::thread t4([](int d) { d += 1; }, d);
+  if (t4.joinable()) {
+    t4.join();
+  }
+  std::cout << "thread_ref d: " << d << std::endl;
 }
 
 std::atomic<int> global_counter(0);
@@ -266,6 +308,33 @@ void ThreadTest() {
   }
 }
 
+
+std::atomic<int> detach_counter(0);
+/**
+ * 当有嵌套的线程时，外层线程会等待内层线程结束后才会结束，因此外层线程的join会等待内层线程的join结束后才会返回
+ * 1.当外层线程调用join时，如果内层线程还没有结束，那么外层线程会阻塞，直到内层线程结束后才会返回
+ * 2.当外层线程调用detach时，外层线程会立即返回，内层线程会继续执行，直到内层线程结束后才会释放资源
+ * 3.当外层线程调用join时，如果内层线程已经结束，那么外层线程会立即返回，不会阻塞
+ * 4.当外层线程调用detach时，如果内层线程已经结束，那么外层线程会立即返回，不会阻塞
+ *
+ * 有些场景就需要 detach，它仅仅是让线程独立执行，并不会让调用它的线程等待它。
+ * 1.detach线程函数内部是一个无限循环
+ * 2.detach线程函数内部的循环需要有终止条件，且这个终止条件需要在外部线程中修改，这样才能让detach线程正常退出，否则会导致资源泄漏
+ */
+void join_detach_test() {
+  std::thread t([&]() {
+    for(;detach_counter.load() < 5;) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      std::cerr << "join_detach_test, thread id: " << std::this_thread::get_id() << std::endl;
+    }
+    std::cerr << "join_detach_test, thread id: " << std::this_thread::get_id() << " is exiting" << std::endl;
+  });
+  if(t.joinable()) {
+    t.detach();
+  }
+
+}
+
 int main() {
   pid_t pid = getpid();
   std::cout << "pid: " << pid << std::endl;
@@ -273,8 +342,8 @@ int main() {
   std::cout << "posix_thread_id: " << posix_thread_id << std::endl;
   std::thread::id id = std::this_thread::get_id();
   std::cout << "std::thread::id: " << id << std::endl;
-  std::cout << "--------------------------ThreadType----------------------------" << std::endl;
-  ThreadType();
+  std::cout << "--------------------------MemberType----------------------------" << std::endl;
+  MemberType();
   std::cout << "--------------------------thread_pthread----------------------------" << std::endl;
   thread_pthread();
   std::cout << "--------------------------thread_ref----------------------------" << std::endl;
@@ -285,4 +354,18 @@ int main() {
   MemFun();
   std::cout << "--------------------------ThreadTest----------------------------" << std::endl;
   ThreadTest();
+  std::cout << "--------------------------join_detach_test----------------------------" << std::endl;
+  std::thread t(join_detach_test);
+
+  while(detach_counter.load() < 10) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    detach_counter.fetch_add(1);
+    std::cerr << "main thread, thread id: " << std::this_thread::get_id() << ", detach_counter: " << detach_counter.load() << std::endl;
+  }
+
+  if (t.joinable()) {
+    t.join();
+  }
+
+  return 0;
 }
