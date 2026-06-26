@@ -45,6 +45,8 @@
 /**
  * template <class charT, class traits = regex_traits<charT> >
  * class basic_regex;
+ * typedef basic_regex<char>    regex;
+ * typedef basic_regex<wchar_t> wregex;
  */
 void basic_regex_example() {
     std::basic_regex<char> rgx("ab*c");
@@ -102,6 +104,35 @@ void basic_regex_example() {
     std::cout << "The regex flags: " << flags << ", ECMASCRIPT: " << std::regex_constants::ECMAScript << std::endl;
     std::locale loc = rgx5.getloc();
     std::cout << "The regex locale: " << loc.name() << std::endl;
+}
+
+/**
+ * template <class charT> 
+ * class regex_traits;
+ */
+void regex_traits_example() {
+    // member types
+    if(std::is_same<std::regex_traits<char>::char_type, char>::value) {
+        std::cout << "The regex_traits is using char as its char_type." << std::endl;
+    } else {
+        std::cout << "The regex_traits is not using char as its char_type." << std::endl;
+    }
+    if(std::is_same<std::regex_traits<char>::string_type, std::string>::value) {
+        std::cout << "The regex_traits is using std::string as its string_type." << std::endl;
+    } else {
+        std::cout << "The regex_traits is not using std::string as its string_type." << std::endl;
+    }
+    if(std::is_same<std::regex_traits<char>::locale_type, std::locale>::value) {
+        std::cout << "The regex_traits is using std::locale as its locale_type." << std::endl;
+    } else {
+        std::cout << "The regex_traits is not using std::locale as its locale_type." << std::endl;
+    }
+
+    // construct, 只有默认构造函数
+
+    // member fun
+    std::size_t len = std::regex_traits<char>::length("nihao");
+    std::cout << "length: " << len << std::endl;
 }
 
 /**
@@ -202,6 +233,8 @@ void regex_replace_test() {
 int main() {
     std::cout << "==================== Basic Regex Example ====================" << std::endl;
     basic_regex_example();
+    std::cout << "==================== Regex Traits Example ====================" << std::endl;
+    regex_traits_example();
     std::cout << "==================== Regex Match Test ====================" << std::endl;
     regex_match_test();
     std::cout << "==================== Match Result Example ====================" << std::endl;
