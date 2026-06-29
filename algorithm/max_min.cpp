@@ -41,9 +41,40 @@ void max_example() {
     
 }
 
+/**
+ * 返回一个pair对象，第一个是最小值，第二个是最大值
+ */
+void minmax_example() {
+    std::pair<int, int> ret = std::minmax(9, 10);
+    std::cout << "ret.first: " << ret.first << ", ret.second: " << ret.second << std::endl;
+
+}
+
+/**
+ * template <class ForwardIterator>  
+ * ForwardIterator min_element (ForwardIterator first, ForwardIterator last);
+ *
+ * template <class ForwardIterator, class Compare>  
+ * ForwardIterator min_element (ForwardIterator first, ForwardIterator last, Compare comp);
+ *
+ * @note 返回[first, last)中最小元素的迭代器
+ */
+void min_element_example() {
+    std::vector<int> v{0, 1, -1, 2, -2, 3};
+
+    std::vector<int>::iterator it = std::min_element(v.begin(), v.end());
+    if(it != v.end()) {
+        std::cout << "it: " << *it << std::endl;
+    }
+}
+
 int main() {
     std::cout << "=============== max_example ===============" << std::endl;
     max_example();
+    std::cout << "=============== minmax_example ===============" << std::endl;
+    minmax_example();
+    std::cout << "=============== min_element_example ===============" << std::endl;
+    min_element_example();
 
     return 0;
 }
