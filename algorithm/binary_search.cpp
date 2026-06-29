@@ -62,11 +62,11 @@ class SensorData {
 bool my_compare_less(SensorData first, SensorData second) {
   std::stringstream ss;
   if(first < second) {
-    ss << "first: "  << std::fixed << std::setprecision(3) << first << " is smaller than second: " << second << std::endl;
+    ss << "first: "  << std::fixed << std::setprecision(3) << first << " is smaller than second: " << second;
     std::cerr << ss.str() << std::endl;
     return true;
   } else {
-    ss << "first: " << std::fixed << std::setprecision(3) << first << " is bigger than second: " << second << std::endl;
+    ss << "first: " << std::fixed << std::setprecision(3) << first << " is bigger than second: " << second;
     std::cerr << ss.str() << std::endl;
     return false;
   }
@@ -79,11 +79,11 @@ struct MyCompare {
   bool operator() (const SensorData& first, const SensorData& second) {
     std::stringstream ss;
     if(first < second) {
-      ss << "MyCompareSS first: "  << std::fixed << std::setprecision(3) << first << " is smaller than second: " << second << std::endl;
+      ss << "MyCompareSS first: "  << std::fixed << std::setprecision(3) << first << " is smaller than second: " << second;
       std::cerr << ss.str() << std::endl;
       return true;
     } else {
-      ss << "MyCompareSS first: " << std::fixed << std::setprecision(3) << first << " is bigger than second: " << second << std::endl;
+      ss << "MyCompareSS first: " << std::fixed << std::setprecision(3) << first << " is bigger than second: " << second;
       std::cerr << ss.str() << std::endl;
       return false;
     }
@@ -91,11 +91,11 @@ struct MyCompare {
   bool operator() (const SensorData& first, const double& second) {
     std::stringstream ss;
     if(first < second) {
-      ss << "MyCompareSD first: "  << std::fixed << std::setprecision(3) << first << " is smaller than second: " << second << std::endl;
+      ss << "MyCompareSD first: "  << std::fixed << std::setprecision(3) << first << " is smaller than second: " << second;
       std::cerr << ss.str() << std::endl;
       return true;
     } else {
-      ss << "MyCompareSD first: " << std::fixed << std::setprecision(3) << first << " is bigger than second: " << second << std::endl;
+      ss << "MyCompareSD first: " << std::fixed << std::setprecision(3) << first << " is bigger than second: " << second;
       std::cerr << ss.str() << std::endl;
       return false;
     }
@@ -103,11 +103,11 @@ struct MyCompare {
   bool operator() (const double& first, const SensorData& second) {
     std::stringstream ss;
     if(first < second) {
-      ss << "MyCompareDS first: "  << std::fixed << std::setprecision(3) << first << " is smaller than second: " << second << std::endl;
+      ss << "MyCompareDS first: "  << std::fixed << std::setprecision(3) << first << " is smaller than second: " << second;
       std::cerr << ss.str() << std::endl;
       return true;
     } else {
-      ss << "MyCompareDS first: " << std::fixed << std::setprecision(3) << first << " is bigger than second: " << second << std::endl;
+      ss << "MyCompareDS first: " << std::fixed << std::setprecision(3) << first << " is bigger than second: " << second;
       std::cerr << ss.str() << std::endl;
       return false;
     }
@@ -211,7 +211,7 @@ void upper_bound_example() {
   double target_timestamp = 1741155871.798;
   std::vector<SensorData>::iterator up = std::upper_bound(data.begin(), data.end(), target_timestamp);
   if(up != data.end()) {
-    ss << "upper_bound at position " << (up - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *up << std::endl;
+    ss << "upper_bound at position " << (up - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *up;
     std::cout << ss.str() << std::endl;
   } else {
     std::cout << "upper_bound not found" << std::endl;
@@ -222,7 +222,7 @@ void upper_bound_example() {
   double target_timestamp2 = 1741155871.798;
   std::vector<SensorData>::iterator up2 = std::upper_bound(data.begin(), data.end(), target_timestamp2, MyCompare());
   if(up2 != data.end()) {
-    ss << "upper_bound at position " << (up2 - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *up2 << std::endl;
+    ss << "upper_bound at position " << (up2 - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *up2;
     std::cout << ss.str() << std::endl;
   } else {
     std::cout << "upper_bound not found" << std::endl;
@@ -266,7 +266,7 @@ void lower_bound_example() {
   double target_timestamp = 1741155871.798;
   std::vector<SensorData>::iterator low = std::lower_bound(data.begin(), data.end(), target_timestamp, MyCompare());
   if(low != data.end()) {
-    ss << "lower_bound at position " << (low - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *low << std::endl;
+    ss << "lower_bound at position " << (low - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *low;
     std::cout << ss.str() << std::endl;
   } else {
     std::cout << "lower_bound not found" << std::endl;
@@ -314,17 +314,17 @@ void equal_range_example() {
    std::size_t diff = bounds.second - bounds.first;
    if(diff > 0) {
     if(bounds.first != data.end()) {
-      ss << "diff > 0 equal_range first at position " << (bounds.first - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds.first << std::endl;
+      ss << "diff > 0 equal_range first at position " << (bounds.first - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds.first;
       std::cout << ss.str() << std::endl;
     }
     ss.str("");
     if(bounds.second != data.end()) {
-      ss << "diff > 0 equal_range second at position " << (bounds.second - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds.second << std::endl;
+      ss << "diff > 0 equal_range second at position " << (bounds.second - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds.second;
       std::cout << ss.str() << std::endl;
     }
    } else {
     if(bounds.first != data.end()) {
-      ss << "diff == 0 equal_range not found, first at position " << (bounds.first - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds.first << std::endl;
+      ss << "diff == 0 equal_range not found, first at position " << (bounds.first - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds.first;
       std::cout << ss.str() << std::endl;
     } else {
       std::cout << "diff == 0 equal_range not found, first is end" << std::endl;
@@ -337,17 +337,17 @@ void equal_range_example() {
    std::size_t diff2 = bounds2.second - bounds2.first;
    if(diff2 > 0) {
     if(bounds2.first != data.end()) {
-      ss << "diff2 > 0 equal_range first at position " << (bounds2.first - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds2.first << std::endl;
+      ss << "diff2 > 0 equal_range first at position " << (bounds2.first - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds2.first;
       std::cout << ss.str() << std::endl;
     }
     ss.str("");
     if(bounds2.second != data.end()) {
-      ss << "diff2 > 0 equal_range second at position " << (bounds2.second - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds2.second << std::endl;
+      ss << "diff2 > 0 equal_range second at position " << (bounds2.second - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds2.second;
       std::cout << ss.str() << std::endl;
     }
    } else {
     if(bounds2.first != data.end()) {
-      ss << "diff2 == 0 equal_range not found, first at position " << (bounds2.first - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds2.first << std::endl;
+      ss << "diff2 == 0 equal_range not found, first at position " << (bounds2.first - data.begin()) << ", value is " << std::fixed << std::setprecision(3) << *bounds2.first;
       std::cout << ss.str() << std::endl;
     } else {
       std::cout << "diff2 == 0 equal_range not found, first is end" << std::endl;
