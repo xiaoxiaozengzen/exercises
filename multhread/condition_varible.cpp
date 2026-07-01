@@ -16,7 +16,8 @@ std::string get_current_time() {
  * void wait (unique_lock<mutex>& lck);
  * @brief 阻塞当前线程，并释放锁，直到被通知为止。被通知时，停止阻塞并重新获取锁。
  * 
- * template <class Predicate> void wait (unique_lock<mutex>& lck, Predicate pred);
+ * template <class Predicate> 
+ * void wait (unique_lock<mutex>& lck, Predicate pred);
  * @brief 当pred为flase时，会一直阻塞当前线程。只有当pred为true时，接收到notifaction才会停止阻塞。
  * @note 注意如果在wait之前，pred已经为true了，那么wait不会阻塞。
  * 
