@@ -110,20 +110,51 @@ void copy_backward_test() {
  * @return 返回一个迭代器，result中移动的最后一个元素的下一个位置。
  */
 void move_test() {
-  std::vector<std::string> foo = {"air","water","fire","earth"};
-  std::vector<std::string> bar (4);
+  std::vector<int> foo = {11, 12, 13, 14};
+  std::vector<int> bar (4);
 
   // moving ranges:
   std::cout << "Moving ranges...\n";
-  std::vector<std::string>::iterator ret = std::move ( foo.begin(), foo.begin()+2, bar.begin() );
+  std::vector<int>::iterator ret = std::move ( foo.begin(), foo.begin()+2, bar.begin() );
   std::cout << "diff: " << std::distance(bar.begin(), ret) << std::endl;
   std::cout << "ret -1: " << *(ret - 1) << std::endl;
 
   // old array
   std::cout << "foo size: " << foo.size() << std::endl;
   std::cout << "foo contains:";
-  for (const auto& x: foo) std::cout << ' ' << x;
+  for (const auto& x: foo) std::cout << " " << x;
   std::cout << '\n';
+
+  // new array
+  std::cout << "bar size: " << bar.size() << std::endl;
+  std::cout << "bar contains:";
+  for (const auto& x: bar) std::cout << " " << x;
+  std::cout << '\n';
+}
+
+/**
+ * template <class BidirectionalIterator1, class BidirectionalIterator2>  
+ * BidirectionalIterator2 move_backward (BidirectionalIterator1 first, BidirectionalIterator1 last, BidirectionalIterator2 result);
+ */
+void move_backward_example() {
+    std::vector<int> fir{10, 1, 2, 3, 4, 5};
+    std::vector<int> sec(5);
+
+    std::vector<int>::iterator ite = std::move_backward(fir.begin(), fir.begin()+3, sec.end());
+    std::cout << "ite: " << *ite << std::endl;
+
+    std::cout << "fir: ";
+    for(auto val: fir) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "sec: ";
+    for(auto val: sec) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
 }
 
 /**
@@ -132,6 +163,8 @@ void move_test() {
  * 
  * template <class T, size_t N> 
  * void swap(T (&a)[N], T (&b)[N])  noexcept (noexcept(swap(*a,*b)));
+ * 
+ * @note 还有接口：swap_range跟iter_swap
  */
 void swap_test() {
     int a = 10;
@@ -419,6 +452,8 @@ int main() {
     copy_backward_test();
     std::cout << "====================== move_test ======================" << std::endl;
     move_test();
+    std::cout << "====================== move_backward_example ======================" << std::endl;
+    move_backward_example();
     std::cout << "====================== swap_test ======================" << std::endl;
     swap_test();
     std::cout << "====================== transform_test ======================" << std::endl;
