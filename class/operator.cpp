@@ -108,6 +108,11 @@ public:
   ///< 重载解引用操作符，&表示只能用于左值对象
   int operator*() & { return a; }
 
+  ///< 类型操作符重载
+  operator int() const {
+    return a;
+  }
+
 public:
   int a = 0;
 };
@@ -145,6 +150,9 @@ void OperatorTest() {
   A a3 = 123_A;
   std::cout << "a3: " << a3 << std::endl;
   std::cout << "*a3: " << *a3 << std::endl;
+
+  int ret = a1;
+  std::cout << "ret = " << ret << std::endl;
 }
 
 
