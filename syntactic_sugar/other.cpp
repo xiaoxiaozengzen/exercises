@@ -37,6 +37,8 @@ void if_declare() {
     /**
      * @brief 对于一个赋值表达式:
      * @note 1.赋值会先执行，即变量会被赋值 2.然后赋值表达式的结果就等价于赋值后的变量
+     * @note 会触发警告：using the result of an assignment as a condition without parentheses [-Wparentheses]
+     *       解决方法：需要使用括号将赋值表达式括起来
      */
     Werid a;
     if(a = 10) {
