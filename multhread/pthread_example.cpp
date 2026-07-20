@@ -3,10 +3,12 @@
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <deque>
 
 /************************create and exit********************** */
 
@@ -49,6 +51,66 @@ void create_exit() {
 
   printf("Thread 1 returns: %d\n", iret1);
   printf("Thread 2 returns: %d\n", iret2);
+}
+
+/************************schedule********************** */
+
+struct Shared {
+  pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+  pthread_cond_t cv = PTHREAD_COND_INITIALIZER;
+
+  std::deque<int> q;
+  bool done = false;
+};
+
+void *Producer(void* arg) {
+  pthread_setname_np(pthread_self(), "producer");
+  auto * s = static_cast<Shared*>(arg);
+  for(int i = 0; i < 5; i++) {
+    pthread_mutex_lock(&s->mtx);
+    s->q.push_back(i);
+    pthread_cond_signal(&s->cv);
+    pthread_mutex_unlock(&s->mtx);
+  }
+  pthread_mutex_lock(&s->mtx);
+  s->done = true;
+  pthread_cond_broadcast(&s->cv);
+  pthread_mutex_unlock(&s->mtx);
+  return nullptr;
+}
+
+void *Consumer(void* arg) {
+  pthread_setname_np(pthread_self(), "consumer");
+  auto * s = static_cast<Shared*>(arg);
+  while(true) {
+    pthread_mutex_lock(&s->mtx);
+    while(s->q.empty() && !s->done) {
+      pthread_cond_wait(&s->cv, &s->mtx);
+    }
+    if(s->q.empty() && s->done) {
+      pthread_mutex_unlock(&s->mtx);
+      break;
+    }
+
+    int v = s->q.front();
+    s->q.pop_front();
+    pthread_mutex_unlock(&s->mtx);
+    printf("consumer get %d\n", v);
+  }
+
+  return nullptr;
+}
+
+void producer_consumer() {
+  Shared s;
+  pthread_t tp, tc;
+  pthread_create(&tp, NULL, Producer, &s);
+  pthread_create(&tc, NULL, Consumer, &s);
+
+  pthread_join(tp, nullptr);
+  pthread_join(tc, nullptr);
+  pthread_mutex_destroy(&s.mtx);
+  pthread_cond_destroy(&s.cv);
 }
 
 /************************schedule********************** */
@@ -169,6 +231,7 @@ void *fun(void *ptr) {
   message = (char *)ptr;
   while (1) {
     printf("%s \n", message);
+    usleep(1000000);
   }
 }
 
@@ -197,22 +260,42 @@ void setaffinity() {
   get_thread_priority(&attr2);
 
   /* Create independent threads each of which will execute function */
-  pthread_create(&thread1, &attr1, fun, (void *)value1);
   pthread_create(&thread2, &attr2, fun, (void *)value2);
+  pthread_create(&thread1, &attr1, fun, (void *)value1);
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
-  pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);
-
+  pthread_join(thread1, NULL);
+  
   pthread_attr_destroy(&attr1);
   pthread_attr_destroy(&attr2);
 }
 
+/************************prctl********************** */
+#include <sys/prctl.h>
+
+/**
+ * int prctl(int option, unsigned long arg2, ...);
+ * @brief pthread底层调用的就是prctl
+ * @note option:
+ *           1. PR_SET_NAME/PR_GET_NAME 
+ *           2. PR_SET_PDEATHSIG，父线程死了给我发某信号，用于孤儿线程清理
+ *           3. PR_SET_DUMPABLE，是否允许生成core
+ */
+void prctl_test() {
+  prctl(PR_SET_NAME, "worker", 0, 0, 0);
+}
+
 main() {
+  std::cout << "============================ create and exit ============================" << std::endl;
   create_exit();
-  std::cout << "===============================================================" << std::endl;
+  std::cout << "============================ producer_consumer ============================" << std::endl;
+  producer_consumer();
+  std::cout << "============================ schelue ============================" << std::endl;
   schedule();
-  std::cout << "===============================================================" << std::endl;
+  std::cout << "============================ prctl_test ============================" << std::endl;
+  prctl_test();
+  std::cout << "============================ setaffinity ============================" << std::endl;
   setaffinity();
 }
