@@ -13,3 +13,5 @@ add_executable(string_view string_view.cpp)
 target_link_libraries(string_view PRIVATE pthread)
 
 add_executable(filesystem filesystem.cpp)
+
+add_executable(syntactic_sugar_other other.cpp)
