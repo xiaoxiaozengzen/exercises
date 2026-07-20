@@ -229,6 +229,7 @@ inline int set_cpu(int i) {
 void *fun(void *ptr) {
   char *message;
   message = (char *)ptr;
+  pthread_setname_np(pthread_self(), message);
   while (1) {
     printf("%s \n", message);
     usleep(1000000);
