@@ -230,9 +230,10 @@ void *fun(void *ptr) {
   char *message;
   message = (char *)ptr;
   pthread_setname_np(pthread_self(), message);
+  set_cpu(0);
   while (1) {
-    printf("%s \n", message);
-    usleep(1000000);
+    // printf("%s \n", message);
+    // usleep(1000000);
   }
 }
 
@@ -261,8 +262,14 @@ void setaffinity() {
   get_thread_priority(&attr2);
 
   /* Create independent threads each of which will execute function */
-  pthread_create(&thread2, &attr2, fun, (void *)value2);
-  pthread_create(&thread1, &attr1, fun, (void *)value1);
+  int rt = pthread_create(&thread2, &attr2, fun, (void *)value2);
+  if(rt != 0) {
+    std::cerr << "pthrad2 create failed!" << std::endl;
+  }
+  rt = pthread_create(&thread1, &attr1, fun, (void *)value1);
+  if(rt != 0) {
+    std::cerr << "pthrad1 create failed!" << std::endl;
+  }
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
 

@@ -10,6 +10,18 @@ top -H -p <pid>
 # -p 指定进程
 # 交互：按1可以切换每个cpu的资源消耗
 #       按H可以切换线程/进程的视图
+
+# top - 20:25:47 up 66 days, 17:41,  2 users,  load average: 7.23, 6.82, 6.14
+# Threads:   3 total,   2 running,   1 sleeping,   0 stopped,   0 zombie
+# %Cpu0  : 98.0 us,  2.0 sy,  0.0 ni,  0.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+# us：user，用户态消耗的CPU(普通优先级用户进程，nice=0)
+# sy：system，内核态消耗的CPU
+# ni：nice，被nice调低优先级(nice>0)的用户进程消耗的CPU
+# id：idle，CPU空闲，且没有等IO
+# wa：iowait，CPU空闲，在等待IO
+# hi：hardware irq，处理硬中断(网卡收包，磁盘完成)
+# si：software irq，处理软中断
+# st：steal，被同宿主机的其他虚拟机偷走的时间，物理机永远为0
 ```
 
 ## 2.htop
