@@ -4,9 +4,12 @@
 
 #include <atomic>
 #include <chrono>
+#include <exception>
 #include <iostream>
 #include <memory>
+#include <ratio>
 #include <thread>
+#include <exception>
 
 /**
  * 一个类，表示执行线程
@@ -321,11 +324,13 @@ std::atomic<int> detach_counter(0);
  * 1.detach线程函数内部是一个无限循环
  * 2.detach线程函数内部的循环需要有终止条件，且这个终止条件需要在外部线程中修改，这样才能让detach线程正常退出，否则会导致资源泄漏
  */
-void join_detach_test() {
+void join_detach_test_fun() {
   std::thread t([&]() {
     for(;detach_counter.load() < 5;) {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
-      std::cerr << "join_detach_test, thread id: " << std::this_thread::get_id() << std::endl;
+      std::cerr << "join_detach_test, thread id: " << std::this_thread::get_id()
+                << ", detach_counter = " << detach_counter.load()
+                << std::endl;
     }
     std::cerr << "join_detach_test, thread id: " << std::this_thread::get_id() << " is exiting" << std::endl;
   });
@@ -333,6 +338,34 @@ void join_detach_test() {
     t.detach();
   }
 
+}
+
+void join_detach_test() {
+  std::thread t(join_detach_test_fun);
+
+  while(detach_counter.load() < 10) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    detach_counter.fetch_add(1);
+    std::cerr << "main thread, thread id: " << std::this_thread::get_id() << ", detach_counter: " << detach_counter.load() << std::endl;
+  }
+
+  if (t.joinable()) {
+    t.join();
+  }
+}
+
+/**
+ * @brief c++中如果一个线程没有join或则detach，则析构的时候直接terminate
+ * 等价于：
+ * ~thread() {
+ *    if(joinable()) std::terminate();
+ * }
+ */
+void thread_exit_terminate() {
+  std::thread t([](){
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  });
 }
 
 int main() {
@@ -355,17 +388,10 @@ int main() {
   std::cout << "--------------------------ThreadTest----------------------------" << std::endl;
   ThreadTest();
   std::cout << "--------------------------join_detach_test----------------------------" << std::endl;
-  std::thread t(join_detach_test);
+  join_detach_test();
+  std::cout << "--------------------------thread_exit_terminate----------------------------" << std::endl;
+  // thread_exit_terminate();
 
-  while(detach_counter.load() < 10) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    detach_counter.fetch_add(1);
-    std::cerr << "main thread, thread id: " << std::this_thread::get_id() << ", detach_counter: " << detach_counter.load() << std::endl;
-  }
-
-  if (t.joinable()) {
-    t.join();
-  }
 
   return 0;
 }
