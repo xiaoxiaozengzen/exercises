@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <exception>
 #include <iostream>
 #include <deque>
 #include <ratio>
@@ -11,6 +12,7 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <functional>
 
 #include "rate.hpp"
 
@@ -125,69 +127,70 @@ public:
             stage1Func_(frame);
             stage2Func_(frame);
             return true;
-        } 
+        }
 
         {
-            std::unique_lock<std::mutex> lk(mutex1_);
-            cv1_.wait(lk, [this](){
-                return !is_1_in_ready_ || stopped_;
+            std::unique_lock<std::mutex> lk(mutex_);
+            cvStage1_.wait(lk, [this]() {
+                return stage1Queue_.size() < queue1Size_ || stopped_;
             });
             if(stopped_) {
                 return false;
             }
-            frame1_ = frame;
-            is_1_in_ready_ = true;
-            cv1_.notify_one();
+            stage1Queue_.push_back(frame);
+            cvStage1_.notify_one();
         }
         return true;
     }
 private:
 
     void RunStage1() {
-        DataFramePtr frame;
         while (true) {
-            DataFramePtr frame;
+            DataFramePtr frameToProcess = nullptr;
             {
-                std::unique_lock<std::mutex> lk(mutex1_);
-                cv1_.wait(lk, [this](){
-                    return is_1_in_ready_ || stopped_;
+                std::unique_lock<std::mutex> lk(mutex_);
+                cvStage1_.wait(lk, [this]() {
+                    return !stage1Queue_.empty() || stopped_;
                 });
-                frame = frame1_;
-                is_1_in_ready_ = false;
-                cv1_.notify_one();
+                if(stopped_ && stage1Queue_.empty()) {
+                    return;
+                }
+                frameToProcess = stage1Queue_.front();
+                stage1Queue_.pop_front();
             }
-            stage1Func_(frame);
+
+            stage1Func_(frameToProcess);
             {
-                std::unique_lock<std::mutex> lk(mutex2_);
-                cv2_.wait(lk, [this](){
-                    return !is_2_in_ready_ || stopped_;
+                std::unique_lock<std::mutex> lk(mutex_);
+                cvStage2_.wait(lk, [this]() {
+                    return stage2Queue_.size() < queue2Size_ || stopped_;
                 });
                 if(stopped_) {
                     return;
                 }
-                frame2_ = frame;
-                is_2_in_ready_ = true;
-                cv2_.notify_one();                
+                stage2Queue_.push_back(frameToProcess);
+                cvStage2_.notify_one();
             }
         }
     }
 
     void RunStage2() {
         while(true) {
-            DataFramePtr frame;
+            DataFramePtr frameToProcess = nullptr;
             {
-                std::unique_lock<std::mutex> lk(mutex2_);
-                cv2_.wait(lk, [this](){
-                    return is_2_in_ready_ || stopped_;
+                std::unique_lock<std::mutex> lk(mutex_);
+                cvStage2_.wait(lk, [this]() {
+                    return !stage2Queue_.empty() || stopped_;
                 });
-                frame = frame2_;
-                is_2_in_ready_ = false;
-                cv2_.notify_one();
+                if(stopped_ && stage2Queue_.empty()) {
+                    return;
+                }
+                frameToProcess = stage2Queue_.front();
+                stage2Queue_.pop_front();
             }
 
-            stage2Func_(frame);
+            stage2Func_(frameToProcess);
         }
-        
     }
 
     
@@ -199,17 +202,11 @@ private:
     std::size_t queue1Size_;
     std::size_t queue2Size_;
 
-    std::mutex mutex1_;
-    std::condition_variable cv1_;
-    std::deque<DataFramePtr> queue1_;
-    bool is_1_in_ready_ = false;
-    DataFramePtr frame1_ = nullptr;
-
-    std::mutex mutex2_;
-    std::condition_variable cv2_;
-    std::deque<DataFramePtr> queue2_;
-    bool is_2_in_ready_ = false;
-    DataFramePtr frame2_ = nullptr;
+    std::mutex mutex_;
+    std::condition_variable cvStage1_;
+    std::condition_variable cvStage2_;
+    std::deque<DataFramePtr> stage1Queue_;
+    std::deque<DataFramePtr> stage2Queue_;
 
     std::function<void(DataFramePtr)> stage1Func_;
     std::function<void(DataFramePtr)> stage2Func_;
@@ -223,51 +220,73 @@ void stage1Function(DataFramePtr frame) {
         global_log << "Received null frame in stage 1.";
         return;
     }
-    frame->index1++;
+    static std::uint64_t frame_count = 0;
+    frame_count++;
+    frame->index1 = frame_count;
     global_log << "Stage 1 processed frame with index1: " + std::to_string(frame->index1.load());
     frame->data += "stage1_" + std::to_string(frame->index1) + "_";
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 }
 
-void stage2Function(DataFramePtr frame) {
+void stage2Function(DataFramePtr frame, bool do_timeout) {
     if(!frame) {
         global_log << "Received null frame in stage 2.";
         return;
     }
-    frame->index2++;
+    static std::uint64_t frame_count = 0;
+    frame_count++;
+    frame->index2 = frame_count;
     global_log << "Stage 2 processed frame with index2: " + std::to_string(frame->index2.load());
     frame->data += "stage2_" + std::to_string(frame->index2) + "_";
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    if(do_timeout) {
+        if(frame_count % 8 == 0) {
+            std::cerr << "fun2 sleep" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
+    }
+
+    if(frame->index1 != frame->index2) {
+        std::terminate();
+    }
 
     global_log << "Final frame data: " + frame->data;
 }
 
 int main(int argc, char* argv[]) {
-    if(argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <mode>" << std::endl;
+    if(argc != 3) {
+        std::cout << "Usage: " << argv[0] << " <mode> <timeout>" << std::endl;
         std::cout << "mode: 0 for Serial, 1 for Parallel" << std::endl;
+        std::cout << "timeout: 0 is true, other is false" << std::endl;
         return 1;
     }
 
     Mode mode = (std::atoi(argv[1]) == 0) ? Mode::Serial : Mode::Parallel;
+    bool is_timeout = (std::atoi(argv[2]) == 0) ? true : false;
+    std::cerr << "--- is_timeout: " << (is_timeout?"True":"False") << std::endl;
+
 
     Rate rate(10.0); // 10 Hz
     static std::uint64_t frameIndex = 0;
 
     TwoStagePipeline pipeline(mode, 2);
     pipeline.setStage1Function(stage1Function);
-    pipeline.setStage2Function(stage2Function);
+    std::function<void(DataFramePtr frame)> new_stage2 = std::bind(stage2Function, std::placeholders::_1, is_timeout);
+    pipeline.setStage2Function(new_stage2);
     pipeline.Start();
 
+    
     for (int i = 0; i < 20; ++i) {
+        frameIndex++;
+        global_log << "start frame " + std::to_string(frameIndex);
+
         DataFramePtr frame = std::make_shared<DataFrame>();
-        frame->index1 = frameIndex;
-        frame->index2 = frameIndex;
         if (!pipeline.Dispatch(frame)) {
             global_log << "Failed to dispatch frame: " + std::to_string(i);
         }
         rate.sleep();
-        frameIndex++;
+        global_log << "end frame " + std::to_string(frameIndex);
     }
 
     std::this_thread::sleep_for(std::chrono::seconds(2));

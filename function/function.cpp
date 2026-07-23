@@ -76,6 +76,18 @@ void function_test() {
   } else {
     std::cout << "f0_2 is not valid" << std::endl;
   }
+  std::function<int(int, int)> f0_5(my_plus); // 直接使用函数
+  if(f0_5) {
+    std::cout << "f0_5 is valid" << std::endl;
+  } else {
+    std::cout << "f0_5 is not valid" << std::endl;
+  }
+  std::function<int(int, int)> f0_6 = std::bind(my_plus, std::placeholders::_1, std::placeholders::_2);
+  if(f0_6) {
+    std::cout << "f0_6 is valid" << std::endl;
+  } else {
+    std::cout << "f0_6 is not valid" << std::endl;
+  }
 
   // member function
   std::function<int(int, int)> f1 = [](int a, int b) { return a + b; };
