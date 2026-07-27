@@ -12,7 +12,7 @@
  *     * ① 该操作成功结束； 
  *     * ② 该操作根本未被执行，且未发现任何部分执行的状态；
  * 2.临界区：
- *   - 指一段代码，其对应进程需哟访问共享资源，而另一个进程也处于相同代码区域时，这段代码不会被执行
+ *   - 指一段代码，其对应进程需要访问共享资源，而另一个进程也处于相同代码区域时，这段代码不会被执行
  * 3.互斥：
  *   - 指当一个进程处于临界区并访问共享资源时，没有其他进程会处于临界区并且访问任何相同的共享资源；
  * 4.死锁：
@@ -201,7 +201,7 @@ void lock_guard_test() {
    * 2. adopting initialization
    * 
    * lock_guard(mutex_type& m, adopt_lock_t tag);
-   * @brief 表示该锁已经被锁定，lock_guard不会尝试再次锁定它。
+   * @brief 对m进行管理，并假设其已经是lock的状态，lock_guard不会再去lock。
    */
   auto print_thread_id = [&](int id) {
     mtx.lock();
@@ -221,12 +221,14 @@ void lock_guard_test() {
  * template <class Mutex> class unique_lock;
  */
 void unique_lock_test() {
+  // 1. member type
   if(std::is_same<std::unique_lock<std::mutex>::mutex_type, std::mutex>::value) {
     std::cout << "std::unique_lock<std::mutex>::mutex_type is the same as std::mutex." << std::endl;
   } else {
     std::cout << "std::unique_lock<std::mutex>::mutex_type is NOT the same as std::mutex." << std::endl;
   }
 
+  // 2.construct
   /**
    * constructor:
    * 1. unique_lock() noexcept;
@@ -251,8 +253,31 @@ void unique_lock_test() {
    *   - x将变得跟调用默认构造函数一样
    * 9. unique_lock(const unique_lock&) = delete;
    */
+  /**
+   * @brief 对于构造的时候的tag：
+   * - no tag: 在构造的时候调用lock函数加锁
+   * - try_to_lock: 在构造的时候调用try_lock去上锁
+   * - defer_lock: 在构造的时候不去上锁，让你后面再自己决定什么时候上锁
+   * - adopt_lock: 在构造的时候不去上锁，假设其已经在外部进行了上锁
+   */
 
+  // 3. function
   std::mutex cur_mtx;
+  // 3.1. lock
+  {
+    std::unique_lock<std::mutex> lck(cur_mtx, std::defer_lock);
+    bool locked = lck.try_lock();
+    if(locked) {
+      std::cerr << "try_lock is true" << std::endl;
+    } else {
+      lck.lock();
+      std::cerr << "lock" << std::endl;
+    }
+
+    // try_lock_for跟try_lock_until需要mutex类型本身支持
+    std::cerr << "defer lock" << std::endl;
+    lck.unlock();    
+  }
   {
     std::unique_lock<std::mutex> lck(cur_mtx);
     
@@ -288,6 +313,7 @@ void unique_lock_test() {
     std::cout << "Managed mutex pointer: " << p_mtx2 << std::endl;
   }
 
+  // 3.3. 其他的function
   /**
    * template <class Mutex1, class Mutex2, class... Mutexes>  
    * void lock (Mutex1& a, Mutex2& b, Mutexes&... cde);
@@ -300,7 +326,7 @@ void unique_lock_test() {
    * @brief 按照参数顺序，使用它们的try_lock()方法尝试锁定多个互斥量。非阻塞。
    * @return
    *   - -1：如果所有互斥量都被锁定，则返回-1
-   *   - n：返回锁失败的互斥量的索引，从0开始计数。
+   *   - n：返回锁失败的互斥量的索引，从0开始计数。并对已经lock的mutex调用其unlock
    */
   std::mutex foo, bar;
 
