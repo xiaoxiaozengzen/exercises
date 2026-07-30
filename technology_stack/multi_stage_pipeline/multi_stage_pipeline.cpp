@@ -29,28 +29,30 @@ public:
     }
 
     void operator<<(const std::string& message) {
-        std::stringstream ss;
-        ss << GetTime() << " " << message;
-        std::cout << ss.str() << std::endl;
+        Emit(message);
     }
 
     void operator<<(const char* message) {
-        std::stringstream ss;
-        ss << GetTime() << " " << message;
-        std::cout << ss.str() << std::endl;
+        Emit(message);
     }
 
     void operator<<(const int& message) {
-        std::stringstream ss;
-        ss << GetTime() << " " << message;
-        std::cout << ss.str() << std::endl;
+        Emit(std::to_string(message));
     }
 
     void operator<<(const std::atomic<int>& message) {
-        std::stringstream ss;
-        ss << GetTime() << " " << message.load();
-        std::cout << ss.str() << std::endl;
+        Emit(std::to_string(message.load()));
     }
+
+private:
+    void Emit(const std::string& message) {
+        std::stringstream ss;
+        ss << GetTime() << " " << message << "\n";
+        std::lock_guard<std::mutex> lk(outMutex_);
+        std::cout << ss.str() << std::flush;
+    }
+
+    std::mutex outMutex_;
 };
 
 LogLine global_log;
@@ -67,12 +69,67 @@ enum class Mode {
     Serial
 };
 
+// Thread-safe bounded queue. Blocks producers when full and consumers when
+// empty. Close() wakes everyone: Push then fails, Pop drains what's left then
+// fails.
+template <typename T>
+class BlockingQueue {
+public:
+    explicit BlockingQueue(std::size_t capacity) : capacity_(capacity) {}
+
+    // Returns false if the queue was closed before the item could be enqueued.
+    bool Push(T item) {
+        std::unique_lock<std::mutex> lk(mutex_);
+        notFull_.wait(lk, [this]() {
+            return queue_.size() < capacity_ || closed_;
+        });
+        if (closed_) {
+            return false;
+        }
+        queue_.push_back(std::move(item));
+        notEmpty_.notify_one();
+        return true;
+    }
+
+    // Returns false only when the queue is closed AND drained.
+    bool Pop(T& out) {
+        std::unique_lock<std::mutex> lk(mutex_);
+        notEmpty_.wait(lk, [this]() {
+            return !queue_.empty() || closed_;
+        });
+        if (queue_.empty()) {
+            return false;
+        }
+        out = std::move(queue_.front());
+        queue_.pop_front();
+        notFull_.notify_one();
+        return true;
+    }
+
+    void Close() {
+        {
+            std::lock_guard<std::mutex> lk(mutex_);
+            closed_ = true;
+        }
+        notEmpty_.notify_all();
+        notFull_.notify_all();
+    }
+
+private:
+    std::size_t capacity_;
+    std::mutex mutex_;
+    std::condition_variable notEmpty_;
+    std::condition_variable notFull_;
+    std::deque<T> queue_;
+    bool closed_ = false;
+};
+
 class TwoStagePipeline {
 public:
     TwoStagePipeline(Mode mode, std::size_t queueSize)
      :mode_(mode),
-      queue1Size_(queueSize),
-      queue2Size_(queueSize) {
+      stage1Queue_(queueSize),
+      stage2Queue_(queueSize) {
 
     }
 
@@ -89,6 +146,8 @@ public:
             return;
         }
         global_log << "Stopping pipeline...";
+        stage1Queue_.Close();
+        stage2Queue_.Close();
         if (stage1Thread_.joinable()) {
             stage1Thread_.join();
         }
@@ -129,84 +188,34 @@ public:
             return true;
         }
 
-        {
-            std::unique_lock<std::mutex> lk(mutex_);
-            cvStage1_.wait(lk, [this]() {
-                return stage1Queue_.size() < queue1Size_ || stopped_;
-            });
-            if(stopped_) {
-                return false;
-            }
-            stage1Queue_.push_back(frame);
-            cvStage1_.notify_one();
-        }
-        return true;
+        return stage1Queue_.Push(std::move(frame));
     }
 private:
 
     void RunStage1() {
-        while (true) {
-            DataFramePtr frameToProcess = nullptr;
-            {
-                std::unique_lock<std::mutex> lk(mutex_);
-                cvStage1_.wait(lk, [this]() {
-                    return !stage1Queue_.empty() || stopped_;
-                });
-                if(stopped_ && stage1Queue_.empty()) {
-                    return;
-                }
-                frameToProcess = stage1Queue_.front();
-                stage1Queue_.pop_front();
-            }
-
-            stage1Func_(frameToProcess);
-            {
-                std::unique_lock<std::mutex> lk(mutex_);
-                cvStage2_.wait(lk, [this]() {
-                    return stage2Queue_.size() < queue2Size_ || stopped_;
-                });
-                if(stopped_) {
-                    return;
-                }
-                stage2Queue_.push_back(frameToProcess);
-                cvStage2_.notify_one();
+        DataFramePtr frame;
+        while (stage1Queue_.Pop(frame)) {
+            stage1Func_(frame);
+            if (!stage2Queue_.Push(frame)) {
+                return;
             }
         }
     }
 
     void RunStage2() {
-        while(true) {
-            DataFramePtr frameToProcess = nullptr;
-            {
-                std::unique_lock<std::mutex> lk(mutex_);
-                cvStage2_.wait(lk, [this]() {
-                    return !stage2Queue_.empty() || stopped_;
-                });
-                if(stopped_ && stage2Queue_.empty()) {
-                    return;
-                }
-                frameToProcess = stage2Queue_.front();
-                stage2Queue_.pop_front();
-            }
-
-            stage2Func_(frameToProcess);
+        DataFramePtr frame;
+        while (stage2Queue_.Pop(frame)) {
+            stage2Func_(frame);
         }
     }
-
-    
 
 private:
     std::atomic<bool> stopped_{false};
 
     Mode mode_;
-    std::size_t queue1Size_;
-    std::size_t queue2Size_;
 
-    std::mutex mutex_;
-    std::condition_variable cvStage1_;
-    std::condition_variable cvStage2_;
-    std::deque<DataFramePtr> stage1Queue_;
-    std::deque<DataFramePtr> stage2Queue_;
+    BlockingQueue<DataFramePtr> stage1Queue_;
+    BlockingQueue<DataFramePtr> stage2Queue_;
 
     std::function<void(DataFramePtr)> stage1Func_;
     std::function<void(DataFramePtr)> stage2Func_;
