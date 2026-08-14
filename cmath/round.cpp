@@ -143,6 +143,20 @@ void division_and_modulus() {
     std::cout << "Integer modulus: " << c << " % " << d << " = " << mod_result << std::endl;
 }
 
+void lround_example() {
+    double x = 3.14;
+    long result = std::lround(x);
+    std::cout << "lround of " << x << " is " << result << std::endl; // 输出: lround of 3.14 is 3
+
+    double y = -3.14;
+    long result_y = std::lround(y);
+    std::cout << "lround of " << y << " is " << result_y << std::endl; // 输出: lround of -3.14 is -3
+
+    double z = 3.5;
+    long result_z = std::lround(z);
+    std::cout << "lround of " << z << " is " << result_z << std::endl; // 输出: lround of 3.5 is 4
+}
+
 int main() {
     std::cout << "=========== Ceil Example ============" << std::endl;
     ceil_example();
@@ -156,6 +170,8 @@ int main() {
     trunc_example();
     std::cout << "=========== Division and Modulus Example ============" << std::endl;
     division_and_modulus();
+    std::cout << "=========== lround Example ============" << std::endl;
+    lround_example();
 
     return 0;
 }
