@@ -166,8 +166,13 @@ int mv_convert(T value) {
     return static_cast<int>(value);
 }
 
+// 显示实例化定义
 template int mv_convert<int>(int value);
 template int mv_convert<double>(double value);
+
+// 显示实例化声明
+// 这个不是把模板声明成外部函数，而是模板示例化机制里的：显示实例化声明
+// 表示当前编译单元中不需要对 my_swap<int> 进行隐式实例化，其特化由其他编译单元提供
 extern template void my_swap<int>(int& a, int& b);
 
 void explict_instantiation_test() {
